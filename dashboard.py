@@ -230,12 +230,19 @@ class Dashboard():
                 payload = self.redis.get(client).decode('utf-8')
                 devices[keyname] = json.loads(payload)
 
-            # print(devices)
+                livekey = 'traffic-live-%s' % devices[keyname]['ip-address']
+                live = self.redis.get(livekey)
+
+                if live is not None:
+                    traffic = json.loads(live.decode('utf-8'))
+                    devices[keyname]['rx'] = traffic['rx']
+                    devices[keyname]['tx'] = traffic['tx']
+
             self.debug("[+] local devices checker: %d devices found" % len(devices))
             self.devices = devices
 
             await self.wsbroadcast("devices", self.devices)
-            await asyncio.sleep(3)
+            await asyncio.sleep(1)
 
 
     async def wireless_handler(self):
