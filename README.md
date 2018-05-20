@@ -6,6 +6,10 @@ I doubt you use the exact same setup as me, since it use lot of custom hardware,
 
 Feel free to take piece of code from this work, it's here for you (and to backup my code).
 
+# Screenshots
+![Screenshot 1](https://i.imgur.com/ztvFgGj.png)
+![Screenshot 2](https://i.imgur.com/jJdmmI2.png)
+
 # Installation
 - Copy `config-sample.py` to `config.py`
 - Edit `config.py` with custom parameters
