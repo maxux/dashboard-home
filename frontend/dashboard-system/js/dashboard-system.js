@@ -649,22 +649,41 @@ function rxtxactive(value) {
     return 'active';
 }
 
+function clientscmp(a, b) {
+    a = a['addr'].split('.');
+    b = b['addr'].split('.');
+
+    for(var i = 0; i < a.length; i++) {
+        if((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i])))
+            return -1;
+
+        else if(a[i] > b[i])
+            return 1;
+    }
+
+    return 0;
+}
+
 function devices_update(clients) {
     $('.devices').empty();
-    // console.log(clients);
 
     var now = new Date();
 
     var downarrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-down"></span> ';
     var uparrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-up"></span> ';
 
-    for(var host in clients) {
-        var client = clients[host];
+    var oclients = []
+    for(var host in clients)
+        oclients.push({'addr': clients[host]['ip-address'], 'mac': host});
+
+    oclients.sort(clientscmp);
+
+    for(var index in oclients) {
+        var client = clients[oclients[index]['mac']];
         var elapsed = (now.getTime() / 1000) - client['timestamp'];
         var rx = (client['rx'] != undefined) ? client['rx'] : null;
         var tx = (client['tx'] != undefined) ? client['tx'] : null;
 
-        // var tr = $('<tr>', {'class': elapsedvisibiliy(elapsed)});
         var tr = $('<tr>');
         tr.append($('<td>').html(client['mac-address']));
         tr.append($('<td>').html(client['ip-address']));
@@ -678,21 +697,6 @@ function devices_update(clients) {
 
         var badgeclass = 'badge pull-right';
         var badgehtml = "---";
-
-        /*
-        if(client['ping'] != undefined) {
-            if(!client['ping'][0]) {
-                badgehtml = "No reply";
-                badgeclass += " text-danger";
-
-            } else {
-                badgehtml = client['ping'][1];
-
-                if(parseFloat(client['ping'][1]) > 3.0)
-                    badgeclass += " text-warning";
-            }
-        }
-        */
 
         var badge = $('<span>', {'class': badgeclass}).html(elapsedstr(elapsed.toFixed(0)));
         tr.append($('<td>').append(badge));
