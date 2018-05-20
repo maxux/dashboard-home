@@ -1,0 +1,214 @@
+html, body {
+    height: 100%;
+}
+
+@media screen and (min-width: 1000px) {
+    html, body {
+        overflow: hidden;
+    }
+}
+
+body {
+    padding: 15px;
+}
+
+.node-down {
+    opacity: 0.3;
+}
+
+.glyphicon-text {
+    padding-right: 6px;
+}
+
+.glyphicon-small {
+    font-size: 10px;
+}
+
+.rtinfo {
+    padding-bottom: 10px;
+}
+
+.rtinfo table thead {
+	font-weight: bold;
+	color: #BFBFBF;
+	border-bottom: solid 2px #4D4D4D;
+}
+
+.rtinfo table tbody {
+	font-family: monospace;
+	font-size: 15px;
+    margin-bottom: 0;
+}
+
+.rtinfo table a:link, table a:hover, table a:visited {
+    text-decoration: none !important;
+    font-weight: bold;
+}
+
+.td-14 { width: 14%; }
+.td-10 { width: 10%; }
+.td-8 { width: 8%; }
+.td-6 { width: 6%; }
+.td-5 { width: 5%; }
+.td-3 { width: 3%; }
+.td-2 { width: 2%; }
+.td-1 { width: 1%; }
+
+.table {
+    margin-bottom: 0;
+}
+
+.wfix {
+    word-spacing: -6px;
+}
+
+table.connectivity {
+    /* font-size: 13px; */
+    font-family: monospace;
+}
+
+table.connectivity td:first-child {
+    width: 55%;
+}
+
+table.connectivity td:last-child {
+    width: 25%;
+}
+
+table.wireless {
+    font-size: 14px;
+    font-family: monospace;
+}
+
+table.wireless td:first-child {
+    width: 30px;
+}
+
+/* devices */
+table.devices {
+    font-size: 14px;
+    font-family: monospace;
+    table-layout: fixed;
+}
+
+table.devices td:nth-child(1) {
+    width: 12em;
+}
+
+table.devices td:nth-child(2) {
+    width: 10em;
+}
+
+table.devices td:nth-child(4), table.devices td:nth-child(5) {
+    width: 8em;
+}
+
+table.devices td:nth-child(6) {
+    width: 9em;
+}
+
+table.devices .glyphicon-arrow-up {
+    /* color: #3C98E9; */
+}
+
+table.devices .glyphicon-arrow-down {
+    /* color: #5DB5A4; */
+}
+
+table.devices .inactive {
+    opacity: 0.3;
+}
+
+/* badge extended */
+.badge-danger {
+    background-color: #B90B00;
+    color: #FFFFFF;
+}
+
+.badge-warning {
+    background-color: #C87406;
+}
+
+/* connectivity */
+table.connectivity tr td:last-child {
+    text-align: right;
+}
+
+table.router td:first-child, table.router td:last-child {
+    width: 5%;
+}
+
+table.router span.badge {
+    font-size: 15px;
+}
+
+table.router td {
+    width: 45%;
+    text-align: center;
+}
+
+@keyframes redshadow {
+    from { text-shadow: 0px 0px 15px #F4A0A0; }
+    to { text-shadow : none; }
+}
+
+.text-danger {
+    animation: redshadow 1s infinite ease-in-out;
+    font-weight: bold;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+#disconnected {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+    color: #A52A2A;
+    font-weight: bold;
+    animation: blinker 1s linear infinite;
+}
+
+.panel-ping .panel-body {
+    text-align: center;
+}
+
+.panel-ping span.badge {
+    font-size: 15px;
+}
+
+@keyframes error-blinker {
+    50% { background-color: #222222; }
+}
+
+.system-error {
+    background-color: #792525;
+    animation: error-blinker 2s infinite;
+}
+
+/* Charts */
+.chart-container {
+    height: 80px;
+}
+
+.chart-placeholder {
+    height: 100%;
+}
+
+.visibility-recent {
+    opacity: 1;
+}
+
+.visibility-middle {
+    opacity: 0.6;
+}
+
+.visibility-old {
+    opacity: 0.3;
+}
+
+.docsis-value {
+    margin-left: 5px;
+    margin-right: 5px;
+}

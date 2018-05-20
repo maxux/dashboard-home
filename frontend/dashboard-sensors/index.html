@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Maxux Dashboard</title>
+
+    <link href="css/bootstrap.dark.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
+                            Right now
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row row-sensor sensor-10-000802776315">
+                        <div class="col-lg-4">Living Room 1</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <!-- <div class="row row-sensor sensor-dht22-1-temp" style="border-bottom: dashed 1px #4D4D4D;"> -->
+                        <div class="row row-sensor sensor-10-000802775cc7" style="border-bottom: dashed 1px #4D4D4D;">
+                        <div class="col-lg-4">Living Room 2</div>
+                        <div class="col-lg-5 value">
+                            <span class="t"></span>
+                            <span class="h"></span>
+                        </div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-28-03164756d6ff">
+                        <div class="col-lg-4">Fridge</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-28-0316454327ff">
+                        <div class="col-lg-4">Freezer</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-28-031644fec5ff">
+                        <div class="col-lg-4">Kitchen</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+
+                    <div class="panel-body text-center">
+                        <h2 id="current-time">00:00:00</h2>
+                        <h3 id="current-date">0000-00-00</h3>
+                        <h4 id="current-day">Loading</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-globe glyphicon-text"></span>
+                            <span id="weather-city">Weather</span>
+                            <span class="badge pull-right" id="weather-backtime">Loading</span>
+                        </h3>
+                    </div>
+                    <div class="panel-body weather">
+                        <div class="row">
+                        <div class="col-lg-4 text-center">
+                            Outside Temperature
+                            <h1 id="weather-temperature"></h1>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            Wind Speed
+                            <h1 id="weather-wind"></h1>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            Humidity
+                            <h1 id="weather-hum"></h1>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div id="chart-rain" class="chart-container-small">
+                                <div class="chart-placeholder">
+
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
+                            Living Room 1 Temperature
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="chart-container">
+                            <div id="chart-10-000802776315" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
+                            Freezer Temperature
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="chart-container">
+                            <div id="chart-28-0316454327ff" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
+                            Fridge Temperature
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="chart-container">
+                            <div id="chart-28-03164756d6ff" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
+                            Kitchen Temperature
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="chart-container">
+                            <div id="chart-28-031644fec5ff" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Power (Phase 1)
+                        </h3>
+                    </div>
+                    <div class="panel-body power">
+                        <h2 class="power-value-phase-0"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Power (Phase 2)
+                        </h3>
+                    </div>
+                    <div class="panel-body power">
+                        <h2 class="power-value-phase-1"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Power (Phase 3)
+                        </h3>
+                    </div>
+                    <div class="panel-body power">
+                        <h2 class="power-value-phase-2"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Power (Total)
+                        </h3>
+                    </div>
+                    <div class="panel-body panel-body-light power">
+                        <h2 class="power-value-total"></h2>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!--
+            <div class="col-lg-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Channels status (GPIO, Raspberry Pi)
+                        </h3>
+                    </div>
+                    <div class="panel-body power">
+                        <div class="chart-container">
+                            <div id="gpio-table" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            -->
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Power Usage (30 days, Wh)
+                        </h3>
+                    </div>
+                    <div class="panel-body power">
+                        <div class="chart-container">
+                            <div id="chart-power-backlog-70days" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
+                            Electric Power Usage (today, Wh)
+                        </h3>
+                    </div>
+                    <div class="panel-body power">
+                        <div class="chart-container">
+                            <div id="chart-power-backlog" class="chart-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="disconnected">Connecting...</div>
+    </div>
+    </div>
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.flot.js"></script>
+    <script src="js/jquery.flot.time.js"></script>
+    <script src="js/jquery.flot.threshold.js"></script>
+    <script src="js/jquery.flot.curvedlines.js"></script>
+    <script src="js/jquery.flot.categories.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+body {
+    padding: 15px;
+}
+
+#current-time {
+    margin-top: 0;
+    font-size: 106px;
+}
+
+#current-date {
+    font-size: 42px;
+}
+
+#current-day {
+    font-size: 20px;
+}
+
+.glyphicon-text {
+    padding-right: 6px;
+}
+
+.weather h1 {
+    margin-top: 10px;
+    font-size: 40px;
+}
+
+.weather .unit {
+    font-size: 25px;
+}
+
+.power h2 {
+    text-align: center;
+    margin: 0;
+    font-size: 60px;
+}
+
+.power .unit {
+    font-size: 25px;
+}
+
+.value span.h {
+    font-size: 15px;
+    padding-left: 15px;
+}
+
+/* GPIO */
+.gpio-item {
+    padding: 5px;
+}
+
+.gpio-item.online {
+    font-weight: bold;
+}
+
+/* Charts */
+.chart-container {
+    height: 160px;
+}
+
+.chart-container-small {
+    height: 90px;
+    margin-top: 10px;
+}
+
+.chart-placeholder {
+    height: 100%;
+}
+
+/* Sensors List */
+.row-sensor {
+    font-size: 130%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.row-sensor .value {
+    font-family: monospace;
+}
+
+.row-sensor .updated {
+    text-align: right;
+}
+
+.panel-body-light {
+    background: #333030;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+#disconnected {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+    color: #A52A2A;
+    font-weight: bold;
+    animation: blinker 1s linear infinite;
+}
+
+@media (max-width: 640px) {
+    .row-sensor {
+        text-align: center;
+    }
+
+    .row-sensor .updated {
+        text-align: center;
+    }
+
+    #current-time {
+        margin-top: 0;
+        font-size: 50px;
+    }
+
+    #current-date {
+        font-size: 25px;
+    }
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Cluster Monitoring (rtinfo)</title>
+	<link href="css/bootstrap.dark.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+	<link href="css/dashboard-system.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="wrapper">
+	<div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-cloud glyphicon-text"></span>
+                            Realtime System Monitoring (rtinfo)
+                        </h3>
+                    </div>
+                    <div class="panel-body rtinfo">
+                        <div id="content">
+                            <!-- rtinfo table -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-2">
+            <div class="panel panel-default panel-ping">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-hdd glyphicon-text"></span>
+                        cbr8-cjl-2.voo.be
+                    </h3>
+                </div>
+                <div class="panel-body ping-reply ping-cbr8-cjl-2-voo-be">
+                    Checking...
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-2">
+            <div class="panel panel-default panel-ping">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-hdd glyphicon-text"></span>
+                        public-dns.google.com
+                    </h3>
+                </div>
+                <div class="panel-body ping-reply ping-public-dns-google-com">
+                    Checking...
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-2">
+            <div class="panel panel-default panel-ping">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-hdd glyphicon-text"></span>
+                        clea.maxux.net
+                    </h3>
+                </div>
+                <div class="panel-body ping-reply ping-clea-maxux-net">
+                    Checking...
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-2">
+            <div class="panel panel-default panel-ping">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-hdd glyphicon-text"></span>
+                        arya.maxux.net
+                    </h3>
+                </div>
+                <div class="panel-body ping-reply ping-arya-maxux-net">
+                    Checking...
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-2">
+            <div class="panel panel-default panel-ping">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-globe glyphicon-text"></span>
+                        DOCSIS Upstream (dBmV)
+                    </h3>
+                </div>
+                <div class="panel-body docsis-signal">
+                    Measuring...
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-globe glyphicon-text"></span>
+                        Internet Traffic
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-condensed table-hover router">
+
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-eye-open glyphicon-text"></span>
+                        Local Network Devices
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-condensed table-hover devices">
+
+                    </table>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-signal glyphicon-text"></span>
+                        Wireless Clients
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-condensed table-hover wireless">
+
+                    </table>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-globe glyphicon-text"></span>
+                        Internet Download (MiB/s)
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-container">
+                        <div id="chart-download" class="chart-placeholder"></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-globe glyphicon-text"></span>
+                        Internet Upload (MiB/s)
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-container">
+                        <div id="chart-upload" class="chart-placeholder"></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="disconnected">Connecting...</div>
+	</div>
+    </div>
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.flot.js"></script>
+    <script src="js/jquery.flot.time.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="js/dashboard-system.js"></script>
+</body>
+</html>
