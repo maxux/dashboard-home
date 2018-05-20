@@ -30,6 +30,9 @@ dashconfig = {
     'voo-address': '192.168.100.1',
     'voo-password': '',
 
+    # trusted live prefix (unfiltered contents)
+    'trusted-prefix': '10.241.',
+
     # private (update) endpoint listener
     'http-listen-addr': "10.241.0.254",
     'http-listen-port': 30502,

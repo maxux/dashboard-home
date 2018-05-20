@@ -64,6 +64,45 @@ class Dashboard():
 
         print("[+] ---------------------------------------------")
 
+    # privacy handler
+    def privatefix(self, type, payload):
+        if type == 'devices':
+            clients = {}
+            index = 0
+
+            for client in payload:
+                newclient = 'host-%d' % index
+                clients[newclient] = payload[client]
+                clients[newclient]['mac-address'] = 'xx:xx:xx:xx:xx:xx'
+                clients[newclient]['hostname'] = '(filtered name)'
+
+                index += 1
+
+            return clients
+
+        if type == 'wireless':
+            clients = {}
+            index = 0
+
+            for client in payload:
+                newclient = 'host-%d' % index
+                clients[newclient] = payload[client]
+                clients[newclient]['bssid'] = 'xx:xx:xx:xx:xx:xx'
+
+            return clients
+
+        if type == 'rtinfo':
+            for index, value in enumerate(payload['rtinfo']):
+                network = value['network']
+
+                for nindex, nic in enumerate(network):
+                    nic['ip'] = '0.0.0.0'
+                    nic['name'] = 'filter'
+
+            return payload
+
+        return payload
+
     #
     # Websocket
     #
@@ -71,11 +110,18 @@ class Dashboard():
         if not len(self.wsclients):
             return
 
-        content = json.dumps({"type": type, "payload": payload})
+        goodcontent = json.dumps({"type": type, "payload": payload})
 
         for client in self.wsclients:
             if not client.open:
                 continue
+
+            content = goodcontent
+
+            # replacing payload with filtered contents if needed
+            if not client.remote_address[0].startswith(dashconfig['trusted-prefix']):
+                fixedpayload = self.privatefix(type, payload)
+                content = json.dumps({"type": type, "payload": fixedpayload})
 
             try:
                 await client.send(content)
@@ -84,6 +130,9 @@ class Dashboard():
                 print(e)
 
     async def wspayload(self, websocket, type, payload):
+        if not websocket.remote_address[0].startswith(dashconfig['trusted-prefix']):
+            payload = self.privatefix(type, payload)
+
         content = json.dumps({"type": type, "payload": payload})
         await websocket.send(content)
 
