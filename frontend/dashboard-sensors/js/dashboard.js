@@ -47,17 +47,17 @@ var localsensors =  {
         'timestamp': 0, 'value': 0, 'value-new': 0,
     },
     */
-    "28-0316454327ff": {
+    "28-041703012fff": {
         'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
         'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -20,
         'timestamp': 0, 'value': 0
     },
-    "28-03164756d6ff": {
+    "28-031702b4d3ff": {
         'high': 9,   'warn': 5.5, 'normal': 2,   'low': 1,
         'min': 0, 'max': 15, 'color': '#295987', 'threshold': 8,
         'timestamp': 0, 'value': 0
     },
-    "28-031644fec5ff": {
+    "28-05170227adff": {
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
@@ -78,8 +78,14 @@ function update_sensors_time() {
         $('div.sensor-' + sensor['id'] + ' .badge').html(elapsed.toFixed(0) + ' seconds ago');
         $('div.sensor-' + sensor['id'] + ' .badge').removeClass('text-danger');
 
-        if(elapsed > 240)
+        if(elapsed > 240) {
             $('div.sensor-' + sensor['id'] + ' .badge').addClass('text-danger');
+
+            if(elapsed > 7200) {
+                var hrs = (elapsed / 3600).toFixed(0);
+                $('div.sensor-' + sensor['id'] + ' .badge').html(hrs + ' hours ago');
+            }
+        }
     }
 }
 
