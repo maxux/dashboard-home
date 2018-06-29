@@ -330,11 +330,17 @@ class Dashboard():
 
             # Today
             cursor = self.db.cursor()
+            '''
             cursor.execute("""
                 select byhour, sum(val) from (
                     select strftime('%m-%d %Hh', timestamp, 'unixepoch', 'localtime') byhour, avg(value) val, phase
                     from power where timestamp > ? group by byhour, phase
                 ) group by byhour;
+            """, (limit,))
+            '''
+            cursor.execute("""
+                select strftime('%m-%d %Hh', timestamp, 'unixepoch', 'localtime') byhour, avg(value) val
+                from power where timestamp > ? and phase = 2 group by byhour
             """, (limit,))
 
             backlog = cursor.fetchall()
@@ -350,6 +356,7 @@ class Dashboard():
             # 30 days backlog
             self.debug("[+] power backlogger: fetching 70 days")
             cursor = self.db.cursor()
+            '''
             cursor.execute("""
                 -- select sum of hours, per day
                 select strftime('%Y-%m-%d', byhour) byday, sum(av) from (
@@ -361,6 +368,22 @@ class Dashboard():
                     ) group by byhour
                 ) group by byday;
             """)
+            cursor.execute("""
+                -- select sum of hours, per day
+                select strftime('%Y-%m-%d', byhour) byday, sum(av) from (
+                    -- select average per hour
+                    select strftime('%Y-%m-%d %H:00:00', timestamp, 'unixepoch', 'localtime') byhour, avg(value) av
+                    from power where date(timestamp, 'unixepoch') > date('now', '-30 days') and phase = 2 group by byhour
+                ) group by byday;
+            """)
+            '''
+            cursor.execute("""
+                select strftime('%Y-%m-%d', byhour) byday, phase, sum(av) from (
+                    select strftime('%Y-%m-%d %H:00:00', timestamp, 'unixepoch', 'localtime') byhour, avg(value) av, phase
+                    from power where date(timestamp, 'unixepoch') > date('now', '-30 days') group by byhour, phase
+                ) group by byday, phase;
+            """)
+
             backlog = cursor.fetchall()
 
             self.power_backlog_days = backlog
