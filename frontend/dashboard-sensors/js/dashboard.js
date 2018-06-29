@@ -159,19 +159,40 @@ function rain_chart(data) {
 }
 
 function prettifyday(source) {
-    var pretty = []
+    var pretty = [];
+    var values = {};
 
     for(var idx in source) {
         var date = new Date(source[idx][0]);
         var formatted = date.toLocaleString("en-us", { month: "short", day: "2-digit" });
 
-        pretty.push([formatted, source[idx][1]]);
+        if(values[formatted] == undefined)
+            values[formatted] = {};
+
+        var phase = source[idx][1];
+        if(pretty[phase] == undefined)
+            pretty[phase] = [];
+
+        // compute channel 1 which is (channel 2 - channel 3)
+        var value = source[idx][2];
+        if(phase == 2) {
+            value -= values[formatted][0] + values[formatted][1];
+
+            if(value < 0)
+                value = 0;
+        }
+
+        pretty[phase].push([formatted, value]);
+        values[formatted][phase] = value;
     }
+
+    console.log(pretty);
 
     return pretty;
 }
 
 var socket;
+var poweriter = 0;
 
 function connect() {
     socket = new WebSocket("ws://home.maxux.net:30501/");
@@ -242,14 +263,27 @@ function connect() {
             case "power":
                 var total = 0;
 
-                for(var phase in json['payload']) {
-                    var value = json['payload'][phase]['value'].toFixed(0);
-                    total += parseInt(value);
-
-                    $('.power-value-phase-' + phase).html(value + ' <span class="unit">W</span>');
+                for(var channel in json['payload']) {
+                    var value = json['payload'][channel]['value'].toFixed(0);
+                    $('.power-value-channel-' + channel).html(value + ' <span class="unit">W</span>');
                 }
 
-                $('.power-value-total').html(total + ' <span class="unit">W</span>');
+                // special case
+                var diff = json['payload'][0]['value'] + json['payload'][1]['value'];
+
+                if(poweriter % 3 == 0) {
+                    // master - (channel 3 + channel 2) = channel 1
+                    var ch1 = json['payload'][2]['value'] - diff;
+
+                    // don't allow negative number, except if this is a high
+                    // value which could be something wrong
+                    if(ch1 < 0 && ch1 > -100)
+                        ch1 = 0;
+
+                    $('.power-value-channel-10').html(ch1.toFixed(0) + ' <span class="unit">W</span>');
+                }
+
+                poweriter += 1;
             break;
 
             case "power-backlog":
@@ -288,11 +322,13 @@ function connect() {
             break;
 
             case "power-backlog-days":
+                console.log(json['payload']);
                 var serie = prettifyday(json['payload']);
 
-                $.plot("#chart-power-backlog-70days", [serie], {
+                $.plot("#chart-power-backlog-70days", serie, {
+                    colors: ["#6792BD", "#3E5C78", "#7C8A96"],
                     series: {
-                        color: "#5B6C72",
+                        stack: true,
                         bars: {
                             show: true,
                             barWidth: 0.8,
