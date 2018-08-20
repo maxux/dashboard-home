@@ -85,6 +85,10 @@ body {
     background: #333030;
 }
 
+.panel-final {
+    margin-bottom: 0;
+}
+
 @keyframes blinker {
     50% { opacity: 0; }
 }

@@ -226,11 +226,6 @@ function connect() {
 
             case "sensors":
                 for(var id in json['payload']) {
-                    /*
-                    if(id == "dht22-1-hum")
-                        localsensors["dht22-1-temp"]['value-new'] = json['payload'][id]['value'];
-                    */
-
                     if(localsensors[id] == undefined)
                         continue;
 
@@ -239,6 +234,13 @@ function connect() {
                     localsensors[id]['id'] = id
 
                     update_sensor(localsensors[id]);
+                }
+            break;
+
+            case "sensors-dht":
+                for(var id in json['payload']) {
+                    $("#dht-" + id + " .temp").html(json['payload'][id]['temperature'] + '°C');
+                    $("#dht-" + id + " .hum").html(json['payload'][id]['humidity'] + '%');
                 }
             break;
 
