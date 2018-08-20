@@ -487,6 +487,32 @@ class Dashboard():
 
             return sanicjson({})
 
+        @app.route("/sensors-dht/<name>/<timestamp>/<temperature>/<humidity>")
+        async def httpd_routes_dht(request, name, timestamp, temperature, humidity):
+            self.debug("[+] sensors: %s (%s): temperature: %s, humidity: %s" % (name, timestamp, temperature, humidity))
+
+            cursor = self.db.cursor()
+            rows = (name, int(timestamp), float(temperature), float(humidity))
+            cursor.execute("INSERT INTO dht (id, timestamp, temp, hum) VALUES (?, ?, ?, ?)", rows)
+            self.db.commit()
+
+            self.sensors_last[name] = {
+                'id': name,
+                'timestamp': int(timestamp),
+                'temperature': float(temperature),
+                'humidity': float(humidity),
+            }
+
+            # update sensors stats
+            await self.wsbroadcast("sensors", self.sensors_last)
+
+            # pushing chart
+            temp = {"id": name, "serie": self.sensors_backlog(name)}
+            await self.wsbroadcast("sensors-backlog", temp)
+
+            return sanicjson({})
+
+
         @app.route("/power/<timestamp>/<value>")
         async def httpd_routes_power(request, timestamp, value):
             self.debug("[+] power: %s watt at %s" % (value, timestamp))
