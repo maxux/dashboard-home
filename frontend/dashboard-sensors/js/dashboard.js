@@ -52,6 +52,11 @@ var localsensors =  {
         'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -20,
         'timestamp': 0, 'value': 0
     },
+    "28-ff23a602170371": {
+        'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
+        'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -20,
+        'timestamp': 0, 'value': 0
+    },
     "28-031702b4d3ff": {
         'high': 9,   'warn': 5.5, 'normal': 2,   'low': 1,
         'min': 0, 'max': 15, 'color': '#295987', 'threshold': 8,
@@ -273,12 +278,12 @@ function connect() {
 
                 if(poweriter % 3 == 0) {
                     // master - (channel 3 + channel 2) = channel 1
-                    var ch1 = json['payload'][2]['value'] - diff;
+                    var ch1 = json['payload'][2]['value'] - diff + 150;
 
                     // don't allow negative number, except if this is a high
                     // value which could be something wrong
-                    if(ch1 < 0 && ch1 > -100)
-                        ch1 = 0;
+                    // if(ch1 < 0 && ch1 > -100)
+                    //    ch1 = 0;
 
                     $('.power-value-channel-10').html(ch1.toFixed(0) + ' <span class="unit">W</span>');
                 }
