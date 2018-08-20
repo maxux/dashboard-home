@@ -498,7 +498,7 @@ class Dashboard():
             cursor.execute("INSERT INTO dht (id, timestamp, temp, hum) VALUES (?, ?, ?, ?)", rows)
             self.db.commit()
 
-            self.sensors_last[name] = {
+            self.sensors_dht_last[name] = {
                 'id': name,
                 'timestamp': int(timestamp),
                 'temperature': float(temperature),
