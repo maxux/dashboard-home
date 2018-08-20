@@ -27,6 +27,7 @@ class Dashboard():
         self.weather_short = {}
         self.sensors_last = {}
         self.sensors_id = dashconfig['sensors-id']
+        self.sensors_dht_last = {}
         self.rtinfo = {}
         self.ping = {}
         self.bandwidth = {}
@@ -145,6 +146,7 @@ class Dashboard():
             # pushing current data
             await self.wspayload(websocket, "weather", self.weather)
             await self.wspayload(websocket, "sensors", self.sensors_last)
+            await self.wspayload(websocket, "sensors-dht", self.sensors_dht_last)
             await self.wspayload(websocket, "rtinfo", self.rtinfo)
             await self.wspayload(websocket, "devices", self.devices)
             await self.wspayload(websocket, "wireless", self.monitor_wlz.clients)
@@ -504,11 +506,13 @@ class Dashboard():
             }
 
             # update sensors stats
-            await self.wsbroadcast("sensors", self.sensors_last)
+            await self.wsbroadcast("sensors-dht", self.sensors_dht_last)
 
+            """
             # pushing chart
             temp = {"id": name, "serie": self.sensors_backlog(name)}
             await self.wsbroadcast("sensors-backlog", temp)
+            """
 
             return sanicjson({})
 
