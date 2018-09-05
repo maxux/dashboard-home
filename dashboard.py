@@ -113,7 +113,7 @@ class Dashboard():
 
         goodcontent = json.dumps({"type": type, "payload": payload})
 
-        for client in self.wsclients:
+        for client in list(self.wsclients):
             if not client.open:
                 continue
 
