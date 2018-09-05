@@ -40,29 +40,22 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#D5ACDE', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    /*
-    "dht22-1-temp": {
-        'high': 31,  'warn': 26,  'normal': 23,  'low': 21,
-        'min': 15, 'max': 35, 'color': '#D5ACDE', 'threshold': 30,
-        'timestamp': 0, 'value': 0, 'value-new': 0,
-    },
-    */
-    "28-041703012fff": {
+    "28-ff2f0103170457": {
         'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
-        'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -20,
+        'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -18,
         'timestamp': 0, 'value': 0
     },
     "28-ff23a602170371": {
         'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
-        'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -20,
+        'min': -28, 'max': -14, 'color': '#E87851', 'threshold': -18,
         'timestamp': 0, 'value': 0
     },
-    "28-031702b4d3ff": {
+    "28-ffd3b4021703e8": {
         'high': 9,   'warn': 5.5, 'normal': 2,   'low': 1,
         'min': 0, 'max': 15, 'color': '#295987', 'threshold': 8,
         'timestamp': 0, 'value': 0
     },
-    "28-05170227adff": {
+    "28-ffad2702170593": {
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
