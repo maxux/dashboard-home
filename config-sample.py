@@ -30,6 +30,11 @@ dashconfig = {
     'voo-address': '192.168.100.1',
     'voo-password': '',
 
+    # wireless access-point address and password
+    'lapac-address': '10.241.0.253',
+    'lapac-username': 'admin',
+    'lapac-password': '',
+
     # trusted live prefix (unfiltered contents)
     'trusted-prefix': '10.241.',
 

@@ -600,30 +600,24 @@ function wireless_update(clients) {
     // console.log(clients);
 
     var freqs = {
-        "wlan0": "5G",
-        "wlan1": "2G"
+        "Maxux Network (2.4G)": "2G",
+        "Maxux Network (5.2G)": "5G"
     };
 
     for(var bssid in clients) {
         var client = clients[bssid];
         var tr = $('<tr>');
 
-        var signal = parseFloat(client['signal']);
-        var rxbr = parseFloat(client['rx bitrate']).toFixed(0);
-        var txbr = parseFloat(client['tx bitrate']).toFixed(0);
-        var rxdata = (client['rx bytes'] / (1024 * 1024)).toFixed(2);
-        var txdata = (client['tx bytes'] / (1024 * 1024)).toFixed(2);
-
-        var rxspan = '<span class="glyphicon glyphicon-small glyphicon-arrow-down text-info"></span> ';
-        var txspan = '<span class="glyphicon glyphicon-small glyphicon-arrow-up text-info"></span> ';
+        var online = parseFloat(client['online'] / 60).toFixed(1);
+        var signal = parseFloat(client['rssi']);
         var sigspan = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
 
-        tr.append($('<td>').html(freqs[client['interface']]));
-        tr.append($('<td>').html(bssid));
-        tr.append($('<td>').html(client['ip']));
-        tr.append($('<td>').html(rxspan + rxdata + ' MiB [' + rxbr + ' Mbps]'));
-        tr.append($('<td>').html(txspan + txdata + ' MiB [' + txbr + ' Mbps]'));
+        tr.append($('<td>').html(freqs[client['ssid']]));
+        tr.append($('<td>').html(client['address']));
+        // tr.append($('<td>').html(client['ip']));
+        tr.append($('<td>').html('Rate: ' + client['linkrate'] + ' Mbps'));
         tr.append($('<td>', wireless_signal(signal)).html(sigspan + signal + ' dBm'));
+        tr.append($('<td>').html('Online: ' + online + ' min'));
 
         $('.wireless').append(tr);
     }

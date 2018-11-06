@@ -14,6 +14,7 @@ from sanic import Sanic
 from sanic.response import json as sanicjson
 from modules.netuse import *
 from modules.voolevels import *
+from modules.lapac import *
 from config import dashconfig
 
 class Dashboard():
@@ -38,7 +39,12 @@ class Dashboard():
 
         self.redis = redis.Redis()
 
-        self.monitor_wlz = WirelessMonitor(None, dashconfig['wireless-intf'])
+        self.monitor_wlz = LAPACMonitor(
+            dashconfig['lapac-address'],
+            dashconfig['lapac-username'],
+            dashconfig['lapac-password']
+        )
+
         self.devices = {}
 
         self.power_backlog = []
@@ -304,7 +310,7 @@ class Dashboard():
             self.debug("[+] wireless: updating")
             self.uptrack()
 
-            wireless_future = loop.run_in_executor(None, self.monitor_wlz.update)
+            wireless_future = loop.run_in_executor(None, self.monitor_wlz.allclients)
             response = await wireless_future
 
             self.debug("[+] wireless: %d clients found" % len(self.monitor_wlz.clients))
