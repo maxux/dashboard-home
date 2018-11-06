@@ -80,7 +80,11 @@ class DHCPLogger():
         fp = open(self.filename, 'r')
 
         while True:
-            line = fp.readline()
+            try:
+                line = fp.readline()
+
+            except:
+                continue
 
             if not line:
                 time.sleep(1)
