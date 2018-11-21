@@ -539,6 +539,9 @@ class RootPing():
             return (False, 0)
 
         if lines[1] != '':
+            if "time=" not in lines[1]:
+                return (False, 0)
+
             idx = lines[1].index('time=')
             return (True, lines[1][idx + 5:])
 
