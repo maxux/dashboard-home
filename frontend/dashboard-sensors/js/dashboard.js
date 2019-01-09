@@ -60,6 +60,17 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
+    "28-ffc5fe441603d7": {
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
+
+};
+
+var extrasensors = {
+    "28-ffc0d7021703c2": {},
+    "28-ffc5fe441603d7": {},
 };
 
 function update_sensors_time() {
@@ -184,7 +195,7 @@ function prettifyday(source) {
         values[formatted][phase] = value;
     }
 
-    console.log(pretty);
+    // console.log(pretty);
 
     return pretty;
 }
@@ -228,12 +239,27 @@ function connect() {
 
                     update_sensor(localsensors[id]);
                 }
+
+                for(var id in json['payload']) {
+                    if(extrasensors[id] == undefined)
+                        continue;
+
+                    $('div#extra-sensors-' + id + ' span.value').html(json['payload'][id]['value']);
+                }
             break;
 
             case "sensors-dht":
                 for(var id in json['payload']) {
-                    $("#dht-" + id + " .temp").html(json['payload'][id]['temperature'] + '°C');
-                    $("#dht-" + id + " .hum").html(json['payload'][id]['humidity'] + '%');
+                    if(localsensors[id] != undefined) {
+                        localsensors[id]['timestamp'] = json['payload'][id]['timestamp'];
+                        localsensors[id]['value'] = json['payload'][id]['temperature'];
+                        localsensors[id]['id'] = id
+
+                        update_sensor(localsensors[id]);
+                    }
+
+                    $("#dht-" + id + " .temp").html(json['payload'][id]['temperature']);
+                    $("#dht-" + id + " .hum").html(json['payload'][id]['humidity']);
                 }
             break;
 
@@ -322,7 +348,6 @@ function connect() {
             break;
 
             case "power-backlog-days":
-                console.log(json['payload']);
                 var serie = prettifyday(json['payload']);
 
                 $.plot("#chart-power-backlog-70days", serie, {

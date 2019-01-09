@@ -89,6 +89,16 @@ body {
     margin-bottom: 0;
 }
 
+.extrasensors .value, .extrasensors .temp {
+    font: monospace;
+    color: #97bad8;
+}
+
+.extrasensors .hum {
+    font: monospace;
+    color: #afb7bd;
+}
+
 @keyframes blinker {
     50% { opacity: 0; }
 }
