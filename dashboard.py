@@ -281,19 +281,41 @@ class Dashboard():
 
             devices = {}
 
-            clients = self.redis.keys('dhcp-*')
-            for client in clients:
-                keyname = client.decode('utf-8')[5:]
+            dhclients = self.redis.keys('dhcp-*')
+            for client in dhclients:
                 payload = self.redis.get(client).decode('utf-8')
+                keyname = client.decode('utf-8')[5:]
+
                 devices[keyname] = json.loads(payload)
 
-                livekey = 'traffic-live-%s' % devices[keyname]['ip-address']
-                live = self.redis.get(livekey)
+            clients = self.redis.keys('traffic-*')
+            for client in clients:
+                payload = self.redis.get(client).decode('utf-8')
+                live = json.loads(payload)
 
-                if live is not None:
-                    traffic = json.loads(live.decode('utf-8'))
-                    devices[keyname]['rx'] = traffic['rx']
-                    devices[keyname]['tx'] = traffic['tx']
+                # ignore inactive client
+                if live['active'] < time.time() - (4 * 3600):
+                    continue
+
+                dhcpfound = False
+
+                for device in devices:
+                    if devices[device]['ip-address'] == live['addr']:
+                        devices[device]['rx'] = live['rx']
+                        devices[device]['tx'] = live['tx']
+                        devices[device]['timestamp'] = live['active']
+                        dhcpfound = True
+                        break
+
+                if not dhcpfound:
+                    devices[live['addr']] = {
+                        "timestamp": live['active'],
+                        "mac-address": live['macaddr'],
+                        "hostname": live['host'],
+                        "ip-address": live['addr'],
+                        "rx": live['rx'],
+                        "tx": live['tx'],
+                    }
 
             self.debug("[+] local devices checker: %d devices found" % len(devices))
             self.devices = devices
