@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 from datetime import date
 from datetime import timezone
+from file_read_backwards import FileReadBackwards
 
 class DHCPLogger():
     def __init__(self, filename):
@@ -18,7 +19,7 @@ class DHCPLogger():
         self.redis = redis.Redis()
 
     def isExpired(self, timestamp):
-        return (timestamp < time.time() - (3600 * 24))
+        return (timestamp < time.time() - (3600 * 72))
 
     def timestamp(self, fields):
         timestr = '%s %s %s' % (fields[0], fields[1], fields[2])
@@ -72,12 +73,23 @@ class DHCPLogger():
 
         key = "dhcp-%s" % client['mac-address']
         payload = json.dumps(client)
-        expire = (3600 * 8)
 
-        self.redis.set(key, payload, ex=expire)
+        self.redis.set(key, payload)
 
     def watch(self):
+        with FileReadBackwards(self.filename, encoding="utf-8") as frb:
+            for line in frb:
+                if not "DHCPACK" in line:
+                    continue
+
+                client = self.client(line)
+                if not client:
+                    break
+
+                self.save(client)
+
         fp = open(self.filename, 'r')
+        fp.seek(0, 2)
 
         while True:
             try:
