@@ -6,6 +6,8 @@ I doubt you use the exact same setup as me, since it use lot of custom hardware,
 
 Feel free to take piece of code from this work, it's here for you (and to backup my code).
 
+> The new code is inside `slaves` directory, code on the root directory is there for legacy purpose.
+
 # Screenshots
 ![Screenshot 1](https://i.imgur.com/ztvFgGj.png)
 ![Screenshot 2](https://i.imgur.com/jJdmmI2.png)
@@ -23,6 +25,4 @@ Basicly, this dashboard server listen to two things:
 
 A simple web-page connecting websocket and parsing json input can display information easily and in realtime.
 
-Each part of the dashboard (ping, rtinfo, power, ...) runs inside future and does everything in async.
-
-There is a redis server use in the middle to handle dhcp hosts (can be found on `tools` directory)
+Each part of the dashboard (ping, rtinfo, power, ...) runs inside external process and push everything in a redis queue.
