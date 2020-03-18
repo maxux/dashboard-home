@@ -25,7 +25,7 @@ class LAPACMonitor:
         self.jar = attempt.cookies
 
     def fetch(self, unit, retry=True):
-        page = requests.get(self.baseurl + "/StatusClients.htm&&unit=%d&vap=1" % unit, cookies=self.jar)
+        page = requests.get(self.baseurl + "/StatusClients.htm&&unit=%d&vap=0" % unit, cookies=self.jar)
 
         if 'action="/login.cgi"' in page.text:
             if not retry:
