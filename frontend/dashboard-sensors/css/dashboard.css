@@ -1,5 +1,22 @@
+html {
+    background-image: url(../resources/wallpaper/default.jpg);
+    background-size: cover;
+    height: 100%;
+}
+
 body {
     padding: 15px;
+    background-color: #333030;
+    background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* background fix */
+#wrapper {
+    background: transparent !important;
+}
+
+.panel {
+    background: rgba(50, 50, 50, 0.6) !important;
 }
 
 #current-time {
@@ -82,7 +99,6 @@ body {
 }
 
 .panel-body-light {
-    background: #333030;
 }
 
 .panel-final {

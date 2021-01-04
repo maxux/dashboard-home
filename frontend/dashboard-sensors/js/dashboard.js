@@ -204,7 +204,7 @@ var socket;
 var poweriter = 0;
 
 function connect() {
-    socket = new WebSocket("ws://home.maxux.net:30501/");
+    socket = new WebSocket("ws://" + window.location.hostname + ":30501/");
 
     socket.onopen = function() {
         console.log("websocket open");
@@ -217,13 +217,15 @@ function connect() {
 
         switch(json['type']) {
             case "weather":
+                console.log(json['payload'])
                 localweather['timestamp'] = json['payload']['updated'];
+                var today = json['payload']['zone']['today'];
 
                 $("#weather-city").html("Liège");
                 $("#weather-backtime").html("Right now");
-                $("#weather-temperature").html(json['payload']['temp'] + '°C');
-                $("#weather-wind").html(json['payload']['wind'] + ' <span class="unit">km/h</span>');
-                $("#weather-hum").html(json['payload']['hum'] + ' <span class="unit">%</span>');
+                $("#weather-temperature").html(today['temp'] + '°C');
+                $("#weather-wind").html(today['wind_speed_to'] + ' <span class="unit">km/h</span>');
+                $("#weather-hum").html(today['ppcp'] + ' <span class="unit">%</span>');
 
                 rain_chart(json['payload']['rain90min']['data']);
             break;
@@ -264,6 +266,7 @@ function connect() {
             break;
 
             case "sensors-backlog":
+                console.log(json);
                 var id = json['payload']["id"];
 
                 if(localsensors[id] == undefined)

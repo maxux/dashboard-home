@@ -1,3 +1,8 @@
+html {
+    background-image: url(../resources/wallpaper/default.jpg);
+    background-size: cover;
+}
+
 html, body {
     height: 100%;
 }
@@ -10,6 +15,17 @@ html, body {
 
 body {
     padding: 15px;
+    background-color: #333030;
+    background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* background fix */
+#wrapper {
+    background: transparent !important;
+}
+
+.panel {
+    background: rgba(50, 50, 50, 0.6) !important;
 }
 
 .node-down {
@@ -157,6 +173,18 @@ table.router td {
     font-weight: bold;
 }
 
+.rtinfo .text-danger {
+    animation: none !important;
+}
+
+table.devices .offline {
+    opacity: 0.5;
+}
+
+.darker {
+    opacity: 0.3;
+}
+
 @keyframes blinker {
     50% { opacity: 0; }
 }
@@ -211,4 +239,8 @@ table.router td {
 .docsis-value {
     margin-left: 5px;
     margin-right: 5px;
+}
+
+tr.spacer {
+    height: 15px;
 }

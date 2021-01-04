@@ -426,8 +426,19 @@ function summary(host, server, nodes) {
     $('#summary-' + host).append(thead);
     $('#summary-' + host).append($('<tbody>'));
 
-    for(var n in nodes)
+    for(var n in nodes) {
+        if(nodes[n].hostname == "prod-01") {
+            $('#summary-' + host + ' tbody').append($('<tr>', {'class': 'spacer'}));
+        }
+
         $('#summary-' + host + ' tbody').append(summary_node(nodes[n], server));
+    }
+}
+
+function arraymove(arr, fi, di) {
+    var element = arr[fi];
+    arr.splice(fi, 1);
+    arr.splice(di, 0, element);
 }
 
 //
@@ -457,6 +468,12 @@ function parsing(response, host) {
 		hosts.push(json.rtinfo[x].hostname);
 
 	hosts = hosts.sort();
+
+    // push 'prod-01' on last line
+	for(var n in hosts) {
+        if(hosts[n] == "prod-01")
+            arraymove(hosts, n, hosts.length - 1);
+    }
 
 	for(var n in hosts)
 		for(var x in json.rtinfo)
@@ -491,7 +508,7 @@ function call(host) {
 var socket;
 
 function connect() {
-    socket = new WebSocket("ws://home.maxux.net:30501/");
+    socket = new WebSocket("ws://" + window.location.hostname + ":30501/");
 
     socket.onopen = function() {
         console.log("websocket open");
@@ -510,6 +527,7 @@ function connect() {
             case "power-backlog":
             case "power-backlog-days":
             case "gpio-status":
+            case "sensors-dht":
                 // ignore all of this
             break;
 
@@ -595,20 +613,48 @@ function wireless_signal(value) {
     return {'class': 'text-success'};
 }
 
+function hrsmin_from_sec(value) {
+    var min = ((value / 60) % 60).toFixed(0);
+    var hrs = parseInt(value / 3600);
+
+    return [hrs, min];
+}
+
+function wireless_online(value) {
+    if(value < 120)
+        return value + " sec";
+
+    if(value < (60 * 60))
+        return (value / 60).toFixed(0) + " min";
+
+    var hm = hrsmin_from_sec(value);
+
+    if(hm[0] < 24)
+        return hm[0] + "h" + hm[1];
+
+    var days = parseInt(hm[0] / 24);
+    value -= (days * 86400);
+
+    var hm = hrsmin_from_sec(value);
+
+    return days + "d " + hm[0] + "h" + hm[1];
+}
+
 function wireless_update(clients) {
     $('.wireless').empty();
     // console.log(clients);
 
     var freqs = {
         "Maxux Network (2.4G)": "2G",
-        "Maxux Network (5.2G)": "5G"
+        "Maxux Network (5.2G)": "5G",
+        "Maxux Legacy": "LL",
     };
 
     for(var bssid in clients) {
         var client = clients[bssid];
         var tr = $('<tr>');
 
-        var online = parseFloat(client['online'] / 60).toFixed(1);
+        var online = wireless_online(client['online']);
         var signal = parseFloat(client['rssi']);
         var sigspan = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
 
@@ -617,7 +663,7 @@ function wireless_update(clients) {
         // tr.append($('<td>').html(client['ip']));
         tr.append($('<td>').html('Rate: ' + client['linkrate'] + ' Mbps'));
         tr.append($('<td>', wireless_signal(signal)).html(sigspan + signal + ' dBm'));
-        tr.append($('<td>').html('Online: ' + online + ' min'));
+        tr.append($('<td>').html('Online: ' + online));
 
         $('.wireless').append(tr);
     }
@@ -675,13 +721,16 @@ function devices_update(clients) {
     for(var index in oclients) {
         var client = clients[oclients[index]['mac']];
         var elapsed = (now.getTime() / 1000) - client['timestamp'];
+        var hostname = client['hostname'] ? client['hostname'] : "(unknown)";
         var rx = (client['rx'] != undefined) ? client['rx'] : null;
         var tx = (client['tx'] != undefined) ? client['tx'] : null;
+        var hostclass = (!client['hostname']) ? {'class': 'text-muted darker'} : {};
+        var trclass = (elapsed > 3600) ? {'class': 'offline'} : {}; // 1h offline
 
-        var tr = $('<tr>');
+        var tr = $('<tr>', trclass);
         tr.append($('<td>').html(client['mac-address']));
         tr.append($('<td>').html(client['ip-address']));
-        tr.append($('<td>').html(client['hostname']));
+        tr.append($('<td>', hostclass).html(hostname));
         tr.append($('<td>', {'class': rxtxactive(rx)})
             .append($('<span>', {'class': rxtxclass(rx) + ' badge'}).html(downarrow + shortrate(rx)))
         );
