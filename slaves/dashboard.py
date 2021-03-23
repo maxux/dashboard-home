@@ -48,7 +48,7 @@ class DashboardServer():
 
             for client in payload:
                 newclient = 'host-%d' % index
-                clients[newclient] = payload[client]
+                clients[newclient] = client
                 clients[newclient]['bssid'] = 'xx:xx:xx:xx:xx:xx'
 
             return clients
@@ -123,6 +123,7 @@ class DashboardServer():
 
         while True:
             message = pubsub.get_message()
+            print(message)
             if message and message['type'] == 'message':
                 handler = json.loads(message['data'])
 

@@ -16,15 +16,17 @@ class DHCPLogger():
         self.resolver = dns.resolver.Resolver()
         self.resolver.nameservers = ['10.241.0.254']
 
+        self.expire = 3600 * 12
+
         self.redis = redis.Redis()
 
     def isExpired(self, timestamp):
-        return (timestamp < time.time() - (3600 * 72))
+        return (timestamp < time.time() - self.expire)
 
     def timestamp(self, fields):
-        timestr = '%s %s %s' % (fields[0], fields[1], fields[2])
-        target = datetime.strptime(timestr, '%b %d %X')
         now = date.today().year
+        timestr = '%s %s %s %d' % (fields[0], fields[1], fields[2], now)
+        target = datetime.strptime(timestr, '%b %d %X %Y')
 
         compare = target.replace(year=now).timestamp()
 
@@ -74,7 +76,7 @@ class DHCPLogger():
         key = "dhcp-%s" % client['mac-address']
         payload = json.dumps(client)
 
-        self.redis.set(key, payload)
+        self.redis.set(key, payload, self.expire)
 
     def watch(self):
         with FileReadBackwards(self.filename, encoding="utf-8") as frb:

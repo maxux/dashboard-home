@@ -14,7 +14,11 @@ while True:
 
     dhclients = r.keys('dhcp-*')
     for client in dhclients:
-        payload = r.get(client).decode('utf-8')
+        data = r.get(client)
+        if not data:
+            continue
+
+        payload = data.decode('utf-8')
         keyname = client.decode('utf-8')[5:]
 
         devices[keyname] = json.loads(payload)
@@ -42,7 +46,7 @@ while True:
             devices[live['addr']] = {
                 "timestamp": live['active'],
                 "mac-address": live['macaddr'],
-                "hostname": live['host'],
+                "hostname": live['host'] if 'host' in live else None,
                 "ip-address": live['addr'],
                 "rx": live['rx'],
                 "tx": live['tx'],

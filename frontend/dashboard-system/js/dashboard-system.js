@@ -630,14 +630,14 @@ function wireless_online(value) {
     var hm = hrsmin_from_sec(value);
 
     if(hm[0] < 24)
-        return hm[0] + "h" + hm[1];
+        return hm[0] + "h " + hm[1] + "m";
 
     var days = parseInt(hm[0] / 24);
     value -= (days * 86400);
 
     var hm = hrsmin_from_sec(value);
 
-    return days + "d " + hm[0] + "h" + hm[1];
+    return days + "d " + hm[0] + "h " + hm[1] + "m";
 }
 
 function wireless_update(clients) {

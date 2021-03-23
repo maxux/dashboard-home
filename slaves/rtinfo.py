@@ -8,7 +8,7 @@ while True:
     print("[+] rtinfo: fetching")
 
     try:
-        response = requests.get(dashconfig['rtinfo-endpoint'])
+        response = requests.get(dashconfig['rtinfo-endpoint'], timeout=2)
         slave.set(response.json())
 
         print("[+] rtinfo: %d hosts found" % len(slave.payload['rtinfo']))

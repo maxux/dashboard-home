@@ -1,5 +1,7 @@
 import requests
 import time
+import hashlib
+import pprint
 from config import dashconfig
 from dashboard import DashboardSlave
 
@@ -8,21 +10,30 @@ slave = DashboardSlave("weather")
 while True:
     print("[+] weather information: fetching")
 
-    response = requests.get(dashconfig['weather-station'], timeout=3).json()
-    slave.set(response)
+    ti = "%d" % int(time.time() / (60 * 60))
+    m = hashlib.md5()
+    m.update(ti.encode('utf-8'))
+    key = m.digest().hex()
 
-    if not response:
-        slave.set({"temp": "-", "press": "-", "hum":"-", "dew":"-", "wind":0, "uv":"-", "widir":"-", "gust": None, "solar":"-"})
+    try:
+        response = requests.get(dashconfig['weather-forecast'] + "&key=" + key, timeout=3).json()
+        slave.set(response)
 
-    response = requests.get(dashconfig['weather-rain'], timeout=3).json()
-    if not response:
+        if not response:
+            slave.set({"timestamp": 0})
+
+    except Exception as e:
+        print(e)
+        slave.sleep(5)
         continue
 
-    slave.payload['rain90min'] = response['rain_90min']
+    pprint.pprint(response)
+
+    slave.payload['rain90min'] = response['zone']['rain_90min']
     slave.payload['updated'] = int(time.time())
 
     # notify connected client
-    print("[+] weather information: %s, %s" % (slave.payload['temp'], slave.payload['press']))
+    print("[+] weather information: timestamp: %s" % (slave.payload['timestamp']))
     slave.publish()
 
     slave.sleep(5 * 60)
