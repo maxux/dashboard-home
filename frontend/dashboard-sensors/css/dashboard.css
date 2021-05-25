@@ -128,6 +128,15 @@ body {
     animation: blinker 1s linear infinite;
 }
 
+@keyframes error-blinker {
+    50% { background-color: #222222; }
+}
+
+.system-error {
+    background-color: #792525;
+    animation: error-blinker 2s infinite;
+}
+
 @media (max-width: 640px) {
     .row-sensor {
         text-align: center;

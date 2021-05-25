@@ -23,10 +23,15 @@ function update_time() {
 
     update_sensors_time();
     update_weather_time();
+    update_powers_time();
 }
 
 var localweather = {
-    'timestamp': 0
+    'timestamp': 0,
+};
+
+var localpower = {
+    'lastupdate': 0,
 };
 
 var localsensors =  {
@@ -110,6 +115,17 @@ function update_weather_time() {
         $('#weather-backtime').html((elapsed / 60).toFixed(0) + ' minutes ago');
     else
         $('#weather-backtime').html(elapsed.toFixed(0) + ' seconds ago');
+}
+
+function update_powers_time() {
+    var now = Date.now();
+
+    if(now > localpower["lastupdate"] + 5000) {
+        $('.panel-power-watt').addClass('system-error');
+        return;
+    }
+
+    $('.panel-power-watt').removeClass('system-error');
 }
 
 function sensor_color(id, value) {
@@ -313,6 +329,7 @@ function connect() {
                 }
 
                 poweriter += 1;
+                localpower['lastupdate'] = Date.now();
             break;
 
             case "power-backlog":
