@@ -486,14 +486,20 @@ function parsing(response, host) {
 	// iterate over differents part showable/hiddable
 	//
 	summary(host, json, nodes);
+}
+
+function parsing_local(response, host) {
+    // console.log(response);
+    var json = response;
 
     //
     // router information
     //
-    for(var n in hosts)
-        if(hosts[n] == "routinx")
-            router_update(nodes[n]);
+	for(var x in json.rtinfo)
+        if(json.rtinfo[x].hostname == "routinx")
+            router_update(json.rtinfo[x]);
 }
+
 
 function call(host) {
     // ensure this source exists
@@ -534,6 +540,10 @@ function connect() {
             case "rtinfo":
                 call("maxux");
                 parsing(json['payload'], 'maxux');
+            break;
+
+            case "rtinfo-local":
+                parsing_local(json['payload'], 'maxux');
             break;
 
             case "ping":
@@ -818,11 +828,11 @@ function router_update(node) {
         var tr = $('<tr>');
         tr.append($('<td>').html($('<span>', {'class': 'glyphicon glyphicon-small glyphicon-arrow-down'})));
 
-        var badge = $('<span>', {'class': 'badge'});
+        var badge = $('<span>', {'class': rxtxclass(intf['rx_rate']) + ' badge'});
         badge.html(shortrate(intf['rx_rate']));
         tr.append($('<td>').html(badge));
 
-        var badge = $('<span>', {'class': 'badge'});
+        var badge = $('<span>', {'class': rxtxclass(intf['tx_rate']) + ' badge'});
         badge.html(shortrate(intf['tx_rate']));
         tr.append($('<td>').html(badge));
 
