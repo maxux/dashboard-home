@@ -82,8 +82,13 @@ class DashboardServer():
 
             # replacing payload with filtered contents if needed
             if not client.remote_address[0].startswith(dashconfig['trusted-prefix']):
+                # doesn't forward dns queries to foreign clients
+                if type == "dnsquery":
+                    continue
+
                 fixedpayload = self.privatefix(type, payload)
                 content = json.dumps({"type": type, "payload": fixedpayload})
+
 
             try:
                 await client.send(content)
@@ -93,6 +98,9 @@ class DashboardServer():
 
     async def wspayload(self, websocket, type, payload):
         if not websocket.remote_address[0].startswith(dashconfig['trusted-prefix']):
+            if type == "dnsquery":
+                return
+
             payload = self.privatefix(type, payload)
 
         content = json.dumps({"type": type, "payload": payload})
