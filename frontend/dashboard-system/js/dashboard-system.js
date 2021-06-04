@@ -562,6 +562,10 @@ function connect() {
                 docsis(json['payload']);
             break;
 
+            case "dnsquery":
+                dns_activity(json['payload']);
+            break;
+
             default:
                 console.log("Unknown type");
                 console.log(json);
@@ -755,6 +759,29 @@ function devices_update(clients) {
         tr.append($('<td>').append(badge));
 
         $('.devices').append(tr);
+    }
+}
+
+var dnsentries = [];
+
+function dns_activity(entry) {
+    dnsentries.push(entry);
+    console.log(dnsentries);
+
+    if(dnsentries.length > 3)
+        dnsentries = dnsentries.slice(1);
+
+    $(".dns-activity").empty();
+
+    for(var line in dnsentries) {
+        var entry = dnsentries[line];
+        console.log(entry);
+
+        var tr = $("<tr>");
+        tr.append($("<td>", {"class": "host"}).append($("<span>", {"class": "badge"}).html(entry["host"])));
+        tr.append($("<td>", {"class": "query"}).html(entry["query"]));
+
+        $(".dns-activity").append(tr);
     }
 }
 

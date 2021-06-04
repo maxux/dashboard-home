@@ -244,3 +244,15 @@ table.devices .offline {
 tr.spacer {
     height: 15px;
 }
+
+.dns-activity td {
+    font-family: monospace;
+}
+
+.dns-activity td.host {
+    width: 20%;
+}
+
+.dns-activity td.query {
+    width: 80%;
+}
