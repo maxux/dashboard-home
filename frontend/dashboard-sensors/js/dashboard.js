@@ -35,6 +35,11 @@ var localpower = {
 };
 
 var localsensors =  {
+    "d-1": { // utility-room
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
     "10-000802776315": {
         'high': 31,  'warn': 26,  'normal': 23,  'low': 21,
         'min': 15, 'max': 35, 'color': '#D5ACDE', 'threshold': 30,
@@ -65,9 +70,29 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-ffc5fe441603d7": {
+    "28-ffc5fe441603d7": { // desktop
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
+    "28-3709b812210156": { // bedroom
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
+    "28-8245ca122101dd": {
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
+    "88-00000000000010": {
+        'high': 18,  'warn': 25,  'normal': 17,  'low': 12,
+        'min': 10, 'max': 20, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0,
+    },
+    "88-00000000000020": {
+        'high': 15,  'warn': 10,  'normal': 4,  'low': 1,
+        'min': 0, 'max': 20, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
 
@@ -76,6 +101,9 @@ var localsensors =  {
 var extrasensors = {
     "28-ffc0d7021703c2": {},
     "28-ffc5fe441603d7": {},
+    "28-ff2f0103170457": {},
+    "88-00000000000010": {},
+    "88-00000000000020": {},
 };
 
 function update_sensors_time() {
@@ -385,6 +413,7 @@ function connect() {
             break;
 
             case "rtinfo":
+            case "rtinfo-local":
             case "ping":
             case "dhcp":
             case "wireless":

@@ -36,7 +36,7 @@
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ffad2702170593" style="border-bottom: dashed 1px #4D4D4D;">
+                        <div class="row row-sensor sensor-28-ffad2702170593">
                         <div class="col-lg-4">Kitchen</div>
                         <div class="col-lg-5 value">
                             <span class="t"></span>
@@ -47,24 +47,24 @@
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ffd3b4021703e8">
-                        <div class="col-lg-4">Fridge</div>
+                        <div class="row row-sensor sensor-28-3709b812210156">
+                        <div class="col-lg-4">Bedroom</div>
                         <div class="col-lg-5 value"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ff2f0103170457">
-                        <div class="col-lg-4">Freezer (small)</div>
+                        <div class="row row-sensor sensor-d-1">
+                        <div class="col-lg-4">Utility Room</div>
                         <div class="col-lg-5 value"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ff23a602170371">
-                        <div class="col-lg-4">Freezer (big)</div>
+                        <div class="row row-sensor sensor-28-8245ca122101dd">
+                        <div class="col-lg-4">Mezzanine</div>
                         <div class="col-lg-5 value"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
@@ -86,6 +86,7 @@
             </div>
 
             <div class="col-lg-4">
+                <!--
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -121,6 +122,57 @@
                         </div>
                     </div>
                 </div>
+                -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
+                            Right now
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row row-sensor sensor-28-ffd3b4021703e8">
+                        <div class="col-lg-4">Fridge (food)</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-88-00000000000010">
+                        <div class="col-lg-4">Fridge (drink, top)</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-88-00000000000020">
+                        <div class="col-lg-4">Fridge (drink, low)</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-28-ff2f0103170457">
+                        <div class="col-lg-4">Fridge (freezer)</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+
+                        <div class="row row-sensor sensor-28-ff23a602170371">
+                        <div class="col-lg-4">Freezer (large)</div>
+                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-3 updated">
+                            <span class="badge">Now</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -309,17 +361,20 @@
                         </h3>
                     </div>
                     <div class="panel-body extrasensors">
-                        <div id="dht-d-1" class="col-lg-3">
-                            Utility-Room: <span class="temp">...</span>°C / <span class="hum">...</span>%
-                        </div>
-                        <div id="dht-d-2" class="col-lg-3">
+                        <div id="dht-d-2" class="col-lg-2">
                             Terrace: <span class="temp">...</span>°C / <span class="hum">...</span>%
                         </div>
-                        <div id="extra-sensors-28-ffc0d7021703c2" class="col-lg-3">
+                        <div id="extra-sensors-28-ffc0d7021703c2" class="col-lg-2">
                             Sound Rack: <span class="value">...</span>°C
                         </div>
-                        <div id="extra-sensors-28-ffc5fe441603d7" class="col-lg-3">
-                            Desktop: <span class="value">...</span>°C
+
+                        <div class="col-lg-4">
+                        </div>
+
+                        <div class="col-lg-4">
+                            Outside Temperature: <span id="weather-temperature"></span> /
+                            Wind Speed: <span id="weather-wind"></span> /
+                            Rainfall: <span id="weather-hum"></span>
                         </div>
                     </div>
                 </div>
