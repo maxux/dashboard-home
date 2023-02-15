@@ -1,18 +1,27 @@
 from modules.voolevels import *
+from modules.voocga import *
 from config import dashconfig
 from dashboard import DashboardSlave
 
 slave = DashboardSlave("docsis-levels")
+levels = TechnicolorCGA(dashconfig['voo-username'], dashconfig['voo-password'])
 
 while True:
     print("[+] voo levels: fetching new values")
 
-    levels = SignalLevel(dashconfig['voo-address'], dashconfig['voo-password'])
+    if not levels.logged:
+        levels.login()
 
     try:
-        response = levels.fetch()
+        response = levels.levels()
         if response:
-            slave.set({'up': levels.upstream, 'down': levels.downstream})
+            upstream = response['USTbl']
+            downstream = response['DSTbl']
+
+            for a in upstream:
+                a['txpower'] = float(a['PowerLevel'].split()[0])
+
+            slave.set({'up': upstream, 'down': downstream})
 
             docsisaverage = 0.0
             for ups in slave.payload['up']:
@@ -24,4 +33,4 @@ while True:
     except Exception as e:
         print(e)
 
-    slave.sleep(10)
+    slave.sleep(60)

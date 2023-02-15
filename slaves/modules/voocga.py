@@ -13,6 +13,8 @@ class TechnicolorCGA:
         self.username = username
         self.password = password
 
+        self.logged = False
+
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"})
         self.session.headers.update({"X-Requested-With": "XMLHttpRequest"})
@@ -86,6 +88,9 @@ class TechnicolorCGA:
             # required to allow further request, for some reason
             endpoint = self.endpoint("session", ["menu"])
             menu = self.session.get(endpoint)
+
+            self.logged = True
+
             return True
 
         raise RuntimeError("invalid credentials")
