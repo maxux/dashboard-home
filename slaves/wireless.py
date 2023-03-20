@@ -1,3 +1,4 @@
+import time
 from modules.lapac import *
 from config import dashconfig
 from dashboard import DashboardSlave
@@ -13,10 +14,19 @@ monitor = LAPACMonitor(
 while True:
     print("[+] wireless: updating")
 
-    response = monitor.allclients()
-    print("[+] wireless: %d clients found" % len(monitor.clients))
+    try:
+        response = monitor.allclients()
+        print("[+] wireless: %d clients found" % len(monitor.clients))
 
-    slave.set(monitor.clients)
+    except Exception as e:
+        print(e)
+
+    payload = {
+        'update': int(time.time()),
+        'clients': monitor.clients
+    }
+
+    slave.set(payload)
     slave.publish()
     slave.sleep(2)
 

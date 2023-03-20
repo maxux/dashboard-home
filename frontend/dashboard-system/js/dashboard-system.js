@@ -551,7 +551,7 @@ function connect() {
             break;
 
             case "wireless":
-                wireless_update(json['payload']);
+                wireless_update(json['payload']['clients'], json['payload']['update']);
             break;
 
             case "devices":
@@ -654,7 +654,9 @@ function wireless_online(value) {
     return days + "d " + hm[0] + "h " + hm[1] + "m";
 }
 
-function wireless_update(clients) {
+var wireless_last_update = 0;
+
+function wireless_update(clients, timestamp) {
     $('.wireless').empty();
     // console.log(clients);
 
@@ -681,6 +683,9 @@ function wireless_update(clients) {
 
         $('.wireless').append(tr);
     }
+
+    // commit last update
+    wireless_last_update = timestamp;
 }
 
 function rxtxclass(value) {
@@ -884,6 +889,17 @@ function router_update(node) {
     }
 }
 
+function cronjob() {
+    if(wireless_last_update < (Date.now() / 1000) - 30) {
+        $('#wireless-body').addClass('system-error');
+
+    } else {
+        $('#wireless-body').removeClass('system-error');
+
+    }
+}
+
 $(document).ready(function() {
     connect();
+    setInterval(cronjob, 1000);
 });
