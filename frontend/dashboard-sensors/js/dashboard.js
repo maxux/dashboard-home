@@ -95,7 +95,16 @@ var localsensors =  {
         'min': 0, 'max': 20, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-
+    "28-1f55b4122101e7": {
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
+    "28-ffc0d7021703c2": {
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
 };
 
 var extrasensors = {
@@ -104,6 +113,7 @@ var extrasensors = {
     "28-ff2f0103170457": {},
     "88-00000000000010": {},
     "88-00000000000020": {},
+    "28-1f55b4122101e7": {},
 };
 
 function update_sensors_time() {
