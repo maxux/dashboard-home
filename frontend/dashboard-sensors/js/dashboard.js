@@ -306,6 +306,8 @@ function connect() {
 
             case "sensors-dht":
                 for(var id in json['payload']) {
+                    console.log(id);
+                    console.log(localsensors[id]);
                     if(localsensors[id] != undefined) {
                         localsensors[id]['timestamp'] = json['payload'][id]['timestamp'];
                         localsensors[id]['value'] = json['payload'][id]['temperature'];
@@ -386,6 +388,7 @@ function connect() {
 
             case "gpio-status":
                 var payload = json['payload'];
+                console.log(payload);
 
                 $('#gpio-table').empty();
 
