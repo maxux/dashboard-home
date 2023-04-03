@@ -113,7 +113,9 @@ class DashboardServer():
 
         try:
             for id in self.payloads:
-                await self.wspayload(websocket, id, self.payloads[id])
+                item = self.payloads[id]
+                print("[+] sending backlog: %s (%s)" % (id, item['id']))
+                await self.wspayload(websocket, item['id'], item['payload'])
 
             while True:
                 if not websocket.open:
@@ -131,14 +133,22 @@ class DashboardServer():
 
         while True:
             message = pubsub.get_message()
-            print(message)
+            # print(message)
+
             if message and message['type'] == 'message':
                 handler = json.loads(message['data'])
 
                 print("[+] forwarding data from slave: %s" % handler['id'])
 
                 # caching payload
-                self.payloads[handler['id']] = handler['payload']
+                id = handler['id']
+                if "id" in handler['payload']:
+                    id = "%s-%s" % (handler['id'], handler['payload']['id'])
+
+                self.payloads[id] = {
+                    "id": handler['id'],
+                    "payload": handler['payload'],
+                }
 
                 # forwarding
                 await self.wsbroadcast(handler['id'], handler['payload'])
