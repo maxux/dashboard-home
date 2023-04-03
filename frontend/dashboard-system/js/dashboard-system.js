@@ -744,7 +744,7 @@ function devices_update(clients) {
         var rx = (client['rx'] != undefined) ? client['rx'] : null;
         var tx = (client['tx'] != undefined) ? client['tx'] : null;
         var hostclass = (!client['hostname']) ? {'class': 'text-muted darker'} : {};
-        var trclass = (elapsed > 3600) ? {'class': 'offline'} : {}; // 1h offline
+        var trclass = (elapsed > 1200) ? {'class': 'offline'} : {}; // 20 min offline
 
         var tr = $('<tr>', trclass);
         tr.append($('<td>').html(client['mac-address']));

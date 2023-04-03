@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import time
 import random
-import websockets
 import requests
 import json
 import sqlite3
@@ -137,16 +136,8 @@ class DashboardSensors():
             return sanicjson({})
 
     def run(self):
-        loop = asyncio.get_event_loop()
-
         self.httpd_routes(self.app)
-        httpd = self.app.create_server(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'])
-        asyncio.ensure_future(httpd, loop=loop)
-
-        #
-        # main loop, let's run everything together
-        #
-        loop.run_forever()
+        self.app.run(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'])
 
 if __name__ == '__main__':
     sensors = DashboardSensors()
