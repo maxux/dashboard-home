@@ -62,6 +62,7 @@ class Dashboard():
             print(message)
 
     def uptrack(self):
+        return
         source = inspect.stack()[1][3]
         self.timing[source] = time.time()
 
@@ -633,7 +634,7 @@ class Dashboard():
         # this will updates sensors status
         #
         self.httpd_routes(self.app)
-        httpd = self.app.create_server(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'], loop=loop)
+        httpd = self.app.create_server(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'])
         asyncio.ensure_future(httpd, loop=loop)
 
         #
