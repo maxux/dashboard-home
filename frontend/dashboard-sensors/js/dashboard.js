@@ -35,7 +35,7 @@ var localpower = {
 };
 
 var localsensors =  {
-    "d-1": { // utility-room
+    "28-ff641e93a42b71": { // utility-room
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
@@ -65,7 +65,12 @@ var localsensors =  {
         'min': 0, 'max': 15, 'color': '#295987', 'threshold': 8,
         'timestamp': 0, 'value': 0
     },
-    "28-ffad2702170593": {
+    "28-ffad2702170593": { // kitchen (old)
+        'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
+    "28-ff641f43cac675": { // kitchen (new)
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
@@ -290,7 +295,7 @@ function connect() {
                         continue;
 
                     localsensors[id]['timestamp'] = json['payload'][id]['timestamp'];
-                    localsensors[id]['value'] = json['payload'][id]['value'];
+                    localsensors[id]['value'] = json['payload'][id]['value'] / 1000;
                     localsensors[id]['id'] = id
 
                     update_sensor(localsensors[id]);
@@ -304,6 +309,7 @@ function connect() {
                 }
             break;
 
+            /*
             case "sensors-dht":
                 for(var id in json['payload']) {
                     console.log(id);
@@ -320,6 +326,7 @@ function connect() {
                     $("#dht-" + id + " .hum").html(json['payload'][id]['humidity']);
                 }
             break;
+            */
 
             case "sensors-backlog":
                 console.log(json);
