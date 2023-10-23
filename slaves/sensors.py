@@ -9,6 +9,7 @@ import subprocess
 import logging
 import redis
 import inspect
+import pymysql
 from sanic import Sanic
 from sanic.response import json as sanicjson
 from config import dashconfig
@@ -22,7 +23,6 @@ class DashboardSensors():
 
         self.app = Sanic(__name__)
 
-        self.db_sensors = sqlite3.connect(dashconfig['db-sensors-path'])
         self.db_power = sqlite3.connect(dashconfig['db-power-path'])
 
         self.power = {1000: {
@@ -31,18 +31,27 @@ class DashboardSensors():
         }}
 
         self.slave_sensors = DashboardSlave("sensors")
-        self.slave_sensors_dht = DashboardSlave("sensors-dht")
         self.slave_power = DashboardSlave("power")
+
+    def remote_database_cursor(self):
+        db_sensors = pymysql.connect(
+            host=dashconfig['db-sensors-host'],
+            user=dashconfig['db-sensors-user'],
+            password=dashconfig['db-sensors-pass'],
+            database=dashconfig['db-sensors-db'],
+            autocommit=True
+        )
+
+        return db_sensors.cursor()
 
     def httpd_routes(self, app):
         @app.route("/sensors/<name>/<timestamp>/<value>")
         async def httpd_routes_index(request, name, timestamp, value):
             print("[+] sensors: %s (%s): value: %s" % (name, timestamp, value))
 
-            cursor = self.db_sensors.cursor()
+            cursor = self.remote_database_cursor()
             rows = (name, int(timestamp), float(value))
-            cursor.execute("INSERT INTO sensors (id, timestamp, value) VALUES (?, ?, ?)", rows)
-            self.db_sensors.commit()
+            cursor.execute("INSERT INTO sensors (id, timestamp, value) VALUES (%s, FROM_UNIXTIME(%s), %s)", rows)
 
             self.sensors_last[name] = {
                 'id': name,
@@ -61,6 +70,7 @@ class DashboardSensors():
 
             return sanicjson({})
 
+        '''
         @app.route("/sensors-dht/<name>/<timestamp>/<temperature>/<humidity>")
         async def httpd_routes_dht(request, name, timestamp, temperature, humidity):
             print("[+] sensors: %s (%s): temperature: %s, humidity: %s" % (name, timestamp, temperature, humidity))
@@ -87,7 +97,7 @@ class DashboardSensors():
             """
 
             return sanicjson({})
-
+        '''
 
         @app.route("/power/<timestamp>/<value>")
         async def httpd_routes_power(request, timestamp, value):

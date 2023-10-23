@@ -3,12 +3,12 @@ import time
 import random
 import json
 import sqlite3
+import pymysql
 from config import dashconfig
 from dashboard import DashboardSlave
 
 class DashboardBacklog():
     def __init__(self):
-        self.db_sensors = sqlite3.connect(dashconfig['db-sensors-path'])
         self.db_power = sqlite3.connect(dashconfig['db-power-path'])
 
         self.sensors = dashconfig['sensors-id']
@@ -18,6 +18,17 @@ class DashboardBacklog():
         self.slave_sensors = DashboardSlave("sensors-backlog")
         self.slave_power_backlog = DashboardSlave("power-backlog")
         self.slave_power_backlog_days = DashboardSlave("power-backlog-days")
+
+    def remote_database_cursor(self):
+        db_sensors = pymysql.connect(
+            host=dashconfig['db-sensors-host'],
+            user=dashconfig['db-sensors-user'],
+            password=dashconfig['db-sensors-pass'],
+            database=dashconfig['db-sensors-db'],
+            autocommit=True
+        )
+
+        return db_sensors.cursor()
 
     def power_backlog_fetch(self):
         print("[+] power backlogger: fetching 24h")
@@ -90,16 +101,14 @@ class DashboardBacklog():
     def sensors_backlog(self, id):
         limit = 600
 
-        cursor = self.db_sensors.cursor()
+        cursor = self.remote_database_cursor()
         rows = (id, limit)
-        cursor.execute("select timestamp, value from sensors where id=? order by timestamp desc limit ?", rows)
-
-        backlog = cursor.fetchall()
+        cursor.execute("SELECT UNIX_TIMESTAMP(timestamp), value FROM sensors WHERE id = %s ORDER BY timestamp DESC LIMIT %s", rows)
 
         array = []
 
-        for entry in backlog:
-            array.append([entry[0] * 1000, entry[1]])
+        for entry in cursor.fetchall():
+            array.append([entry[0], entry[1] / 1000])
 
         return array
 
