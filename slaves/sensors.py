@@ -19,11 +19,9 @@ class DashboardSensors():
     def __init__(self):
         self.sensors_last = {}
         self.sensors_id = dashconfig['sensors-id']
-        self.sensors_dht_last = {}
+        # self.sensors_dht_last = {}
 
         self.app = Sanic(__name__)
-
-        self.db_power = sqlite3.connect(dashconfig['db-power-path'])
 
         self.power = {1000: {
             'timestamp': 0,
@@ -103,10 +101,9 @@ class DashboardSensors():
         async def httpd_routes_power(request, timestamp, value):
             print("[+] power: %s watt at %s" % (value, timestamp))
 
-            cursor = self.db_power.cursor()
-            rows = (int(timestamp), float(value))
-            cursor.execute("INSERT OR IGNORE INTO power (timestamp, value, phase) VALUES (?, ?, 1000)", rows)
-            self.db_power.commit()
+            cursor = self.remote_database_cursor()
+            rows = (int(timestamp), int(value))
+            cursor.execute("INSERT IGNORE INTO power (timestamp, value, phase) VALUES (FROM_UNIXTIME(%s), %s, 1000)", rows)
 
             self.power["1000"] = {
                 'timestamp': int(timestamp),
@@ -126,10 +123,9 @@ class DashboardSensors():
         async def httpd_routes_power(request, timestamp, phase, value):
             print("[+] power: phase %s: %s watt at %s" % (phase, value, timestamp))
 
-            cursor = self.db_power.cursor()
-            rows = (int(timestamp), float(value), int(phase))
-            cursor.execute("INSERT OR IGNORE INTO power (timestamp, value, phase) VALUES (?, ?, ?)", rows)
-            self.db_power.commit()
+            cursor = self.remote_database_cursor()
+            rows = (int(timestamp), int(value), int(phase))
+            cursor.execute("INSERT IGNORE INTO power (timestamp, value, phase) VALUES (FROM_UNIXTIME(%s), %s, %s)", rows)
 
             self.power[phase] = {
                 'timestamp': int(timestamp),
