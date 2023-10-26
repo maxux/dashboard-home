@@ -95,7 +95,7 @@ class Dashboard():
             for client in payload:
                 newclient = 'host-%d' % index
                 clients[newclient] = payload[client]
-                clients[newclient]['bssid'] = 'xx:xx:xx:xx:xx:xx'
+                # clients[newclient]['bssid'] = 'xx:xx:xx:xx:xx:xx'
 
             return clients
 
