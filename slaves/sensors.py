@@ -58,7 +58,7 @@ class DashboardSensors():
 
                 # if time differs more than 5 min, ignoring difference of temperature
                 if timediff < 300:
-                    if valdiff > 5:
+                    if valdiff > 5000:
                         print(f"[-] discarding value, temperature difference too high [{valdiff}]")
                         return sanicjson({})
 
