@@ -10,6 +10,7 @@ from dashboard import DashboardSlave
 class DashboardBacklog():
     def __init__(self):
         self.sensors = dashconfig['sensors-id']
+        self.sensorsgrp = dashconfig['sensors-group']
         self.power_backlog = []
         self.power_backlog_days = []
 
@@ -76,7 +77,8 @@ class DashboardBacklog():
         cursor.execute("""
             SELECT DATE_FORMAT(byhour, '%Y-%m-%d') byday, phase, SUM(av) FROM (
                 SELECT DATE_FORMAT(timestamp, '%Y-%m-%d %H:00:00') byhour, AVG(value) av, phase
-                FROM power WHERE timestamp > CURRENT_DATE - INTERVAL 30 DAY GROUP BY byhour, phase
+                FROM power
+                WHERE timestamp > CURRENT_DATE - INTERVAL 30 DAY GROUP BY byhour, phase
             ) x GROUP BY byday, phase
         """)
 
@@ -104,14 +106,43 @@ class DashboardBacklog():
         for entry in cursor.fetchall():
             array.append([entry[0] * 1000, entry[1] / 1000])
 
-        return array
+        return [array]
+
+    def sensors_group_backlog(self, id):
+        series = []
+
+        cursor = self.remote_database_cursor()
+
+        for nid in self.sensorsgrp[id]:
+            cursor.execute("""
+                SELECT UNIX_TIMESTAMP(timestamp), value
+                FROM sensors
+                WHERE id = %s
+                AND timestamp > CURRENT_TIMESTAMP - INTERVAL 14 HOUR
+                ORDER BY timestamp DESC
+            """, (nid))
+
+            array = []
+
+            for entry in cursor.fetchall():
+                array.append([entry[0] * 1000, entry[1] / 1000])
+
+            series.append({"data": array})
+
+        return series
 
     def run(self):
         while True:
             for name in self.sensors:
-                print("[+] sensors backlog: fetching [%s]" % name)
-                self.slave_sensors.set({"id": name, "serie": self.sensors_backlog(name)})
-                self.slave_sensors.publish()
+                if name in self.sensorsgrp:
+                    print("[+] sensors backlog: fetching group [%s]" % name)
+                    self.slave_sensors.set({"id": name, "serie": self.sensors_group_backlog(name)})
+                    self.slave_sensors.publish()
+
+                else:
+                    print("[+] sensors backlog: fetching [%s]" % name)
+                    self.slave_sensors.set({"id": name, "serie": self.sensors_backlog(name)})
+                    self.slave_sensors.publish()
 
             self.power_backlog_fetch()
 
