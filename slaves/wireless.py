@@ -11,6 +11,21 @@ monitor = LAPACMonitor(
     dashconfig['lapac-password']
 )
 
+"""
+radios = monitor.allstats()
+
+for radio in radios:
+    for intf in radio:
+        if radio[intf]["transmit"]["packets"] == 0:
+            continue
+
+        print(intf)
+        print(radio[intf]["transmit"]["bytes"] / (1024 * 1024))
+        print(radio[intf]["receive"]["bytes"] / (1024 * 1024))
+
+    # print(radio)
+"""
+
 while True:
     print("[+] wireless: updating")
 
