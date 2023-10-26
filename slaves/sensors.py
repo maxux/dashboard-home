@@ -48,6 +48,20 @@ class DashboardSensors():
             print("[+] sensors: %s (%s): value: %s" % (name, timestamp, value))
 
             cursor = self.remote_database_cursor()
+
+            rows = (name)
+            cursor.execute("SELECT value, timestamp FROM sensors WHERE id = %s ORDER BY timestamp DESC LIMIT 1", rows)
+            previous = cursor.fetchone()
+            if previous != None:
+                timediff = int(time.time()) - int(datetime.datetime.timestamp(previous[1]))
+                valdiff = abs(previous[0] - int(value))
+
+                # if time differs more than 5 min, ignoring difference of temperature
+                if timediff < 300:
+                    if valdiff > 5:
+                        print(f"[-] discarding value, temperature difference too high [{valdiff}]")
+                        return sanicjson({})
+
             rows = (name, int(timestamp), float(value))
             cursor.execute("INSERT INTO sensors (id, timestamp, value) VALUES (%s, FROM_UNIXTIME(%s), %s)", rows)
 
