@@ -57,7 +57,7 @@ var localsensors =  {
     },
     "28-ff23a602170371": {
         'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
-        'min': -28, 'max': -14, 'color': '#E87851', 'threshold': -18,
+        'min': -28, 'max': -10, 'color': '#E87851', 'threshold': -18,
         'timestamp': 0, 'value': 0
     },
     "28-ffd3b4021703e8": {
@@ -335,12 +335,12 @@ function connect() {
                 if(localsensors[id] == undefined)
                     break;
 
-                $.plot("#chart-" + id, [json['payload']['serie']], {
+                $.plot("#chart-" + id, json['payload']['serie'], {
                     series: {
-                        color: "#AD2222",
+                        // color: "#AD2222",
                         threshold: {
-                            below: localsensors[id]['threshold'],
-                            color: localsensors[id]['color'],
+                            // below: localsensors[id]['threshold'],
+                            // color: localsensors[id]['color'],
                         },
                     },
                     xaxis: { mode: "time", timezone: "browser" },
