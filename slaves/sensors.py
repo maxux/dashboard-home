@@ -10,8 +10,7 @@ import logging
 import redis
 import inspect
 import pymysql
-from sanic import Sanic
-from sanic.response import json as sanicjson
+from flask import Flask, request, session, redirect, render_template, abort, make_response, jsonify, g
 from config import dashconfig
 from dashboard import DashboardSlave
 
@@ -19,9 +18,8 @@ class DashboardSensors():
     def __init__(self):
         self.sensors_last = {}
         self.sensors_id = dashconfig['sensors-id']
-        # self.sensors_dht_last = {}
 
-        self.app = Sanic(__name__)
+        self.app = Flask("dashboard-sensors")
 
         self.power = {1000: {
             'timestamp': 0,
@@ -44,7 +42,7 @@ class DashboardSensors():
 
     def httpd_routes(self, app):
         @app.route("/sensors/<name>/<timestamp>/<value>")
-        async def httpd_routes_index(request, name, timestamp, value):
+        def httpd_routes_sensor(name, timestamp, value):
             print("[+] sensors: %s (%s): value: %s" % (name, timestamp, value))
 
             cursor = self.remote_database_cursor()
@@ -60,7 +58,7 @@ class DashboardSensors():
                 if timediff < 300:
                     if valdiff > 5000:
                         print(f"[-] discarding value, temperature difference too high [{valdiff}]")
-                        return sanicjson({})
+                        return jsonify({})
 
             rows = (name, int(timestamp), float(value))
             cursor.execute("INSERT INTO sensors (id, timestamp, value) VALUES (%s, FROM_UNIXTIME(%s), %s)", rows)
@@ -74,45 +72,10 @@ class DashboardSensors():
             self.slave_sensors.set(self.sensors_last)
             self.slave_sensors.publish()
 
-            """
-            # pushing chart
-            temp = {"id": name, "serie": self.sensors_backlog(name)}
-            await self.wsbroadcast("sensors-backlog", temp)
-            """
-
-            return sanicjson({})
-
-        '''
-        @app.route("/sensors-dht/<name>/<timestamp>/<temperature>/<humidity>")
-        async def httpd_routes_dht(request, name, timestamp, temperature, humidity):
-            print("[+] sensors: %s (%s): temperature: %s, humidity: %s" % (name, timestamp, temperature, humidity))
-
-            cursor = self.db_sensors.cursor()
-            rows = (name, int(timestamp), float(temperature), float(humidity))
-            cursor.execute("INSERT INTO dht (id, timestamp, temp, hum) VALUES (?, ?, ?, ?)", rows)
-            self.db_sensors.commit()
-
-            self.sensors_dht_last[name] = {
-                'id': name,
-                'timestamp': int(timestamp),
-                'temperature': float(temperature),
-                'humidity': float(humidity),
-            }
-
-            self.slave_sensors_dht.set(self.sensors_dht_last)
-            self.slave_sensors_dht.publish()
-
-            """
-            # pushing chart
-            temp = {"id": name, "serie": self.sensors_backlog(name)}
-            await self.wsbroadcast("sensors-backlog", temp)
-            """
-
-            return sanicjson({})
-        '''
+            return jsonify({})
 
         @app.route("/power/<timestamp>/<value>")
-        async def httpd_routes_power(request, timestamp, value):
+        def httpd_routes_power(timestamp, value):
             print("[+] power: %s watt at %s" % (value, timestamp))
 
             cursor = self.remote_database_cursor()
@@ -127,14 +90,10 @@ class DashboardSensors():
             self.slave_power.set(self.power)
             self.slave_power.publish()
 
-            # pushing chart
-            # temp = {"id": name, "serie": self.sensors_backlog(name)}
-            # await self.wsbroadcast("sensors-backlog", temp)
-
-            return sanicjson({})
+            return jsonify({})
 
         @app.route("/power/<timestamp>/<phase>/<value>")
-        async def httpd_routes_power(request, timestamp, phase, value):
+        def httpd_routes_power_phase(timestamp, phase, value):
             print("[+] power: phase %s: %s watt at %s" % (phase, value, timestamp))
 
             cursor = self.remote_database_cursor()
@@ -149,15 +108,11 @@ class DashboardSensors():
             self.slave_power.set(self.power)
             self.slave_power.publish()
 
-            # pushing chart
-            # temp = {"id": name, "serie": self.sensors_backlog(name)}
-            # await self.wsbroadcast("sensors-backlog", temp)
-
-            return sanicjson({})
+            return jsonify({})
 
     def run(self):
         self.httpd_routes(self.app)
-        self.app.run(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'])
+        self.app.run(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'], debug=True, threaded=True)
 
 if __name__ == '__main__':
     sensors = DashboardSensors()
