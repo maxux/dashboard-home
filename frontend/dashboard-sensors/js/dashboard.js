@@ -62,7 +62,7 @@ var localsensors =  {
     },
     "28-ffd3b4021703e8": {
         'high': 9,   'warn': 5.5, 'normal': 2,   'low': 1,
-        'min': 0, 'max': 15, 'color': '#295987', 'threshold': 8,
+        'min': 0, 'max': 20, 'color': '#295987', 'threshold': 8,
         'timestamp': 0, 'value': 0
     },
     "28-ffad2702170593": { // kitchen (old)
@@ -90,12 +90,12 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "88-00000000000010": {
+    "28-ff274345160329": {
         'high': 18,  'warn': 25,  'normal': 17,  'low': 12,
         'min': 10, 'max': 20, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0,
     },
-    "88-00000000000020": {
+    "28-ffd656471603b4": {
         'high': 15,  'warn': 10,  'normal': 4,  'low': 1,
         'min': 0, 'max': 20, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
@@ -116,8 +116,8 @@ var extrasensors = {
     "28-ffc0d7021703c2": {},
     "28-ffc5fe441603d7": {},
     "28-ff2f0103170457": {},
-    "88-00000000000010": {},
-    "88-00000000000020": {},
+    "28-ff274345160329": {},
+    "28-ffd656471603b4": {},
     "28-1f55b4122101e7": {},
 };
 

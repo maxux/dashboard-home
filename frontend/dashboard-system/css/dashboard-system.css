@@ -1,22 +1,39 @@
 html {
     background-image: url(../resources/wallpaper/default.jpg);
     background-size: cover;
-}
-
-html, body {
-    height: 100%;
-}
-
-@media screen and (min-width: 1000px) {
-    html, body {
-        overflow: hidden;
-    }
+    background-attachment: fixed;
 }
 
 body {
-    padding: 15px;
+    min-height: 100vh;
+    padding: 5px;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none;
+}
+
+:root {
+    --bs-bg-opacity: 0.4;
+}
+
+.card {
+    --bs-card-spacer-y: 0.4rem;
+    --bs-card-cap-bg: rgba(255, 255, 255, 0.05);
+}
+
+.badge {
+    --bs-bg-opacity: 1;
+}
+
+.table-dark {
+    --bs-table-bg: transparent;
+}
+
+.table-sm .badge {
+    padding: 0.4em 0.7em 0.4em 0.7em;
 }
 
 /* background fix */
@@ -24,36 +41,18 @@ body {
     background: transparent !important;
 }
 
-.panel {
-    background: rgba(50, 50, 50, 0.6) !important;
-}
-
 .node-down {
     opacity: 0.3;
 }
 
-.glyphicon-text {
-    padding-right: 6px;
-}
-
-.glyphicon-small {
-    font-size: 10px;
-}
-
-.rtinfo {
-    padding-bottom: 10px;
+.rtinfo table {
+    font-size: 14px;
 }
 
 .rtinfo table thead {
 	font-weight: bold;
 	color: #BFBFBF;
 	border-bottom: solid 2px #4D4D4D;
-}
-
-.rtinfo table tbody {
-	font-family: monospace;
-	font-size: 15px;
-    margin-bottom: 0;
 }
 
 .rtinfo table a:link, table a:hover, table a:visited {
@@ -70,30 +69,19 @@ body {
 .td-2 { width: 2%; }
 .td-1 { width: 1%; }
 
-.table {
-    margin-bottom: 0;
+.ping-reply {
+    text-align: center;
+    font-size: 20px;
 }
 
 .wfix {
     word-spacing: -6px;
 }
 
-table.connectivity {
-    /* font-size: 13px; */
-    font-family: monospace;
-}
-
-table.connectivity td:first-child {
-    width: 55%;
-}
-
-table.connectivity td:last-child {
-    width: 25%;
-}
-
-table.wireless {
+table.wireless tr {
     font-size: 14px;
     font-family: monospace;
+    line-height: 10px;
 }
 
 table.wireless td:first-child {
@@ -104,7 +92,7 @@ table.wireless td:first-child {
 table.devices {
     font-size: 14px;
     font-family: monospace;
-    table-layout: fixed;
+    line-height: 10px;
 }
 
 table.devices td:nth-child(1) {
@@ -123,44 +111,22 @@ table.devices td:nth-child(6) {
     width: 9em;
 }
 
-table.devices .glyphicon-arrow-up {
-    /* color: #3C98E9; */
-}
-
-table.devices .glyphicon-arrow-down {
-    /* color: #5DB5A4; */
-}
-
 table.devices .inactive {
     opacity: 0.3;
-}
-
-/* badge extended */
-.badge-danger {
-    background-color: #B90B00;
-    color: #FFFFFF;
-}
-
-.badge-warning {
-    background-color: #C87406;
-}
-
-/* connectivity */
-table.connectivity tr td:last-child {
-    text-align: right;
 }
 
 table.router td:first-child, table.router td:last-child {
     width: 5%;
 }
 
-table.router span.badge {
-    font-size: 15px;
-}
-
 table.router td {
     width: 45%;
     text-align: center;
+}
+
+@keyframes overlight {
+    from { text-shadow: 0px 0px 18px #135489; }
+    to { text-shadow : none; }
 }
 
 @keyframes redshadow {
@@ -169,8 +135,13 @@ table.router td {
 }
 
 .text-danger {
-    animation: redshadow 1s infinite ease-in-out;
+    animation: redshadow 1s infinite ease-in-out alternate;
     font-weight: bold;
+}
+
+.discard {
+    animation: overlight 1s infinite ease-in-out alternate;
+    filter: blur(1px);
 }
 
 .rtinfo .text-danger {
@@ -198,14 +169,6 @@ table.devices .offline {
     animation: blinker 1s linear infinite;
 }
 
-.panel-ping .panel-body {
-    text-align: center;
-}
-
-.panel-ping span.badge {
-    font-size: 15px;
-}
-
 @keyframes error-blinker {
     50% { background-color: #222222; }
 }
@@ -217,11 +180,11 @@ table.devices .offline {
 
 /* Charts */
 .chart-container {
-    height: 80px;
+    height: 90px;
 }
 
 .chart-placeholder {
-    height: 100%;
+    height: 90px;
 }
 
 .visibility-recent {
@@ -236,23 +199,35 @@ table.devices .offline {
     opacity: 0.3;
 }
 
-.docsis-value {
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
 tr.spacer {
     height: 15px;
 }
 
-.dns-activity td {
-    font-family: monospace;
+
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url("../fonts/glyphicons-halflings-regular.eot");
+  src: url("../fonts/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/glyphicons-halflings-regular.woff2") format("woff2"), url("../fonts/glyphicons-halflings-regular.woff") format("woff"), url("../fonts/glyphicons-halflings-regular.ttf") format("truetype"), url("../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
 }
 
-.dns-activity td.host {
-    width: 20%;
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
 }
 
-.dns-activity td.query {
-    width: 80%;
-}
+.glyphicon-signal:before {
+  content: "\e018"; }
+
+.glyphicon-arrow-up:before {
+  content: "\e093"; }
+
+.glyphicon-arrow-down:before {
+  content: "\e094"; }
+

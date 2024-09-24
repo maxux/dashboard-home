@@ -27,67 +27,63 @@ function elapsedvisibiliy(elapsed) {
     return 'visibility-old';
 }
 
-function percentstyle(percent) {
-	return 'color: black;';
-}
-
 function percentvalue(value, total) {
 	if(total == 0)
-		return 0;
+		return null;
 
 	return parseFloat(Math.floor((value / total) * 100));
 }
 
 function colorizesw(value, size) {
 	if(value < 10)
-		return {'class': 'text-muted'};
+		return 'text-muted';
 
     if(value < 2)
-		return {'class': 'text-muted'};
+		return 'text-muted';
 
 	if(value < 30)
-		return {'class': 'text-info'};
+		return 'text-info';
 
 	return colorize(value);
 }
 
 function colorize(value) {
 	if(value < 8)
-		return {'class': 'text-muted'};
+		return 'text-muted';
 
     if(value < 18)
-        return {'class': ''};
+        return '';
 
 	if(value < 50)
-		return {'class': 'text-info'};
+		return 'text-info';
 
 	if(value < 80)
-		return {'class': 'text-warning'};
+		return 'text-warning';
 
-	return {'class': 'text-danger'};
+	return 'text-danger';
 }
 
 function loadcolor(value, cpu) {
 	if(value < 0.8)
-		return {'class': 'text-muted'};
+		return 'text-muted';
 
     if(value < 1.5)
-        return {'class': ''};
+        return '';
 
 	if(value < cpu / 4)
-		return {'class': 'text-info'};
+		return 'text-info';
 
 	if(value < cpu)
-		return {'class': 'text-warning'};
+		return 'text-warning';
 
-	return {'class': 'text-danger'};
+	return 'text-danger';
 }
 
 function autosize(value) {
 	var temp = value / 1024;
 	var unitidx = 2;
 
-	if(temp > 4096) {
+	if(temp > 1540) {
 		temp /= 1024;
 		unitidx = 3;
 	}
@@ -118,32 +114,6 @@ function unixtime(timestamp) {
 //
 // compute a scaled size with adapted prefix
 //
-function size(value, total) {
-	uindex = 1;
-
-	pc = Math.floor((value / total) * 100);
-
-	for(; value > 1024; value /= 1024)
-		uindex++;
-
-	text = value.toFixed(2) + ' ' + units[uindex] + (total ? ' (' + pc + ' %)' : '');
-
-	return $('<span>', {style: percentstyle(pc)}).html(text);
-}
-
-function streamsize(value) {
-	uindex = 0;
-
-	for(; value > 1024; value /= 1024)
-		uindex++;
-
-	text = value.toFixed(2) + ' ' + units[uindex];
-
-	pc = ((uindex / rates.length) * 100);
-
-	return $('<span>', {style: percentstyle(pc)}).html(text);
-}
-
 function rate(value) {
 	value = value / 1024;
 	uindex = 1;
@@ -151,7 +121,7 @@ function rate(value) {
 	for(; value > 1024; value /= 1024)
 		uindex++;
 
-	return value.toFixed(2) + ' ' + rates[uindex];
+	return value.toFixed(1) + ' ' + rates[uindex];
 }
 
 function shortrate(value) {
@@ -175,16 +145,19 @@ function colorintf(value, maxspeed) {
 	// computing percentage of usage
 	var pc = (value / maxspeed) * 100;
 
-	if(value < 5)
-		return {'class': ''};
+	if(value < 2)
+		return 'text-muted';
+
+    if(value < 5)
+        return '';
 
 	if(value < 40)
-		return {'class': 'text-info'};
+		return 'text-info';
 
 	if(value < 60)
-		return {'class': 'text-warning'};
+		return 'text-warning';
 
-	return {'class': 'text-danger'};
+	return 'text-danger';
 }
 
 function colordisk(value) {
@@ -192,54 +165,54 @@ function colordisk(value) {
 	value = value / 1024 / 1024;
 
 	if(value < 1.2)
-		return {'class': ''};
+		return 'text-muted';
+
+    if(value < 10)
+        return '';
 
 	if(value < 20)
-		return {'class': 'text-info'};
+		return 'text-info';
 
 	if(value < 100)
-		return {'class': 'text-warning'};
+		return 'text-warning';
 
-	return {'class': 'text-danger'};
+	return 'text-danger';
 }
 
 function colorbattery(battery) {
     if(battery.load == -1)
-        return {'class': 'text-muted'};
+        return 'text-muted';
 
-    return {'class': ''};
+    return '';
 }
 
 function colorcputemp(text, value) {
     if(value == 0)
-        return $('<span>', {'class': 'text-muted'}).html(text);
+        return 'text-muted';
 
     if(value < 45)
-        return $('<span>', {'class': 'text-muted'}).html(text);
+        return 'text-muted';
 
     if(value < 55)
-        return $('<span>', {'class': ''}).html(text);
+        return '';
 
     if(value < 65)
-        return $('<span>', {'class': 'text-warning'}).html(text);
+        return 'text-warning';
 
-    return $('<span>', {'class': 'text-danger'}).html(text);
+    return 'text-danger';
 }
 
 function colorhddtemp(text, value) {
-    if(value == 0)
-        return $('<span>', {'class': 'text-muted'}).html(text);
-
     if(value < 35)
-        return $('<span>', {'class': 'text-muted'}).html(text);
+        return 'text-muted';
 
     if(value < 45)
-        return $('<span>', {'class': ''}).html(text);
+        return '';
 
     if(value < 50)
-        return $('<span>', {'class': 'text-warning'}).html(text);
+        return 'text-warning';
 
-    return $('<span>', {'class': 'text-danger'}).html(text);
+    return 'text-danger';
 }
 
 //
@@ -258,13 +231,13 @@ function uptime(value) {
 }
 
 function uptime_color(value) {
-	if(value < 86400)
-		return {'class': 'text-danger'};
+	if(value < (3600 * 3))
+		return 'text-danger';
 
 	if(value < (86400 * 2))
-		return {'class': 'text-warning'};
+		return 'text-warning';
 
-	return {'class': 'text-success'};
+	return 'text-success';
 }
 
 //
@@ -272,7 +245,7 @@ function uptime_color(value) {
 //
 function degree(value, limit) {
 	if(!value)
-		return '<small>-</small>';
+		return '-';
 
 	return value + '°C';
 }
@@ -282,6 +255,9 @@ function degree(value, limit) {
 // scaled with value. optional output text can be used
 //
 function percent(value, extra) {
+    if(value == null)
+        return "-";
+
 	return value + ' %' + ((extra) ? ' (' + extra + ')' : '');
 }
 
@@ -292,7 +268,7 @@ function battery(battery) {
 	var bat = '';
 
 	if(battery.load == -1)
-		return '<small>[AC]</small>';
+		return 'AC';
 
 	if(batpic[battery.status] != undefined)
 		bat = batpic[battery.status] + ' ';
@@ -304,47 +280,97 @@ function battery(battery) {
 	return bat + percent(pc);
 }
 
+function host_status(node, server) {
+    if(node.lasttime + 30 < server.servertime)
+        return "text-danger";
+
+    if(node.lasttime + 5 < server.servertime)
+        return "text-warning";
+
+    return "text-success";
+}
+
 //
 // build a 'summary' table node line
 //
-function summary_node(node, server) {
-    var status = {'class': ''};
+function summary_node(node, host, server) {
+    let prefix = "rtinfo-" + host + "-" + node.hostname;
+
+    if($("#" + prefix).length == 0) {
+        let tr = $("<tr>", {"id": prefix});
+
+        tr.append($('<td>', {'class': 'nn-host'}).html(node.hostname));
+        tr.append($('<td>', {'class': 'nn-cpu'}));
+        tr.append($('<td>', {'class': 'nn-cpu-total'}));
+        tr.append($('<td>', {'class': 'nn-ram'}));
+        tr.append($('<td>', {'class': 'nn-swap'}));
+        tr.append($('<td>', {'class': 'nn-load-1'}));
+        tr.append($('<td>', {'class': 'nn-load-5'}));
+        tr.append($('<td>', {'class': 'nn-load-15'}));
+        tr.append($('<td>', {'class': 'nn-remote'}));
+        tr.append($('<td>', {'class': 'nn-time'}));
+        tr.append($('<td>', {'class': 'nn-uptime'}));
+        tr.append($('<td>', {'class': 'nn-battery'}));
+        tr.append($('<td>', {'class': 'nn-cpu-temp'}));
+        tr.append($('<td>', {'class': 'nn-disks-temp'}));
+        tr.append($('<td>', {'class': 'nn-disks-io'}));
+        tr.append($('<td>', {'class': 'nn-net-rx'}));
+        tr.append($('<td>', {'class': 'nn-net-tx'}));
+
+        $("#rtinfo-" + host + "-nodes").append(tr);
+    }
+
+    $("#" + prefix).removeClass("node-down");
+
+    // strip down all style in one shot
+    $("#" + prefix + " td").removeClass(classes_states);
 
     if(node.lasttime + 30 < server.servertime)
-        status['class'] = 'node-down';
+        $("#" + prefix).addClass("node-down");
 
-    var tr = $('<tr>', status);
+    $("#" + prefix + " .nn-host").addClass(host_status(node, server));
 
-    var status = 'text-success';
-    if(node.lasttime + 5 < server.servertime)
-        status = 'text-warning';
-
-    if(node.lasttime + 30 < server.servertime)
-        status = 'text-danger';
-
-    var hostname = $('<a>', {
-        'data-toggle': "tooltip",
-        'data-placement': "top",
-        'title': new Date(node.lasttime * 1000),
-        'href': '#',
-        'class': status,
-
-    }).tooltip().html(node.hostname);
-
-    tr.append($('<td>', {'class': status}).append(hostname));
-
-    var swap = 0;
-    if(node.memory.swap_total > 0)
-        swap = node.memory.swap_total - node.memory.swap_free;
-
-    for(var index in node.loadavg)
+    for(let index in node.loadavg)
         node.loadavg[index] = parseFloat(node.loadavg[index]).toFixed(2);
 
-    var cpunr = node.cpu_usage.length - 1;
-    var ram   = percentvalue(node.memory.ram_used, node.memory.ram_total);
-    var swap  = node.memory.swap_total - node.memory.swap_free;
-    var pswap = percentvalue(swap, node.memory.swap_total);
+    let cpunr = node.cpu_usage.length - 1;
+    let ram   = percentvalue(node.memory.ram_used, node.memory.ram_total);
+    let ramsz = autosize(node.memory.ram_used);
+    let swap  = node.memory.swap_total - node.memory.swap_free;
+    let pswap = percentvalue(swap, node.memory.swap_total);
+    let swapz = autosize(swap);
 
+    var disksp = 0;
+    for(let idx in node.disks)
+        disksp += node.disks[idx].read_speed + node.disks[idx].write_speed;
+
+    var netrxsp = 0
+    for(var idx in node.network)
+        netrxsp += node.network[idx].rx_rate;
+
+    var nettxsp = 0
+    for(var idx in node.network)
+        nettxsp += node.network[idx].tx_rate;
+
+
+    $("#" + prefix + " .nn-cpu").html(percent(node.cpu_usage[0])).addClass(colorize(node.cpu_usage[0]));
+    $("#" + prefix + " .nn-cpu-total").html(cpunr);
+    $("#" + prefix + " .nn-ram").html(percent(ram, ramsz)).addClass(colorize(ram));
+    $("#" + prefix + " .nn-swap").html(percent(pswap, swapz)).addClass(colorize(pswap));
+    $("#" + prefix + " .nn-load-1").html(node.loadavg[0]).addClass(loadcolor(node.loadavg[0]));
+    $("#" + prefix + " .nn-load-5").html(node.loadavg[1]).addClass(loadcolor(node.loadavg[1]));
+    $("#" + prefix + " .nn-load-15").html(node.loadavg[2]).addClass(loadcolor(node.loadavg[2]));
+    $("#" + prefix + " .nn-remote").html(node.remoteip);
+    $("#" + prefix + " .nn-time").html(unixtime(node.time));
+    $("#" + prefix + " .nn-uptime").html(uptime(node.uptime)).addClass(uptime_color(node.uptime));
+    $("#" + prefix + " .nn-battery").html(battery(node.battery));
+    $("#" + prefix + " .nn-cpu-temp").html(degree(node.sensors.cpu.average));
+    $("#" + prefix + " .nn-disks-temp").html(degree(node.sensors.hdd.average));
+    $("#" + prefix + " .nn-disks-io").html(rate(disksp)).addClass(colordisk(disksp));
+    $("#" + prefix + " .nn-net-rx").html(rate(netrxsp)).addClass(colorintf(netrxsp, 1000));
+    $("#" + prefix + " .nn-net-tx").html(rate(nettxsp)).addClass(colorintf(nettxsp, 1000));
+
+    /*
     tr.append($('<td>', colorize(node.cpu_usage[0]))
         .html($('<span>', {'class': 'wfix'}).html(percent(node.cpu_usage[0]))));
 
@@ -396,6 +422,7 @@ function summary_node(node, server) {
     tr.append($('<td>', colorintf(speed, 1000)).html(rate(speed)));
 
     return tr;
+    */
 }
 
 
@@ -403,36 +430,8 @@ function summary_node(node, server) {
 // build summary table
 //
 function summary(host, server, nodes) {
-    $('#summary-' + host).empty();
-    $('#summary-' + host).css('display', '');
-
-    var thead = $('<thead>')
-        .append($('<td>', {'class': 'td-8'}).html('Hostname'))
-        .append($('<td>', {'class': 'td-3'}).html('CPU'))
-        .append($('<td>', {'class': 'td-2'}).html('#'))
-        .append($('<td>', {'class': 'td-10'}).html('RAM'))
-        .append($('<td>', {'class': 'td-10'}).html('SWAP'))
-        .append($('<td>', {'colspan': 3, 'class': 'td-10'}).html('Load Average'))
-        .append($('<td>', {'class': 'td-8'}).html('Remote IP'))
-        .append($('<td>', {'class': 'td-5'}).html('Time'))
-        .append($('<td>', {'class': 'td-5'}).html('Uptime'))
-        .append($('<td>', {'class': 'td-5'}).html('Battery'))
-        .append($('<td>', {'class': 'td-4'}).html('CPU'))
-        .append($('<td>', {'class': 'td-4'}).html('Disk'))
-        .append($('<td>', {'class': 'td-8'}).html('Disks I/O'))
-        .append($('<td>', {'class': 'td-8'}).html('Net RX'))
-        .append($('<td>', {'class': 'td-8'}).html('Net TX'));
-
-    $('#summary-' + host).append(thead);
-    $('#summary-' + host).append($('<tbody>'));
-
-    for(var n in nodes) {
-        if(nodes[n].hostname == "prod-01") {
-            $('#summary-' + host + ' tbody').append($('<tr>', {'class': 'spacer'}));
-        }
-
-        $('#summary-' + host + ' tbody').append(summary_node(nodes[n], server));
-    }
+    for(var n in nodes)
+        summary_node(nodes[n], host, server);
 }
 
 function arraymove(arr, fi, di) {
@@ -456,7 +455,7 @@ function parsing(response, host) {
     var json = response;
 
 	// clearing everyting
-	$('body').attr('class', 'connected');
+	$('body').addClass('connected');
 
 	//
 	// ordering hostname
@@ -468,12 +467,6 @@ function parsing(response, host) {
 		hosts.push(json.rtinfo[x].hostname);
 
 	hosts = hosts.sort();
-
-    // push 'prod-01' on last line
-	for(var n in hosts) {
-        if(hosts[n] == "prod-01")
-            arraymove(hosts, n, hosts.length - 1);
-    }
 
 	for(var n in hosts)
 		for(var x in json.rtinfo)
@@ -503,9 +496,30 @@ function parsing_local(response, host) {
 
 function call(host) {
     // ensure this source exists
-    if(!$('#root-' + host).length) {
-        var root = $('<div>', {'id': 'root-' + host});
-        root.append($('<table>', {'class': "table table-hover table-condensed", 'id': "summary-" + host}));
+    if($('#root-' + host).length == 0) {
+        let root = $('<div>', {'id': 'root-' + host});
+        let table = $('<table>', {'class': "table table-hover table-borderless table-sm table-dark m-0", "id": "summary-" + host});
+
+        var thead = $('<thead>')
+            .append($('<td>', {'class': 'td-8'}).html('Hostname'))
+            .append($('<td>', {'class': 'td-3'}).html('CPU'))
+            .append($('<td>', {'class': 'td-2'}).html('#'))
+            .append($('<td>', {'class': 'td-10'}).html('RAM'))
+            .append($('<td>', {'class': 'td-10'}).html('SWAP'))
+            .append($('<td>', {'colspan': 3, 'class': 'td-10'}).html('Load Average'))
+            .append($('<td>', {'class': 'td-8'}).html('Remote IP'))
+            .append($('<td>', {'class': 'td-5'}).html('Time'))
+            .append($('<td>', {'class': 'td-5'}).html('Uptime'))
+            .append($('<td>', {'class': 'td-3'}).html('Pwr'))
+            .append($('<td>', {'class': 'td-4'}).html('CPU'))
+            .append($('<td>', {'class': 'td-4'}).html('Disk'))
+            .append($('<td>', {'class': 'td-8'}).html('Disks I/O'))
+            .append($('<td>', {'class': 'td-8'}).html('Net RX'))
+            .append($('<td>', {'class': 'td-8'}).html('Net TX'));
+
+        table.append(thead);
+        table.append($('<tbody>', {"id": "rtinfo-" + host + "-nodes"}));
+        root.append(table);
 
         $('#content').append(root);
     }
@@ -572,6 +586,10 @@ function connect() {
         }
     }
 
+    socket.onerror = function(event) {
+        console.log("websocket error", event);
+    }
+
     socket.onclose = function() {
         $('#disconnected').show();
         setTimeout(connect, 2000);
@@ -580,7 +598,6 @@ function connect() {
 
 
 function ping_update(ping) {
-    $('.connectivity').empty();
     // console.log(ping);
 
     // replace dot by dash
@@ -594,16 +611,16 @@ function ping_update(ping) {
 
     // parse latency
     var latency = parseFloat(ping['data']['value'][1]);
-    var badge = {'class': 'badge text-success'};
+    var badge = {'class': 'badge text-bg-success'};
 
     if(latency < 40) {
-        badge = {'class': 'badge'};
+        badge = {'class': 'badge text-bg-dark'};
 
     } else if(latency < 80) {
-        badge = {'class': 'badge text-warning'};
+        badge = {'class': 'badge text-bg-warning'};
 
     } else {
-        badge = {'class': 'badge text-danger'};
+        badge = {'class': 'badge text-bg-danger'};
     }
 
     // var tr = $('<tr>');
@@ -616,15 +633,15 @@ function ping_update(ping) {
 
 function wireless_signal(value) {
     if(value < -80)
-        return {'class': 'text-danger'};
+        return 'ww-signal text-danger';
 
     if(value < -70)
-        return {'class': 'text-warning'};
+        return 'ww-signal text-warning';
 
     if(value < -55)
-        return {'class': ''};
+        return 'ww-signal';
 
-    return {'class': 'text-success'};
+    return 'ww-signal text-success';
 }
 
 function hrsmin_from_sec(value) {
@@ -639,7 +656,7 @@ function wireless_online(value) {
         return value + " sec";
 
     if(value < (60 * 60))
-        return (value / 60).toFixed(0) + " min";
+        return (value / 60).toFixed(0) + "m";
 
     var hm = hrsmin_from_sec(value);
 
@@ -655,25 +672,68 @@ function wireless_online(value) {
 }
 
 var wireless_last_update = 0;
+var wireless_clients = {};
+let wireless_short_ssid = {
+    "Maxux Network (2.4G)": "2G",
+    "Maxux Network (5.2G)": "5G",
+    "Maxux Legacy": "LL",
+};
+
+let classes_states = 'text-success text-warning text-danger text-info text-muted ' +
+    'bg-success bg-warning bg-info bg-danger ' +
+    'text-bg-success text-bg-warning text-bg-info text-bg-danger text-bg-secondary text-bg-dark ' +
+    'active inactive';
 
 function wireless_update(clients, timestamp) {
-    $('.wireless').empty();
     // console.log(clients);
+    wireless_clients = {}
 
-    var freqs = {
-        "Maxux Network (2.4G)": "2G",
-        "Maxux Network (5.2G)": "5G",
-        "Maxux Legacy": "LL",
-    };
+    let sigspan = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
 
-    for(var bssid in clients) {
-        var client = clients[bssid];
-        var tr = $('<tr>');
+    // first flag all existing clients as maybe outdated
+    $(".wireless tr").addClass("discard");
 
-        var online = wireless_online(client['online']);
-        var signal = parseFloat(client['rssi']);
-        var sigspan = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
+    for(let id in clients) {
+        let client = clients[id];
+        let keyid = client['address'].toLowerCase();
+        let bssid = client['address'].replaceAll(":", "");
 
+        // update global table
+        wireless_clients[keyid] = client;
+
+        // no more wireless table to show
+        continue;
+
+        /*
+        let online = wireless_online(client['online']);
+        let signal = parseFloat(client['rssi']);
+        let sigclass = wireless_signal(signal);
+
+        // FIXME: remove old clients
+
+        if($("#wireless-node-" + bssid).length == 0) {
+            let tr = $("<tr>", {"id": "wireless-node-" + bssid});
+
+            tr.append($('<td>', {'class': 'ww-ssid'}).html(wireless_short_ssid[client['ssid']]));
+            tr.append($('<td>', {'class': 'ww-address'}).html(client['address']));
+            tr.append($('<td>', {'class': 'ww-rate'}));
+            tr.append($('<td>', {'class': 'ww-signal'}));
+            tr.append($('<td>', {'class': 'ww-online badge text-bg-dark rounded-pill'}));
+
+            $('.wireless').append(tr);
+        }
+
+        // this client is still alive
+        $("#wireless-node-" + bssid).removeClass("discard");
+
+        $("#wireless-node-" + bssid + " .ww-ssid").html(wireless_short_ssid[client['ssid']]);
+        $("#wireless-node-" + bssid + " .ww-address").html(client['address']);
+        $("#wireless-node-" + bssid + " .ww-rate").html(client['linkrate'] + ' Mbps');
+        $("#wireless-node-" + bssid + " .ww-online").html(online);
+        $("#wireless-node-" + bssid + " .ww-signal").html(sigspan + signal + ' dBm').removeClass(classes_states).addClass(sigclass);
+        */
+
+        /*
         tr.append($('<td>').html(freqs[client['ssid']]));
         tr.append($('<td>').html(client['address']));
         // tr.append($('<td>').html(client['ip']));
@@ -682,6 +742,7 @@ function wireless_update(clients, timestamp) {
         tr.append($('<td>').html('Online: ' + online));
 
         $('.wireless').append(tr);
+        */
     }
 
     // commit last update
@@ -689,16 +750,18 @@ function wireless_update(clients, timestamp) {
 }
 
 function rxtxclass(value) {
+    var active = (value < 8 * 1024) ? ' inactive' : ' active';
+
     if(value < 8 * 1024)
-        return 'text-muted';
+        return 'text-bg-dark' + active;
 
     if(value < 112 * 1024)
-        return 'text-default';
+        return 'text-bg-secondary' + active;
 
     if(value < 1112 * 1024)
-        return 'badge-warning';
+        return 'text-bg-warning' + active;
 
-    return 'badge-danger';
+    return 'text-bg-danger' + active;
 }
 
 function rxtxactive(value) {
@@ -724,12 +787,13 @@ function clientscmp(a, b) {
 }
 
 function devices_update(clients) {
-    $('.devices').empty();
+    // $('.devices').empty();
 
     var now = new Date();
 
-    var downarrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-down"></span> ';
-    var uparrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-up"></span> ';
+    let downarrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-down"></span> ';
+    let uparrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-up"></span> ';
+    let sigicon = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
 
     var oclients = []
     for(var host in clients)
@@ -737,33 +801,101 @@ function devices_update(clients) {
 
     oclients.sort(clientscmp);
 
-    for(var index in oclients) {
-        var client = clients[oclients[index]['mac']];
-        var elapsed = (now.getTime() / 1000) - client['timestamp'];
-        var hostname = client['hostname'] ? client['hostname'] : "(unknown)";
-        var rx = (client['rx'] != undefined) ? client['rx'] : null;
-        var tx = (client['tx'] != undefined) ? client['tx'] : null;
-        var hostclass = (!client['hostname']) ? {'class': 'text-muted darker'} : {};
-        var trclass = (elapsed > 1200) ? {'class': 'offline'} : {}; // 20 min offline
+    $(".devices tr").addClass("discard");
 
+    for(var index in oclients) {
+        let client = clients[oclients[index]['mac']];
+        let id = client['mac-address'].replaceAll(":", "").replaceAll(".", ""); // sometime, it's an ip as key
+
+        let elapsed = (now.getTime() / 1000) - client['timestamp'];
+        let hostname = client['hostname'] ? client['hostname'] : "(unknown)";
+        let rx = (client['rx'] != undefined) ? client['rx'] : null;
+        let tx = (client['tx'] != undefined) ? client['tx'] : null;
+        let hostclass = (!client['hostname']) ? 'text-muted darker' : '';
+        let trclass = (elapsed > 1200) ? 'offline' : ''; // 20 min offline
+
+        if($("#devices-node-" + id).length == 0) {
+            let tr = $("<tr>", {"id": "devices-node-" + id});
+
+            tr.append($('<td>', {'class': 'dd-mac'}).html(client['mac-address']));
+            tr.append($('<td>', {'class': 'dd-ip'}).html(client['ip-address']));
+            tr.append($('<td>', {'class': 'dd-host'}).html(hostname));
+
+            tr.append($('<td>', {'class': ''}).append(
+                $('<span>', {'class': 'dd-rx badge rounded-pill'}).html("...")
+            ));
+            tr.append($('<td>', {'class': ''}).append(
+                $('<span>', {'class': 'dd-tx badge rounded-pill'}).html("...")
+            ));
+
+            tr.append($('<td>', {'class': 'l'}).append(
+                $('<span>', {'class': 'dd-rx-total badge rounded-pill text-bg-dark inactive'}).html("...")
+            ));
+            tr.append($('<td>', {'class': ''}).append(
+                $('<span>', {'class': 'dd-tx-total badge rounded-pill text-bg-dark inactive'}).html("...")
+            ));
+
+            tr.append($('<td>', {'class': ''}).append(
+                $('<span>', {'class': 'dd-wireless-signal badge rounded-pill'})
+            ).append(
+                $('<span>', {'class': 'dd-wireless-rate badge rounded-pill'})
+            ));
+
+            tr.append($('<td>', {'class': 'text-end'}).append(
+                $('<span>', {'class': 'dd-online badge text-bg-dark rounded-pill'}).html(elapsedstr(elapsed.toFixed(0)))
+            ));
+
+            $('.devices').append(tr);
+        }
+
+        $("#devices-node-" + id).removeClass('offline discard').addClass(trclass);
+        $("#devices-node-" + id + " .dd-mac").html(client['mac-address']);
+        $("#devices-node-" + id + " .dd-ip").html(client['ip-address']);
+        $("#devices-node-" + id + " .dd-host").removeClass('text-muted darker').addClass(hostclass).html(hostname);
+
+        $("#devices-node-" + id + " .dd-rx").removeClass(classes_states).addClass(rxtxclass(rx));
+        $("#devices-node-" + id + " .dd-rx").html(downarrow + shortrate(rx));
+        $("#devices-node-" + id + " .dd-tx").removeClass(classes_states).addClass(rxtxclass(tx));
+        $("#devices-node-" + id + " .dd-tx").html(uparrow + shortrate(tx));
+
+        $("#devices-node-" + id + " .dd-rx-total").html(downarrow + autosize(client['total-rx'] / 1024));
+        $("#devices-node-" + id + " .dd-tx-total").html(uparrow + autosize(client['total-tx'] / 1024));
+
+        $("#devices-node-" + id + " .dd-online").html(elapsedstr(elapsed.toFixed(0)));
+
+        if(wireless_clients[client['mac-address']] !== undefined) {
+            let target = wireless_clients[client['mac-address']];
+            let signal = parseFloat(target['rssi']);
+            let sigclass = wireless_signal(signal);
+
+            $("#devices-node-" + id + " .dd-wireless-signal").html(sigicon + signal + ' dBm');
+            $("#devices-node-" + id + " .dd-wireless-signal").addClass(sigclass + ' text-bg-dark');
+            $("#devices-node-" + id + " .dd-wireless-rate").html(target['linkrate'] + ' Mbps');
+            $("#devices-node-" + id + " .dd-wireless-rate").addClass('text-bg-dark');
+        }
+
+        /*
         var tr = $('<tr>', trclass);
         tr.append($('<td>').html(client['mac-address']));
         tr.append($('<td>').html(client['ip-address']));
         tr.append($('<td>', hostclass).html(hostname));
         tr.append($('<td>', {'class': rxtxactive(rx)})
-            .append($('<span>', {'class': rxtxclass(rx) + ' badge'}).html(downarrow + shortrate(rx)))
+            .append($('<span>', {'class': rxtxclass(rx) + ' badge rounded-pill'}).html(downarrow + shortrate(rx)))
         );
         tr.append($('<td>', {'class': rxtxactive(tx)})
-            .append($('<span>', {'class': rxtxclass(tx) + ' badge'}).html(uparrow + shortrate(tx)))
+            .append($('<span>', {'class': rxtxclass(tx) + ' badge rounded-pill'}).html(uparrow + shortrate(tx)))
         );
 
-        var badgeclass = 'badge pull-right';
+        classes_states
+
+        var badgeclass = 'badge text-bg-dark rounded-pill';
         var badgehtml = "---";
 
         var badge = $('<span>', {'class': badgeclass}).html(elapsedstr(elapsed.toFixed(0)));
-        tr.append($('<td>').append(badge));
+        tr.append($('<td>', {'class': 'text-end'}).append(badge));
 
         $('.devices').append(tr);
+        */
     }
 }
 
@@ -804,14 +936,17 @@ function docsis(payload) {
     for(var i in payload['up']) {
         var channel = payload['up'][i];
 
-        var badge = 'badge docsis-value ';
+        var badge = 'badge docsis-value rounded-pill mx-1 ';
 
-        if(channel['txpower'] > 49.5 && channel['txpower'] <= 51)
-            badge += 'text-warning';
+        if(channel['txpower'] > 49.5 && channel['txpower'] <= 51) {
+            badge += 'text-bg-warning';
 
-        if(channel['txpower'] > 51) {
+        } else if (channel['txpower'] > 51) {
             $('.docsis-signal').addClass('system-error');
-            badge += 'text-danger';
+            badge += 'text-bg-danger';
+
+        } else {
+            badge += 'text-bg-dark';
         }
 
         $('.docsis-signal').append($('<span>', {'class': badge}).html(channel['txpower'].toFixed(1)));
@@ -826,7 +961,7 @@ var trafficplotup = null;
 var trafficplotdown = null;
 
 function router_update(node) {
-    $('.router').empty();
+    // $('.router').empty();
     // console.log(node);
 
     if(trafficitems == 0) {
@@ -840,16 +975,18 @@ function router_update(node) {
 
         trafficplotup = $.plot("#chart-upload", [trafficup], {
             series: { color: '#1E90FF' },
-            xaxis: { mode: "time", timezone: "browser", ticks: 3 },
-            yaxis: { min: 0, },
+            xaxis: { mode: "time", timezone: "browser", ticks: 3, show: false},
+            yaxis: { min: 0 },
         });
 
         trafficplotdown = $.plot("#chart-download", [trafficdown], {
             series: { color: '#F86565' },
-            xaxis: { mode: "time", timezone: "browser", ticks: 3 },
-            yaxis: { min: 0, },
+            xaxis: { mode: "time", timezone: "browser", ticks: 3, show: false },
+            yaxis: { min: 0 },
         });
     }
+
+    let possible = "text-bg-danger text-bg-warning text-bg-secondary text-bg-dark";
 
     for(var ifid in node['network']) {
         var intf = node['network'][ifid];
@@ -857,20 +994,25 @@ function router_update(node) {
         if(intf['name'] != 'eth0')
             continue;
 
+        /*
         var tr = $('<tr>');
         tr.append($('<td>').html($('<span>', {'class': 'glyphicon glyphicon-small glyphicon-arrow-down'})));
 
-        var badge = $('<span>', {'class': rxtxclass(intf['rx_rate']) + ' badge'});
+        var badge = $('<span>', {'class': rxtxclass(intf['rx_rate']) + ' badge rounded-pill'});
         badge.html(shortrate(intf['rx_rate']));
         tr.append($('<td>').html(badge));
 
-        var badge = $('<span>', {'class': rxtxclass(intf['tx_rate']) + ' badge'});
+        var badge = $('<span>', {'class': rxtxclass(intf['tx_rate']) + ' badge rounded-pill'});
         badge.html(shortrate(intf['tx_rate']));
         tr.append($('<td>').html(badge));
 
         tr.append($('<td>').html($('<span>', {'class': 'glyphicon glyphicon-small glyphicon-arrow-up'})));
 
         $('.router').append(tr);
+        */
+
+        $("#router-rate .rr-rx").removeClass(possible).addClass(rxtxclass(intf['rx_rate'])).html(shortrate(intf['rx_rate']));
+        $("#router-rate .rr-tx").removeClass(possible).addClass(rxtxclass(intf['tx_rate'])).html(shortrate(intf['tx_rate']));
 
         // update chart
         trafficup = trafficup.slice(1);

@@ -10,8 +10,7 @@
 
     <title>Maxux Dashboard</title>
 
-    <link href="css/bootstrap.dark.min.css" rel="stylesheet">
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/dashboard.css" rel="stylesheet">
 </head>
 
@@ -20,49 +19,45 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
-                            Right now
-                        </h3>
+                <div class="card text-bg-dark mb-3 mb-2">
+                    <div class="card-header">
+                        Right now
                     </div>
-                    <div class="panel-body">
-                        <div class="row row-sensor sensor-28-ffc5fe441603d7">
+                    <div class="card-body">
+                        <div class="row row-sensor sensor-28-ffc5fe441603d7 my-1">
                         <div class="col-lg-4">Desktop</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ff641f43cac675">
+                        <div class="row row-sensor sensor-28-ff641f43cac675 my-1">
                         <div class="col-lg-4">Kitchen</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
-
-                        <div class="row row-sensor sensor-28-3709b812210156">
+                        <div class="row row-sensor sensor-28-3709b812210156 my-1">
                         <div class="col-lg-4">Bedroom</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ff641e93a42b71">
+                        <div class="row row-sensor sensor-28-ff641e93a42b71 my-1">
                         <div class="col-lg-4">Boiler Room</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-8245ca122101dd">
+                        <div class="row row-sensor sensor-28-8245ca122101dd my-1">
                         <div class="col-lg-4">Mezzanine</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
@@ -72,9 +67,8 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="panel panel-default">
-
-                    <div class="panel-body text-center">
+                <div class="card text-bg-dark mb-3 mb-3">
+                    <div class="card-body text-center">
                         <h2 id="current-time">00:00:00</h2>
                         <h3 id="current-date">0000-00-00</h3>
                         <h4 id="current-day">Loading</h4>
@@ -84,15 +78,15 @@
 
             <div class="col-lg-4">
                 <!--
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-heading">
+                        <div class="card-header">
                             <span class="glyphicon glyphicon-globe glyphicon-text"></span>
                             <span id="weather-city">Weather</span>
                             <span class="badge pull-right" id="weather-backtime">Loading</span>
-                        </h3>
+                        </div>
                     </div>
-                    <div class="panel-body weather">
+                    <div class="card-body weather">
                         <div class="row">
                         <div class="col-lg-4 text-center">
                             Outside Temperature
@@ -120,69 +114,62 @@
                     </div>
                 </div>
                 -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
-                            Right now
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Right now
                     </div>
-                    <div class="panel-body">
-                        <div class="row row-sensor sensor-28-ffd3b4021703e8">
+                    <div class="card-body">
+                        <div class="row row-sensor sensor-28-ffd3b4021703e8 my-1">
                         <div class="col-lg-4">Fridge (food)</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-88-00000000000010">
+                        <div class="row row-sensor sensor-28-ff274345160329  my-1">
                         <div class="col-lg-4">Fridge (drink, top)</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-88-00000000000020">
+                        <div class="row row-sensor sensor-28-ffd656471603b4  my-1">
                         <div class="col-lg-4">Fridge (drink, low)</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ff2f0103170457">
+                        <div class="row row-sensor sensor-28-ff2f0103170457  my-1">
                         <div class="col-lg-4">Fridge (freezer)</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
 
-                        <div class="row row-sensor sensor-28-ff23a602170371">
+                        <div class="row row-sensor sensor-28-ff23a602170371  my-1">
                         <div class="col-lg-4">Freezer (large)</div>
-                        <div class="col-lg-5 value"><span class="t"></span></div>
+                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
                         </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
         <div class="row">
             <div class="col-lg-3">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
-                            Rooms
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Rooms
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="chart-container">
                             <div id="chart-28-ffc5fe441603d7" class="chart-placeholder"></div>
                         </div>
@@ -191,14 +178,11 @@
             </div>
 
             <div class="col-lg-3">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
-                            Freezer Temperature
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Freezer Temperature
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="chart-container">
                             <div id="chart-28-ff23a602170371" class="chart-placeholder"></div>
                         </div>
@@ -206,14 +190,11 @@
                 </div>
             </div>
             <div class="col-lg-3">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
-                            Fridge Temperature
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Fridge Temperature
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="chart-container">
                             <div id="chart-28-ffd3b4021703e8" class="chart-placeholder"></div>
                         </div>
@@ -221,14 +202,11 @@
                 </div>
             </div>
             <div class="col-lg-3">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-stats glyphicon-text"></span>
-                            Extra Temperature
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Extra Temperature
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="chart-container">
                             <div id="chart-28-ff641e93a42b71" class="chart-placeholder"></div>
                         </div>
@@ -241,53 +219,41 @@
             <div class="col-lg-2">
             </div>
             <div class="col-lg-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Power (Channel 1)
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Electric Power (Channel 1)
                     </div>
-                    <div class="panel-body power panel-power-watt">
+                    <div class="card-body power card-power-watt">
                         <h2 class="power-value-channel-10"></h2>
                     </div>
                 </div>
             </div>
             <div class="col-lg-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Power (Channel 2)
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Electric Power (Channel 2)
                     </div>
-                    <div class="panel-body power panel-power-watt">
+                    <div class="card-body power card-power-watt">
                         <h2 class="power-value-channel-0"></h2>
                     </div>
                 </div>
             </div>
             <div class="col-lg-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Power (Channel 3)
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Electric Power (Channel 3)
                     </div>
-                    <div class="panel-body power panel-power-watt">
+                    <div class="card-body power card-power-watt">
                         <h2 class="power-value-channel-1"></h2>
                     </div>
                 </div>
             </div>
             <div class="col-lg-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Power (Master)
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Electric Power (Master)
                     </div>
-                    <div class="panel-body panel-body-light power panel-power-watt">
+                    <div class="card-body card-body-light power card-power-watt">
                         <h2 class="power-value-channel-2"></h2>
                     </div>
                 </div>
@@ -298,14 +264,14 @@
 
             <!--
             <div class="col-lg-5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-heading">
+                        <div class="card-header">
                             <span class="glyphicon glyphicon-flash glyphicon-text"></span>
                             Electric Channels status (GPIO, Raspberry Pi)
-                        </h3>
+                        </div>
                     </div>
-                    <div class="panel-body power">
+                    <div class="card-body power">
                         <div class="chart-container">
                             <div id="gpio-table" class="chart-placeholder"></div>
                         </div>
@@ -317,14 +283,11 @@
 
         <div class="row">
             <div class="col-lg-7">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Power Usage (30 days, Wh)
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Electric Power Usage (30 days, Wh)
                     </div>
-                    <div class="panel-body power">
+                    <div class="card-body power">
                         <div class="chart-container">
                             <div id="chart-power-backlog-70days" class="chart-placeholder"></div>
                         </div>
@@ -332,14 +295,11 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Power Usage (today, Wh)
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Electric Power Usage (today, Wh)
                     </div>
-                    <div class="panel-body power">
+                    <div class="card-body power">
                         <div class="chart-container">
                             <div id="chart-power-backlog" class="chart-placeholder"></div>
                         </div>
@@ -350,23 +310,20 @@
 
         <div class="row">
             <div class="col-lg-12">
-                <div class="panel panel-default panel-final">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-info-sign glyphicon-text"></span>
-                            Extra Sensors
-                        </h3>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Extra Sensors
                     </div>
-                    <div class="panel-body extrasensors">
-                        <div class="col-lg-4 sensor-28-1f55b4122101e7">
-                            <div class="col-lg-2">Terrace:</div>
+                    <div class="card-body row extrasensors">
+                        <div class="col-lg-4 row sensor-28-1f55b4122101e7">
+                            <div class="col-lg-2">Terrace</div>
                             <div class="col-lg-2"><span class="value"><span class="t"></span></div>
                             <div class="col-lg-8 updated">
                                 <span class="badge">Now</span>
                             </div>
                         </div>
-                        <div class="col-lg-4 sensor-28-ffc0d7021703c2">
-                            <div class="col-lg-3">Sound Rack:</div>
+                        <div class="col-lg-4 row sensor-28-ffc0d7021703c2">
+                            <div class="col-lg-3">Sound Rack</div>
                             <div class="col-lg-2"><span class="value"><span class="t"></span></div>
                             <div class="col-lg-7 updated">
                                 <span class="badge">Now</span>
@@ -401,7 +358,7 @@
     <script src="js/jquery.flot.curvedlines.js"></script>
     <script src="js/jquery.flot.categories.js"></script>
     <script src="js/jquery.flot.stack.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 

@@ -1,27 +1,36 @@
 html {
     background-image: url(../resources/wallpaper/default.jpg);
     background-size: cover;
-    height: 100%;
+    background-attachment: fixed;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none;
 }
 
 body {
+    min-height: 100vh;
     padding: 15px;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
 }
 
-/* background fix */
 #wrapper {
     background: transparent !important;
 }
 
-.panel {
-    background: rgba(50, 50, 50, 0.6) !important;
+.card {
+    --bs-card-spacer-y: 0.4rem;
+    --bs-card-cap-bg: rgba(255, 255, 255, 0.05);
+}
+
+:root {
+    --bs-bg-opacity: 0.4;
 }
 
 #current-time {
     margin-top: 0;
-    font-size: 106px;
+    font-size: 88px;
 }
 
 #current-date {
@@ -32,23 +41,10 @@ body {
     font-size: 20px;
 }
 
-.glyphicon-text {
-    padding-right: 6px;
-}
-
-.weather h1 {
-    margin-top: 10px;
-    font-size: 40px;
-}
-
-.weather .unit {
-    font-size: 25px;
-}
-
 .power h2 {
     text-align: center;
     margin: 0;
-    font-size: 60px;
+    font-size: 50px;
 }
 
 .power .unit {
@@ -60,16 +56,6 @@ body {
     padding-left: 15px;
 }
 
-/* GPIO */
-.gpio-item {
-    padding: 5px;
-}
-
-.gpio-item.online {
-    font-weight: bold;
-}
-
-/* Charts */
 .chart-container {
     height: 160px;
 }
@@ -83,7 +69,7 @@ body {
     height: 100%;
 }
 
-/* Sensors List */
+/*
 .row-sensor {
     font-size: 130%;
     padding-top: 5px;
@@ -155,3 +141,4 @@ body {
         font-size: 25px;
     }
 }
+*/
