@@ -39,6 +39,12 @@ while True:
                 devices[device]['rx'] = live['rx']
                 devices[device]['tx'] = live['tx']
                 devices[device]['timestamp'] = live['active']
+                devices[device]["total-rx"] = live['total-rx']
+                devices[device]["total-tx"] = live['total-tx']
+
+                if devices[device]['hostname']:
+                    devices[device]['hostname'] = devices[device]['hostname'].replace(".home.maxux.net", "")
+
                 dhcpfound = True
                 break
 
@@ -46,10 +52,12 @@ while True:
             devices[live['addr']] = {
                 "timestamp": live['active'],
                 "mac-address": live['macaddr'],
-                "hostname": live['host'] if 'host' in live else None,
+                "hostname": live['host'].replace(".home.maxux.net", "") if 'host' in live else None,
                 "ip-address": live['addr'],
                 "rx": live['rx'],
                 "tx": live['tx'],
+                "total-rx": live['total-rx'],
+                "total-tx": live['total-tx'],
             }
 
     print("[+] local devices checker: %d devices found" % len(devices))
