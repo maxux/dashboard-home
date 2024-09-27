@@ -668,22 +668,40 @@ function wireless_online(value) {
 
     var hm = hrsmin_from_sec(value);
 
-    return days + "d " + hm[0] + "h " + hm[1] + "m";
+    return days + "d " + hm[0] + "h "; // + hm[1] + "m";
 }
 
 var wireless_last_update = 0;
 var wireless_clients = {};
-let wireless_short_ssid = {
+const wireless_short_ssid = {
     "Maxux Network (2.4G)": "2G",
     "Maxux Network (5.2G)": "5G",
     "Maxux Legacy": "LL",
 };
 
-let classes_states = 'text-success text-warning text-danger text-info text-muted ' +
+const classes_states = 'text-success text-warning text-danger text-info text-muted ' +
     'bg-success bg-warning bg-info bg-danger ' +
     'text-bg-success text-bg-warning text-bg-info text-bg-danger text-bg-secondary text-bg-dark ' +
     'active inactive';
 
+function wireless_update(clients, timestamp) {
+    // console.log(clients);
+
+    // flushing wireless clients
+    wireless_clients = {}
+
+    for(let id in clients) {
+        let client = clients[id];
+        let keyid = client['address'].toLowerCase();
+
+        // update global table
+        wireless_clients[keyid] = client;
+    }
+
+    wireless_last_update = timestamp;
+}
+
+/*
 function wireless_update(clients, timestamp) {
     // console.log(clients);
     wireless_clients = {}
@@ -704,7 +722,6 @@ function wireless_update(clients, timestamp) {
         // no more wireless table to show
         continue;
 
-        /*
         let online = wireless_online(client['online']);
         let signal = parseFloat(client['rssi']);
         let sigclass = wireless_signal(signal);
@@ -731,23 +748,22 @@ function wireless_update(clients, timestamp) {
         $("#wireless-node-" + bssid + " .ww-rate").html(client['linkrate'] + ' Mbps');
         $("#wireless-node-" + bssid + " .ww-online").html(online);
         $("#wireless-node-" + bssid + " .ww-signal").html(sigspan + signal + ' dBm').removeClass(classes_states).addClass(sigclass);
-        */
 
-        /*
-        tr.append($('<td>').html(freqs[client['ssid']]));
-        tr.append($('<td>').html(client['address']));
-        // tr.append($('<td>').html(client['ip']));
-        tr.append($('<td>').html('Rate: ' + client['linkrate'] + ' Mbps'));
-        tr.append($('<td>', wireless_signal(signal)).html(sigspan + signal + ' dBm'));
-        tr.append($('<td>').html('Online: ' + online));
 
-        $('.wireless').append(tr);
-        */
+        // tr.append($('<td>').html(freqs[client['ssid']]));
+        // tr.append($('<td>').html(client['address']));
+        // // tr.append($('<td>').html(client['ip']));
+        // tr.append($('<td>').html('Rate: ' + client['linkrate'] + ' Mbps'));
+        // tr.append($('<td>', wireless_signal(signal)).html(sigspan + signal + ' dBm'));
+        // tr.append($('<td>').html('Online: ' + online));
+
+        // $('.wireless').append(tr);
     }
 
     // commit last update
     wireless_last_update = timestamp;
 }
+*/
 
 function rxtxclass(value) {
     var active = (value < 8 * 1024) ? ' inactive' : ' active';
@@ -771,40 +787,22 @@ function rxtxactive(value) {
     return 'active';
 }
 
-function clientscmp(a, b) {
-    a = a['addr'].split('.');
-    b = b['addr'].split('.');
-
-    for(var i = 0; i < a.length; i++) {
-        if((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i])))
-            return -1;
-
-        else if(a[i] > b[i])
-            return 1;
-    }
-
-    return 0;
-}
-
 function devices_update(clients) {
-    // $('.devices').empty();
-
     var now = new Date();
 
     let downarrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-down"></span> ';
     let uparrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-up"></span> ';
     let sigicon = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
 
-    var oclients = []
-    for(var host in clients)
-        oclients.push({'addr': clients[host]['ip-address'], 'mac': host});
+    $(".devices div.d-flex").addClass("discard");
 
-    oclients.sort(clientscmp);
+    for(let index in clients) {
+        // ip address as key, this is malformed, ignoring
+        if(index.indexOf('.') > -1)
+            continue;
 
-    $(".devices tr").addClass("discard");
-
-    for(var index in oclients) {
-        let client = clients[oclients[index]['mac']];
+        const client = clients[index];
+        let order = client['ip-address'].split(".")[3];
         let id = client['mac-address'].replaceAll(":", "").replaceAll(".", ""); // sometime, it's an ip as key
 
         let elapsed = (now.getTime() / 1000) - client['timestamp'];
@@ -814,34 +812,39 @@ function devices_update(clients) {
         let hostclass = (!client['hostname']) ? 'text-muted darker' : '';
         let trclass = (elapsed > 1200) ? 'offline' : ''; // 20 min offline
 
+        let totalrx = client['total-rx'] ? autosize(client['total-rx'] / 1024) : "--";
+        let totaltx = client['total-tx'] ? autosize(client['total-tx'] / 1024) : "--";
+
         if($("#devices-node-" + id).length == 0) {
-            let tr = $("<tr>", {"id": "devices-node-" + id});
+            let tr = $("<div>", {"id": "devices-node-" + id, "class": "d-flex", "style": "order: " + order});
 
-            tr.append($('<td>', {'class': 'dd-mac'}).html(client['mac-address']));
-            tr.append($('<td>', {'class': 'dd-ip'}).html(client['ip-address']));
-            tr.append($('<td>', {'class': 'dd-host'}).html(hostname));
+            tr.append($('<div>', {'class': 'dd-mac'}).html(client['mac-address']));
+            tr.append($('<div>', {'class': 'dd-ip'}).html("..."));
+            tr.append($('<div>', {'class': 'dd-host'}).html("..."));
 
-            tr.append($('<td>', {'class': ''}).append(
+            tr.append($('<div>', {'class': 'dd-rx-parent'}).append(
                 $('<span>', {'class': 'dd-rx badge rounded-pill'}).html("...")
             ));
-            tr.append($('<td>', {'class': ''}).append(
+            tr.append($('<div>', {'class': 'dd-tx-parent'}).append(
                 $('<span>', {'class': 'dd-tx badge rounded-pill'}).html("...")
             ));
 
-            tr.append($('<td>', {'class': 'l'}).append(
+            tr.append($('<div>', {'class': 'dd-rx-total-parent'}).append(
                 $('<span>', {'class': 'dd-rx-total badge rounded-pill text-bg-dark inactive'}).html("...")
             ));
-            tr.append($('<td>', {'class': ''}).append(
+            tr.append($('<div>', {'class': 'dd-tx-total-parent'}).append(
                 $('<span>', {'class': 'dd-tx-total badge rounded-pill text-bg-dark inactive'}).html("...")
             ));
 
-            tr.append($('<td>', {'class': ''}).append(
-                $('<span>', {'class': 'dd-wireless-signal badge rounded-pill'})
-            ).append(
-                $('<span>', {'class': 'dd-wireless-rate badge rounded-pill'})
-            ));
+            tr.append($('<div>', {'class': 'dd-wireless'})
+                .append($('<span>', {'class': 'dd-wireless-network badge rounded-pill text-bg-dark'}))
+                .append($('<span>', {'class': 'dd-wireless-signal badge rounded-pill'}))
+                .append($('<span>', {'class': 'dd-wireless-online badge rounded-pill'}))
+                .append($('<span>', {'class': 'dd-wireless-rate badge rounded-pill'}))
+                .append($('<span>', {'class': 'dd-wireless-login badge rounded-pill text-info'}))
+            );
 
-            tr.append($('<td>', {'class': 'text-end'}).append(
+            tr.append($('<div>', {'class': 'dd-online-parent text-end'}).append(
                 $('<span>', {'class': 'dd-online badge text-bg-dark rounded-pill'}).html(elapsedstr(elapsed.toFixed(0)))
             ));
 
@@ -858,21 +861,34 @@ function devices_update(clients) {
         $("#devices-node-" + id + " .dd-tx").removeClass(classes_states).addClass(rxtxclass(tx));
         $("#devices-node-" + id + " .dd-tx").html(uparrow + shortrate(tx));
 
-        $("#devices-node-" + id + " .dd-rx-total").html(downarrow + autosize(client['total-rx'] / 1024));
-        $("#devices-node-" + id + " .dd-tx-total").html(uparrow + autosize(client['total-tx'] / 1024));
+        $("#devices-node-" + id + " .dd-rx-total").html(downarrow + totalrx);
+        $("#devices-node-" + id + " .dd-tx-total").html(uparrow + totaltx);
 
         $("#devices-node-" + id + " .dd-online").html(elapsedstr(elapsed.toFixed(0)));
 
         if(wireless_clients[client['mac-address']] !== undefined) {
             let target = wireless_clients[client['mac-address']];
+
             let signal = parseFloat(target['rssi']);
             let sigclass = wireless_signal(signal);
+            let network = wireless_short_ssid[target['ssid']];
+            let online = wireless_online(target['online']);
+            let onstyle = (target['online'] > 3600) ? "text-bg-dark" : "text-bg-light";
 
-            $("#devices-node-" + id + " .dd-wireless-signal").html(sigicon + signal + ' dBm');
+            $("#devices-node-" + id + " .dd-wireless-network").html(network);
+            // $("#devices-node-" + id + " .dd-wireless-signal").html(sigicon + signal + ' dBm');
+            $("#devices-node-" + id + " .dd-wireless-signal").html(signal + ' dBm');
             $("#devices-node-" + id + " .dd-wireless-signal").addClass(sigclass + ' text-bg-dark');
             $("#devices-node-" + id + " .dd-wireless-rate").html(target['linkrate'] + ' Mbps');
             $("#devices-node-" + id + " .dd-wireless-rate").addClass('text-bg-dark');
+            $("#devices-node-" + id + " .dd-wireless-online").html(online);
+            $("#devices-node-" + id + " .dd-wireless-online").addClass(onstyle);
+
+            if(target['login'])
+                $("#devices-node-" + id + " .dd-wireless-login").html(target['login']);
         }
+
+        $(".devices div.d-flex.discard .dd-host").html("-- EXPIRED --");
 
         /*
         var tr = $('<tr>', trclass);

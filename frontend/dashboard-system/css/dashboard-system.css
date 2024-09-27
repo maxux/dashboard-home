@@ -33,7 +33,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 .table-sm .badge {
-    padding: 0.4em 0.7em 0.4em 0.7em;
+    padding: 0.25em 0.5rem 0.25rem 0.5rem;
 }
 
 /* background fix */
@@ -89,30 +89,43 @@ table.wireless td:first-child {
 }
 
 /* devices */
-table.devices {
+.devices {
     font-size: 14px;
     font-family: monospace;
-    line-height: 10px;
+    line-height: 18px;
 }
 
-table.devices td:nth-child(1) {
-    width: 12em;
+.devices .dd-mac {
+    width: 13em;
 }
 
-table.devices td:nth-child(2) {
-    width: 10em;
+.devices .dd-ip {
+    width: 11em;
 }
 
-table.devices td:nth-child(4), table.devices td:nth-child(5) {
-    width: 8em;
+.devices .dd-host {
+    width: 14em;
 }
 
-table.devices td:nth-child(6) {
+.devices .dd-tx-parent, .devices .dd-rx-parent,
+.devices .dd-rx-total-parent, .devices .dd-tx-total-parent {
     width: 9em;
 }
 
-table.devices .inactive {
+.devices .dd-wireless {
+    width: 20em;
+}
+
+.devices .dd-online-parent {
+    width: 8em;
+}
+
+.devices .inactive {
     opacity: 0.3;
+}
+
+.devices .offline {
+    opacity: 0.5;
 }
 
 table.router td:first-child, table.router td:last-child {
@@ -146,10 +159,6 @@ table.router td {
 
 .rtinfo .text-danger {
     animation: none !important;
-}
-
-table.devices .offline {
-    opacity: 0.5;
 }
 
 .darker {
