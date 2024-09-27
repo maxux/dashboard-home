@@ -48,7 +48,8 @@ class LAPACMonitor:
                 'ssidmac': rawclients[zone + 2],
                 'linkrate': float(rawclients[zone + 3]),
                 'rssi': float(rawclients[zone + 4]),
-                'online': int(rawclients[zone + 5])
+                'online': int(rawclients[zone + 5]),
+                'login': None,
             })
 
         return clients

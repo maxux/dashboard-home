@@ -1,4 +1,5 @@
 import time
+import pymysql
 from modules.lapac import *
 from config import dashconfig
 from dashboard import DashboardSlave
@@ -11,21 +12,6 @@ monitor = LAPACMonitor(
     dashconfig['lapac-password']
 )
 
-"""
-radios = monitor.allstats()
-
-for radio in radios:
-    for intf in radio:
-        if radio[intf]["transmit"]["packets"] == 0:
-            continue
-
-        print(intf)
-        print(radio[intf]["transmit"]["bytes"] / (1024 * 1024))
-        print(radio[intf]["receive"]["bytes"] / (1024 * 1024))
-
-    # print(radio)
-"""
-
 while True:
     print("[+] wireless: updating")
 
@@ -35,6 +21,22 @@ while True:
 
     except Exception as e:
         print(e)
+
+    db = pymysql.connect(
+        host=dashconfig['wireless-db']['host'],
+        user=dashconfig['wireless-db']['user'],
+        password=dashconfig['wireless-db']['pass'],
+        database=dashconfig['wireless-db']['base'],
+        autocommit=True
+    )
+
+    cursor = db.cursor()
+    cursor.execute("SELECT username, callingstationid FROM radacct")
+
+    for row in cursor.fetchall():
+        for client in monitor.clients:
+            if row[1].replace("-", "") == client['address'].replace(":", ""):
+                client["login"] = row[0]
 
     payload = {
         'update': int(time.time()),
