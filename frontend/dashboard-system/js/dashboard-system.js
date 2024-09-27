@@ -676,7 +676,8 @@ var wireless_clients = {};
 const wireless_short_ssid = {
     "Maxux Network (2.4G)": "2G",
     "Maxux Network (5.2G)": "5G",
-    "Maxux Legacy": "LL",
+    "Maxux Legacy": "LE",
+    "Maxux Legacy (5.2G - Trusted)": "TR",
 };
 
 const classes_states = 'text-success text-warning text-danger text-info text-muted ' +
