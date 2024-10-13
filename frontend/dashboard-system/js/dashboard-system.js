@@ -807,7 +807,7 @@ function devices_update(clients) {
     let uparrow = '<span class="glyphicon glyphicon-small glyphicon-arrow-up"></span> ';
     let sigicon = '<span class="glyphicon glyphicon-small glyphicon-signal"></span> ';
 
-    $(".devices div.d-flex").addClass("discard");
+    $(".devices .device-node").addClass("discard");
 
     for(let index in clients) {
         // ip address as key, this is malformed, ignoring
@@ -829,7 +829,7 @@ function devices_update(clients) {
         let totaltx = client['total-tx'] ? autosize(client['total-tx'] / 1024) : "--";
 
         if($("#devices-node-" + id).length == 0) {
-            let tr = $("<div>", {"id": "devices-node-" + id, "class": "d-flex", "style": "order: " + order});
+            let tr = $("<div>", {"id": "devices-node-" + id, "class": "d-flex device-node", "style": "order: " + order});
 
             tr.append($('<div>', {'class': 'dd-mac'}).html(client['mac-address']));
             tr.append($('<div>', {'class': 'dd-ip'}).html("..."));
@@ -864,7 +864,8 @@ function devices_update(clients) {
             $('.devices').append(tr);
         }
 
-        $("#devices-node-" + id).removeClass('offline discard').addClass(trclass);
+        $("#devices-node-" + id).removeClass('offline').removeClass('discard').addClass(trclass);
+
         $("#devices-node-" + id + " .dd-mac").html(client['mac-address']);
         $("#devices-node-" + id + " .dd-ip").html(client['ip-address']);
         $("#devices-node-" + id + " .dd-host").removeClass('text-muted darker').addClass(hostclass).html(hostname);
@@ -901,8 +902,6 @@ function devices_update(clients) {
                 $("#devices-node-" + id + " .dd-wireless-login").html(target['login']);
         }
 
-        $(".devices div.d-flex.discard .dd-host").html("-- EXPIRED --");
-
         /*
         var tr = $('<tr>', trclass);
         tr.append($('<td>').html(client['mac-address']));
@@ -926,6 +925,9 @@ function devices_update(clients) {
         $('.devices').append(tr);
         */
     }
+
+    // cleaning expired entries
+    $(".devices .discard").remove();
 }
 
 var dnsentries = [];
