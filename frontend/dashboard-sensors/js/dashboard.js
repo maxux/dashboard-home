@@ -263,7 +263,7 @@ var socket;
 var poweriter = 0;
 
 function connect() {
-    socket = new WebSocket("ws://" + window.location.hostname + ":30501/");
+    socket = new WebSocket("wss://" + window.location.hostname + "/websocket/dashboard");
 
     socket.onopen = function() {
         console.log("websocket open");
