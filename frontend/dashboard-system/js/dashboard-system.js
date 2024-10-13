@@ -623,12 +623,24 @@ function ping_update(ping) {
         badge = {'class': 'badge text-bg-danger'};
     }
 
+    var latval = 0;
+
+    if(latency >= 100) {
+        latval = latency.toFixed(0);
+
+    } else if(latency >= 10) {
+        latval = latency.toFixed(1);
+
+    } else {
+        latval = latency.toFixed(2);
+    }
+
     // var tr = $('<tr>');
     // tr.append($('<td>').html($('<small>').html(ping['name'])));
     // tr.append($('<td>').html($('<span>', {'class': 'glyphicon ' + status})));
     // tr.append($('<td>').html($('<span>', badge).html(latency.toFixed(2) + ' ms')));
     $('.ping-' + clname).removeClass('system-error');
-    $('.ping-' + clname).html($('<span>', badge).html(latency.toFixed(2) + ' ms'));
+    $('.ping-' + clname).html($('<span>', badge).html(latval + ' ms'));
 }
 
 function wireless_signal(value) {
