@@ -34,10 +34,25 @@ var localpower = {
     'lastupdate': 0,
 };
 
+// extracted from backlog python code
+let sensorsgroups = {
+    // Desktop [Desktop, Kitchen, Bedroom]
+    '28-ffc5fe441603d7': ['28-ffc5fe441603d7', '28-ff641f43cac675', '28-3709b812210156'],
+
+    // Freezer: [Freezer (large), Freezer (small)]
+    '28-ff23a602170371': ['28-ff23a602170371', '28-ff2f0103170457'],
+
+    // Fridge: [Fridge (food), Fridge (drink, top), Fridge (drink, low)]
+    '28-ffd3b4021703e8': ['28-ffd3b4021703e8', '28-ff274345160329', '28-ffd656471603b4'],
+
+    // Boiler Room: [Boiler Room, Mezzanine]
+    '28-ff641e93a42b71': ['28-ff641e93a42b71', '28-8245ca122101dd'],
+};
+
 var localsensors =  {
-    "28-ff641e93a42b71": { // utility-room
+    "28-ff641e93a42b71": { // servers-room
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
-        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'min': 15, 'max': 35, 'color': '#FF6B1A', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
     "10-000802776315": {
@@ -50,19 +65,19 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#D5ACDE', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-ff2f0103170457": {
+    "28-ff2f0103170457": { // fridge (freezer)
         'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
-        'min': -32, 'max': -15, 'color': '#E87851', 'threshold': -18,
+        'min': -32, 'max': -15, 'color': '#00ADA9', 'threshold': -18,
         'timestamp': 0, 'value': 0
     },
-    "28-ff23a602170371": {
+    "28-ff23a602170371": { // freezer (large)
         'high': -14, 'warn': -18, 'normal': -26, 'low': -32,
-        'min': -28, 'max': -10, 'color': '#E87851', 'threshold': -18,
+        'min': -25, 'max': -5, 'color': '#FFC636', 'threshold': -18,
         'timestamp': 0, 'value': 0
     },
-    "28-ffd3b4021703e8": {
+    "28-ffd3b4021703e8": { // fridge (food)
         'high': 9,   'warn': 5.5, 'normal': 2,   'low': 1,
-        'min': 0, 'max': 20, 'color': '#295987', 'threshold': 8,
+        'min': 0, 'max': 20, 'color': '#A2A632', 'threshold': 8,
         'timestamp': 0, 'value': 0
     },
     "28-ffad2702170593": { // kitchen (old)
@@ -72,40 +87,40 @@ var localsensors =  {
     },
     "28-ff641f43cac675": { // kitchen (new)
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
-        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'min': 15, 'max': 35, 'color': '#90A19D', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
     "28-ffc5fe441603d7": { // desktop
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
-        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'min': 15, 'max': 35, 'color': '#196774', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
     "28-3709b812210156": { // bedroom
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
-        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'min': 15, 'max': 35, 'color': '#F0941F', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-8245ca122101dd": {
+    "28-8245ca122101dd": { // mezzanine
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
-        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'min': 15, 'max': 35, 'color': '#00B3AD', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-ff274345160329": {
+    "28-ff274345160329": { // fridge drink (top)
         'high': 18,  'warn': 25,  'normal': 17,  'low': 12,
-        'min': 10, 'max': 20, 'color': '#649564', 'threshold': 30,
+        'min': 10, 'max': 20, 'color': '#4F81F7', 'threshold': 30,
         'timestamp': 0, 'value': 0,
     },
-    "28-ffd656471603b4": {
+    "28-ffd656471603b4": { // fridge drink (low)
         'high': 15,  'warn': 10,  'normal': 4,  'low': 1,
-        'min': 0, 'max': 20, 'color': '#649564', 'threshold': 30,
+        'min': 0, 'max': 20, 'color': '#FF4858', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-1f55b4122101e7": {
+    "28-1f55b4122101e7": { //
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-ffc0d7021703c2": {
+    "28-ffc0d7021703c2": { //
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
@@ -188,6 +203,14 @@ function sensor_color(id, value) {
 }
 
 function update_sensor(sensor) {
+    $('div.sensor-' + sensor['id'] + ' .sname').css("color", sensor['color']);
+
+    /*
+    $('div.sensor-' + sensor['id'] + ' .sname')
+        .css("border-left", "solid 6px " + sensor['color'])
+        .css("padding-left", "8px");
+    */
+
     $('div.sensor-' + sensor['id'] + ' .value span.t').attr("class", "t");
     $('div.sensor-' + sensor['id'] + ' .value span.t').addClass(sensor_color(sensor['id'], sensor['value']));
     $('div.sensor-' + sensor['id'] + ' .value span.t').html(sensor['value'].toFixed(2) + '°C');
@@ -329,26 +352,43 @@ function connect() {
             */
 
             case "sensors-backlog":
-                console.log(json);
                 var id = json['payload']["id"];
 
                 if(localsensors[id] == undefined)
                     break;
 
+                if(sensorsgroups[id] == undefined)
+                    break;
+
+                // colors lines based on sensor color defined
+                var colors = [];
+                for(let i in sensorsgroups[id])
+                    colors.push(localsensors[sensorsgroups[id][i]]['color']);
+
                 $.plot("#chart-" + id, json['payload']['serie'], {
+                    colors: colors,
                     series: {
                         // color: "#AD2222",
-                        threshold: {
+                        // threshold: {
                             // below: localsensors[id]['threshold'],
                             // color: localsensors[id]['color'],
-                        },
+                        // },
                     },
-                    xaxis: { mode: "time", timezone: "browser" },
+                    xaxis: {
+                        mode: "time",
+                        timezone: "browser",
+                        tickSize: [4, "hour"],
+                        align: "center",
+                    },
                     yaxis: {
                         min: localsensors[id]['min'],
                         max: localsensors[id]['max'],
-                        tickFormatter: function(v, axis) { return v.toFixed(1) + " °C"; }
+                        tickFormatter: function(v, axis) { return v.toFixed(0) + "°C"; },
                     },
+                    grid: {
+                        borderColor: "#222222",
+                        labelMargin: 10,
+                    }
                 });
             break;
 
@@ -382,14 +422,25 @@ function connect() {
             case "power-backlog":
                 $.plot("#chart-power-backlog", [json['payload']], {
                     series: {
-                        color: "#4C7DAD",
+                        color: "#00ABBD",
                         bars: {
                             show: true,
-                            barWidth: 0.6,
+                            fill: true,
+                            barWidth: 0.75,
                             align: "center"
-                        }
+                        },
                     },
-                    xaxis: { mode: "categories", tickLength: 0 }
+                    xaxis: {
+                        mode: "categories",
+                        tickLength: 0,
+                        labelHeight: 18,
+                    },
+                    yaxis: {
+                    },
+                    grid: {
+                        borderColor: "#222222",
+                        labelMargin: 10,
+                    },
                 });
             break;
 
@@ -419,16 +470,30 @@ function connect() {
                 var serie = prettifyday(json['payload']);
 
                 $.plot("#chart-power-backlog-70days", serie, {
-                    colors: ["#6792BD", "#3E5C78", "#7C8A96"],
+                    colors: ["#26C4A5", "#ACE08C", "#F2B652"],
                     series: {
                         stack: true,
                         bars: {
                             show: true,
-                            barWidth: 0.8,
-                            align: "center"
+                            barWidth: 0.75,
+                            align: "center",
                         },
                     },
-                    xaxis: { mode: "categories", tickLength: 0 }
+                    xaxis: {
+                        mode: "categories",
+                        tickLength: 0,
+                        ticks: 2,
+                        tickSize: 2,
+                        tickFormatter: function(v, axis) { return Object.keys(axis.categories)[v]; },
+                        labelHeight: 18,
+                    },
+                    yaxis: {
+                        autoscaleMargin: null,
+                    },
+                    grid: {
+                        borderColor: "#222222",
+                        labelMargin: 10,
+                    },
                 });
             break;
 
