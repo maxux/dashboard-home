@@ -26,10 +26,10 @@ class DashboardSlave():
 class DashboardServer():
     def __init__(self):
         self.clients = {}
+        self.hosts = {}
         self.payloads = {}
 
     # privacy handler
-    """
     def privatefix(self, type, payload):
         if type == 'devices':
             clients = {}
@@ -67,48 +67,11 @@ class DashboardServer():
             return payload
 
         return payload
-    """
 
-    """
-    async def wsbroadcast(self, type, payload):
-        if not len(self.wsclients):
-            return
-
-        goodcontent = json.dumps({"type": type, "payload": payload})
-
-        for client in list(self.wsclients):
-            # if not client.open:
-            #    continue
-
-            content = goodcontent
-
-            # replacing payload with filtered contents if needed
-            if not client.remote_address[0].startswith(dashconfig['trusted-prefix']):
-                # doesn't forward dns queries to foreign clients
-                if type == "dnsquery":
-                    continue
-
-                fixedpayload = self.privatefix(type, payload)
-                content = json.dumps({"type": type, "payload": fixedpayload})
-
-
-            try:
-                await client.send(content)
-
-            except websockets.exceptions.ConnectionClosedOK:
-                print(e)
-                self.wsclients.remove(client)
-
-            except Exception as e:
-                traceback.print_exc()
-                print(e)
-    """
-
-    def format_payload(self, websocket, type, payload):
-        """
-        if not websocket.remote_address[0].startswith(dashconfig['trusted-prefix']):
+    def format_payload(self, clientid, type, payload):
+        if not self.hosts[clientid].startswith(dashconfig['trusted-prefix']):
+            print(f"[+] privacy: fixing for: {self.hosts[clientid]}")
             payload = self.privatefix(type, payload)
-        """
 
         content = json.dumps({"type": type, "payload": payload})
         return content
@@ -134,22 +97,27 @@ class DashboardServer():
                 }
 
                 for clientid in self.clients:
-                    client = self.clients[clientid]
-                    payload = self.format_payload(client, handler['id'], handler['payload'])
-                    await client.send(payload)
+                    payload = self.format_payload(clientid, handler['id'], handler['payload'])
+                    await self.clients[clientid].send(payload)
 
     async def websocket_handler(self, websocket):
         clientid = str(uuid.uuid4())
         print(f"[+] websocket: new client: {clientid}")
 
         try:
+            clienthost = "UNKNOWN"
+
+            if 'X-Real-IP' in websocket.request.headers:
+                clienthost = websocket.request.headers['X-Real-IP']
+
+            self.hosts[clientid] = clienthost
             self.clients[clientid] = websocket
 
             for id in self.payloads:
                 item = self.payloads[id]
                 print("[+] sending backlog: %s (%s)" % (id, item['id']))
 
-                payload = self.format_payload(websocket, item['id'], item['payload'])
+                payload = self.format_payload(clientid, item['id'], item['payload'])
                 await websocket.send(payload)
 
             # request a quick latency checking
@@ -168,6 +136,7 @@ class DashboardServer():
             if clientid in self.clients:
                 print(f"[+][{clientid}] cleaning up clients list")
                 del self.clients[clientid]
+                del self.hosts[clientid]
 
     async def process(self):
         # fetching instance settings
