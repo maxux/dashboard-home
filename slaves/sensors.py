@@ -1,16 +1,9 @@
-import asyncio
 import datetime
 import time
 import random
-import requests
-import json
-import sqlite3
-import subprocess
-import logging
 import redis
-import inspect
 import pymysql
-from flask import Flask, request, session, redirect, render_template, abort, make_response, jsonify, g
+import traceback
 from config import dashconfig
 from dashboard import DashboardSlave
 
@@ -19,9 +12,7 @@ class DashboardSensors():
         self.sensors_last = {}
         self.sensors_id = dashconfig['sensors-id']
 
-        self.app = Flask("dashboard-sensors")
-
-        self.power = {1000: {
+        self.power = {100: {
             'timestamp': 0,
             'value': 0,
         }}
@@ -29,8 +20,10 @@ class DashboardSensors():
         self.slave_sensors = DashboardSlave("sensors")
         self.slave_power = DashboardSlave("power")
 
-    def remote_database_cursor(self):
-        db_sensors = pymysql.connect(
+    # dropped crappy ugly http server
+
+    def remote_database(self):
+        db = pymysql.connect(
             host=dashconfig['db-sensors-host'],
             user=dashconfig['db-sensors-user'],
             password=dashconfig['db-sensors-pass'],
@@ -38,82 +31,181 @@ class DashboardSensors():
             autocommit=True
         )
 
-        return db_sensors.cursor()
+        return db
 
-    def httpd_routes(self, app):
-        @app.route("/sensors/<name>/<timestamp>/<value>")
-        def httpd_routes_sensor(name, timestamp, value):
-            print("[+] sensors: %s (%s): value: %s" % (name, timestamp, value))
+    def power_summary_save(self, timewin, phase, value):
+        db = self.remote_database()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
 
-            cursor = self.remote_database_cursor()
+        data = {
+            "timewin": timewin,
+            "value": value,
+            "phase": phase
+        }
 
-            rows = (name)
-            cursor.execute("SELECT value, timestamp FROM sensors WHERE id = %s ORDER BY timestamp DESC LIMIT 1", rows)
-            previous = cursor.fetchone()
-            if previous != None:
-                timediff = int(time.time()) - int(datetime.datetime.timestamp(previous[1]))
-                valdiff = abs(previous[0] - int(value))
+        print(f"[+] database: saving aggregated")
+        cursor.execute("""
+            INSERT IGNORE INTO power_summary (timewin, phase, value)
+            VALUES (%(timewin)s, %(phase)s, %(value)s)
 
-                # if time differs more than 5 min, ignoring difference of temperature
-                if timediff < 300:
-                    if valdiff > 5000:
-                        print(f"[-] discarding value, temperature difference too high [{valdiff}]")
-                        return jsonify({})
+        """, data)
 
-            rows = (name, int(timestamp), float(value))
-            cursor.execute("INSERT INTO sensors (id, timestamp, value) VALUES (%s, FROM_UNIXTIME(%s), %s)", rows)
+        db.close()
 
-            self.sensors_last[name] = {
-                'id': name,
-                'timestamp': int(timestamp),
-                'value': float(value),
-            }
 
-            self.slave_sensors.set(self.sensors_last)
-            self.slave_sensors.publish()
+    def aggregate_watt_hour(self, key):
+        items = self.aggregator.lrange(key, 0, -1)
+        values = []
 
-            return jsonify({})
+        for item in items:
+            values.append(int(item))
 
-        @app.route("/power/<timestamp>/<value>")
-        def httpd_routes_power(timestamp, value):
-            print("[+] power: %s watt at %s" % (value, timestamp))
+        summed = sum(values)
+        average = sum(values) / len(values)
 
-            cursor = self.remote_database_cursor()
-            rows = (int(timestamp), int(value))
-            cursor.execute("INSERT IGNORE INTO power (timestamp, value, phase) VALUES (FROM_UNIXTIME(%s), %s, 1000)", rows)
+        print(f"[+] {key}: summed {summed}, length: {len(values)}, average: {average} watt/hour")
 
-            self.power["1000"] = {
-                'timestamp': int(timestamp),
-                'value': float(value),
-            }
+        return int(average)
 
-            self.slave_power.set(self.power)
-            self.slave_power.publish()
+    def aggregate(self, phase, current):
+        print(f"[+] aggregator: processing availables lists for phase: {phase}")
 
-            return jsonify({})
+        exclude = f"dataset:power:{phase}:{current}"
+        keys = self.aggregator.keys(f"dataset:power:{phase}:*")
 
-        @app.route("/power/<timestamp>/<phase>/<value>")
-        def httpd_routes_power_phase(timestamp, phase, value):
-            print("[+] power: phase %s: %s watt at %s" % (phase, value, timestamp))
+        for key in keys:
+            # skipping current time window
+            if key == exclude:
+                continue
 
-            cursor = self.remote_database_cursor()
-            rows = (int(timestamp), int(value), int(phase))
-            cursor.execute("INSERT IGNORE INTO power (timestamp, value, phase) VALUES (FROM_UNIXTIME(%s), %s, %s)", rows)
+            timewin = key.split(":")[3].replace(".", " ") + ":00:00"
+            print(f"[+] processing: {key} [{timewin}]")
 
-            self.power[phase] = {
-                'timestamp': int(timestamp),
-                'value': float(value),
-            }
+            watth = self.aggregate_watt_hour(key)
+            self.power_summary_save(timewin, phase, watth)
 
-            self.slave_power.set(self.power)
-            self.slave_power.publish()
+            print(f"[+] {key}: removing computed key")
+            self.aggregator.delete(key)
 
-            return jsonify({})
+        return True
+
+    def timekey(self, now=None):
+        if now is None:
+            now = datetime.datetime.now()
+
+        return now.strftime("%Y-%m-%d.%H:00")
+
+    #
+    # sensors handlers
+    #
+    def handle_power(self, data):
+        phase = int(data[2])
+        value = int(data[3])
+        timestamp = int(data[1])
+
+        timekey = self.timekey()
+
+        #
+        # aggregate current hour values into redis list
+        # and computing hour average on the next hour, average is pushed
+        # into mariadb database (aggregated)
+        #
+        # aggregation reducing database from 6 GB (252M rows) to 5.5 MB (182k rows)
+        #
+        print(f"[+] power: phase {phase}: {timestamp}, group: {timekey}, value: {value} watt")
+        length = self.aggregator.rpush(f"dataset:power:{phase}:{timekey}", value)
+
+        if length == 1:
+            print("[+] timekey: new list detected, starting aggregation")
+            self.aggregate(phase, timekey)
+
+        self.power[phase] = {
+            'timestamp': int(timestamp),
+            'value': float(value),
+        }
+
+        self.slave_power.set(self.power)
+        self.slave_power.publish()
+
+    def handle_ds18b20(self, data):
+        name = data[2]
+        value = int(data[3])
+        timestamp = int(data[1])
+
+        print("[+] sensors: %s (%s): value: %s" % (name, timestamp, value))
+
+        db = self.remote_database()
+        cursor = db.cursor()
+
+        #
+        # keep pushing temperature sensors into database directly
+        #
+        cursor.execute("SELECT id FROM sensors_devices WHERE devid = %s", (name,))
+        if cursor.rowcount == 0:
+            print("[-] short id not found on sensors_devices, inserting")
+            cursor.execute("INSERT INTO sensors_devices (devid, NULL) VALUES (%s)", (name,))
+            shortid = cursor.lastrowid
+
+        else:
+            shortid = cursor.fetchone()[0]
+
+        print(f"[+] sensors: short id: {shortid}")
+
+        rows = (shortid, int(timestamp), float(value))
+        cursor.execute("""
+            INSERT INTO sensors (id, timestamp, value) VALUES (%s, FROM_UNIXTIME(%s), %s)
+        """, rows)
+
+        self.sensors_last[name] = {
+            'id': name,
+            'timestamp': int(timestamp),
+            'value': float(value),
+        }
+
+        self.slave_sensors.set(self.sensors_last)
+        self.slave_sensors.publish()
+
+        db.close()
+
+
+    #
+    # main consumer loop
+    #
+    def broker(self, name):
+        return redis.Redis(dashconfig['redis-host'], dashconfig['redis-port'], decode_responses=True, client_name=name)
 
     def run(self):
-        self.httpd_routes(self.app)
-        self.app.run(host=dashconfig['http-listen-addr'], port=dashconfig['http-listen-port'], debug=True, threaded=True)
+        self.listener = self.broker("sensors-listener")
+        self.aggregator = self.broker("sensors-aggregator")
+
+        while True:
+            message = self.listener.blpop(dashconfig['redis-network-list'], 10)
+            if message is None:
+                continue
+
+            stripped = message[1].split(":")
+            if stripped[0] == "power":
+                self.handle_power(stripped)
+
+            if stripped[0] == "ds18b20":
+                self.handle_ds18b20(stripped)
+
+    def loop(self):
+        while True:
+            try:
+                sensors.run()
+
+            except redis.exceptions.ConnectionError as error:
+                print(f"[-] redis: connection lost: {error} attempting to reconnect")
+                time.sleep(1)
+                continue
+
+            except Exception:
+                print("[-] redis: unhandled exception, stopping")
+                traceback.print_exc()
+                return None
 
 if __name__ == '__main__':
     sensors = DashboardSensors()
-    sensors.run()
+    sensors.loop()
+
