@@ -19,5 +19,4 @@ while True:
         slave.set({"name": target, "data": pings[target]})
         slave.publish()
 
-    slave.sleep(2)
-
+    slave.sleep(8)
