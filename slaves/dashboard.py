@@ -1,8 +1,11 @@
 import asyncio
-import websockets
 import json
 import redis
 import time
+import traceback
+import uuid
+import websockets
+from websockets.asyncio.server import serve
 from config import dashconfig
 
 class DashboardSlave():
@@ -22,11 +25,11 @@ class DashboardSlave():
 
 class DashboardServer():
     def __init__(self):
-        self.wsclients = set()
+        self.clients = {}
         self.payloads = {}
-        self.redis = redis.Redis()
 
     # privacy handler
+    """
     def privatefix(self, type, payload):
         if type == 'devices':
             clients = {}
@@ -64,10 +67,9 @@ class DashboardServer():
             return payload
 
         return payload
+    """
 
-    #
-    # Websocket
-    #
+    """
     async def wsbroadcast(self, type, payload):
         if not len(self.wsclients):
             return
@@ -75,8 +77,8 @@ class DashboardServer():
         goodcontent = json.dumps({"type": type, "payload": payload})
 
         for client in list(self.wsclients):
-            if not client.open:
-                continue
+            # if not client.open:
+            #    continue
 
             content = goodcontent
 
@@ -93,46 +95,27 @@ class DashboardServer():
             try:
                 await client.send(content)
 
-            except Exception as e:
+            except websockets.exceptions.ConnectionClosedOK:
                 print(e)
+                self.wsclients.remove(client)
 
-    async def wspayload(self, websocket, type, payload):
+            except Exception as e:
+                traceback.print_exc()
+                print(e)
+    """
+
+    def format_payload(self, websocket, type, payload):
+        """
         if not websocket.remote_address[0].startswith(dashconfig['trusted-prefix']):
-            if type == "dnsquery":
-                return
-
             payload = self.privatefix(type, payload)
+        """
 
         content = json.dumps({"type": type, "payload": payload})
-        await websocket.send(content)
+        return content
 
-    async def handler(self, websocket, path):
-        self.wsclients.add(websocket)
-
-        print("[+] websocket: client connected")
-
-        try:
-            for id in self.payloads:
-                item = self.payloads[id]
-                print("[+] sending backlog: %s (%s)" % (id, item['id']))
-                await self.wspayload(websocket, item['id'], item['payload'])
-
-            while True:
-                if not websocket.open:
-                    break
-
-                await asyncio.sleep(1)
-
-        finally:
-            print("[+] websocket: client disconnected")
-            self.wsclients.remove(websocket)
-
-    async def redisloop(self):
-        pubsub = self.redis.pubsub()
-        pubsub.subscribe(['dashboard'])
-
+    async def redis_reader(self, channel):
         while True:
-            message = pubsub.get_message()
+            message = await channel.get_message(ignore_subscribe_messages=True, timeout=0.1)
             # print(message)
 
             if message and message['type'] == 'message':
@@ -150,24 +133,90 @@ class DashboardServer():
                     "payload": handler['payload'],
                 }
 
-                # forwarding
-                await self.wsbroadcast(handler['id'], handler['payload'])
+                for clientid in self.clients:
+                    client = self.clients[clientid]
+                    payload = self.format_payload(client, handler['id'], handler['payload'])
+                    await client.send(payload)
 
-            await asyncio.sleep(0.1)
+    async def websocket_handler(self, websocket):
+        clientid = str(uuid.uuid4())
+        print(f"[+] websocket: new client: {clientid}")
+
+        try:
+            self.clients[clientid] = websocket
+
+            for id in self.payloads:
+                item = self.payloads[id]
+                print("[+] sending backlog: %s (%s)" % (id, item['id']))
+
+                payload = self.format_payload(websocket, item['id'], item['payload'])
+                await websocket.send(payload)
+
+            # request a quick latency checking
+            await websocket.ping()
+
+            # do not listen for client messages
+            await websocket.wait_closed()
+
+        except websockets.exceptions.ConnectionClosedError:
+            print(f"[-][{clientid}] connection closed prematurely")
+
+        finally:
+            print(f"[+][{clientid}] disconnected, cleaning up")
+
+            # remove clientid from websockets clients list
+            if clientid in self.clients:
+                print(f"[+][{clientid}] cleaning up clients list")
+                del self.clients[clientid]
+
+    async def process(self):
+        # fetching instance settings
+        redis_channel = "dashboard"
+        websocket_address = dashconfig['ws-listen-addr']
+        websocket_port = dashconfig['ws-listen-port']
+
+        async with serve(self.websocket_handler, websocket_address, websocket_port):
+            print(f"[+] websocket: waiting for clients on: [{websocket_address}:{websocket_port}]")
+            future_ws = asyncio.get_running_loop().create_future()
+
+            while True:
+                print("[+] redis: connecting to backend with asyncio")
+
+                try:
+                    self.redis = redis.asyncio.Redis(
+                        # host=dashconfig['redis-host'],
+                        # port=dashconfig['redis-port'],
+                        decode_responses=True,
+                        client_name="dashboard-dispatcher"
+                    )
+
+                    async with self.redis.pubsub() as pubsub:
+                        print(f"[+] redis: subscribing to: {redis_channel}")
+                        await pubsub.subscribe(redis_channel)
+
+                        print(f"[+] redis: waiting for events")
+                        future_redis = asyncio.create_task(self.redis_reader(pubsub))
+                        await future_redis
+
+                except redis.exceptions.ConnectionError as error:
+                    print(f"[-] redis: connection lost: {error} attempting to reconnect")
+
+                    await asyncio.sleep(1)
+                    continue
+
+                except Exception:
+                    print("[-] redis: unhandled exception, stopping")
+                    traceback.print_exc()
+                    return None
+
+            await future_ws
 
     def run(self):
-        # standard polling handlers
         loop = asyncio.get_event_loop()
         loop.set_debug(True)
-
-        # handle websocket communication
-        websocketd = websockets.serve(self.handler, dashconfig['ws-listen-addr'], dashconfig['ws-listen-port'])
-        asyncio.ensure_future(websocketd, loop=loop)
-        asyncio.ensure_future(self.redisloop(), loop=loop)
-
-        print("[+] waiting for clients or slaves")
-        loop.run_forever()
+        loop.run_until_complete(self.process())
 
 if __name__ == '__main__':
     dashboard = DashboardServer()
     dashboard.run()
+
