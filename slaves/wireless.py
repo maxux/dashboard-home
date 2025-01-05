@@ -38,6 +38,8 @@ while True:
             if row[1].replace("-", "") == client['address'].replace(":", ""):
                 client["login"] = row[0]
 
+    db.close()
+
     payload = {
         'update': int(time.time()),
         'clients': monitor.clients
