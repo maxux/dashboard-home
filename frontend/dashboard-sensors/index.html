@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
     <title>Maxux Dashboard</title>
 
@@ -48,7 +49,7 @@
                         </div>
 
                         <div class="row row-sensor sensor-28-ff641e93a42b71 my-1">
-                        <div class="col-lg-4 sname">Servers Room</div>
+                        <div class="col-lg-4 sname">Machines Room</div>
                         <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
                         <div class="col-lg-3 updated">
                             <span class="badge">Now</span>
@@ -340,9 +341,70 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-lg-3">
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Uninterruptible Power Supply
+                    </div>
+                    <div class="card-body ups-card">
+                        <div>
+                            <div class="ups-head">
+                                <span class="badge rounded-pill text-bg-dark">Status</span>
+                            </div>
+                            <div class="ups-content">
+                                <span id="ups-status" class="badge rounded-pill text-bg-dark">Loading...</span>
+                            </div>
+
+                            <div class="ups-head">
+                                <span class="badge rounded-pill text-bg-dark">Realtime</span>
+                            </div>
+                            <span id="ups-live-data" class="badge rounded-pill text-bg-secondary font-monospace">..</span>
+                            <span id="ups-live-time" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                        </div>
+
+                        <div>
+                            <div class="ups-head">
+                                <span class="badge rounded-pill text-bg-dark">Load</span>
+                            </div>
+                            <div class="ups-content">
+                                <span id="ups-power-load" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                                <span id="ups-power-watt" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                            </div>
+
+                            <div class="ups-head">
+                                <span class="badge rounded-pill text-bg-dark">Battery</span>
+                            </div>
+                            <span id="ups-battery-charge" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                            <span id="ups-battery-voltage" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                            <span id="ups-internal-temperature" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                        </div>
+
+                        <div>
+                            <div class="ups-head">
+                                <span class="badge rounded-pill text-bg-dark">Output</span>
+                            </div>
+                            <div class="ups-content">
+                                <span id="ups-output-voltage" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                            </div>
+
+                            <div class="ups-head">
+                                <span class="badge rounded-pill text-bg-dark">Time Left</span>
+                            </div>
+                            <span id="ups-time-left" class="badge rounded-pill text-bg-dark font-monospace">..</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+            </div>
+        </div>
 
         <div id="disconnected">Connecting...</div>
-    </div>
     </div>
 
     <!--
@@ -352,10 +414,9 @@
     -->
 
     <script src="js/jquery-3.6.4.min.js"></script>
+    <script src="js/moment.min.js"></script>
     <script src="js/jquery.flot.js"></script>
     <script src="js/jquery.flot.time.js"></script>
-    <script src="js/jquery.flot.threshold.js"></script>
-    <script src="js/jquery.flot.curvedlines.js"></script>
     <script src="js/jquery.flot.categories.js"></script>
     <script src="js/jquery.flot.stack.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>

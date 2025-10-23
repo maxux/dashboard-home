@@ -96,20 +96,20 @@ table.wireless td:first-child {
 }
 
 .devices .dd-mac {
-    width: 13em;
+    width: 160px;
 }
 
 .devices .dd-ip {
-    width: 11em;
+    width: 140px;
 }
 
 .devices .dd-host {
-    width: 14em;
+    width: 280px;
 }
 
 .devices .dd-tx-parent, .devices .dd-rx-parent,
 .devices .dd-rx-total-parent, .devices .dd-tx-total-parent {
-    width: 9em;
+    width: 7em;
 }
 
 .devices .dd-wireless {
@@ -128,11 +128,12 @@ table.wireless td:first-child {
     opacity: 0.5;
 }
 
-table.router td:first-child, table.router td:last-child {
+table.router td:first-child, table.router td:last-child,
+table.core-room-switch td:first-child, table.core-room-switch td:last-child {
     width: 5%;
 }
 
-table.router td {
+table.router td, table.core-room-switch td {
     width: 45%;
     text-align: center;
 }
@@ -240,3 +241,27 @@ tr.spacer {
 .glyphicon-arrow-down:before {
   content: "\e094"; }
 
+
+#core-switch-system, #room-switch-system {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+}
+
+#core-switch-system div, #room-switch-system div {
+    font-family: monospace;
+}
+
+.cpu-root, .ram-root {
+    width: 27%;
+}
+
+.load-root {
+    width: 46%;
+}
+
+.device-node.gateway .dd-mac,
+.device-node.gateway .dd-ip,
+.device-node.gateway .dd-host {
+    color: #20c997;
+}

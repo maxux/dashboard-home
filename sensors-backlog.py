@@ -136,23 +136,28 @@ class DashboardBacklog():
         return series
 
     def run(self):
-        while True:
-            for name in self.sensors:
-                if name in self.sensorsgrp:
-                    print("[+] sensors backlog: fetching group [%s]" % name)
-                    self.slave_sensors.set({"id": name, "serie": self.sensors_group_backlog(name)})
-                    self.slave_sensors.publish()
+        for name in self.sensors:
+            if name in self.sensorsgrp:
+                print("[+] sensors backlog: fetching group [%s]" % name)
+                self.slave_sensors.set({"id": name, "serie": self.sensors_group_backlog(name)})
+                self.slave_sensors.publish()
 
-                else:
-                    print("[+] sensors backlog: fetching [%s]" % name)
-                    self.slave_sensors.set({"id": name, "serie": self.sensors_backlog(name)})
-                    self.slave_sensors.publish()
+            else:
+                print("[+] sensors backlog: fetching [%s]" % name)
+                self.slave_sensors.set({"id": name, "serie": self.sensors_backlog(name)})
+                self.slave_sensors.publish()
 
-            self.power_backlog_fetch()
+        self.power_backlog_fetch()
 
-            print("[+] done, waiting next time")
-            time.sleep(5 * 60)
+        print("[+] done, waiting next time")
+        time.sleep(5 * 60)
 
 if __name__ == '__main__':
     backlog = DashboardBacklog()
-    backlog.run()
+    while True:
+        try:
+            backlog.run()
+
+        except Exception as error:
+            print(error)
+            time.sleep(10)

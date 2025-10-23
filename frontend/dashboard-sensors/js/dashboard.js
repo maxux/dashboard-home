@@ -24,6 +24,19 @@ function update_time() {
     update_sensors_time();
     update_weather_time();
     update_powers_time();
+
+    /*
+    if(ups_live_cleared == false) {
+        console.log(now)
+        console.log(ups_live_updated);
+        console.log(now - ups_live_updated);
+
+        if(now - ups_live_updated > (30 * 60 * 1000)) {
+            $("#ups-live").removeClass(ups_classes).addClass("text-bg-dark");
+            ups_live_cleared = true;
+        }
+    }
+    */
 }
 
 var localweather = {
@@ -221,6 +234,179 @@ function update_sensor(sensor) {
     update_sensors_time();
 }
 
+//
+// ups value parsing
+//
+function ups_value_percent(value) {
+    return [parseFloat(value).toFixed(0), "%"];
+}
+
+function ups_value_minutes(value) {
+    return [parseFloat(value), "Min"];
+}
+
+function ups_value_voltage(value, fixed) {
+    return [parseFloat(value).toFixed(fixed), " v"];
+}
+
+function ups_value_temperature(value) {
+    return [parseFloat(value).toFixed(1), "°C"];
+}
+
+function ups_value_prettify(data) {
+    return data[0] + " " + data[1];
+}
+
+//
+// ups range coloring
+//
+const ups_classes = "text-bg-dark text-bg-success text-bg-warning text-bg-danger text-bg-info text-bg-secondary";
+
+function ups_status(target, value) {
+    target.html(value);
+    target.removeClass(ups_classes);
+
+    if(value == "ONLINE") {
+        target.addClass("text-bg-success");
+        return;
+    }
+
+    target.addClass("text-bg-warning");
+}
+
+function ups_power_load(target, source) {
+    const value = ups_value_percent(source);
+    target.html(ups_value_prettify(value));
+    target.removeClass(ups_classes);
+
+    if(value[0] < 2)
+        return target.addClass("text-bg-primary");
+
+    if(value[0] < 48)
+        return target.addClass("text-bg-success");
+
+    if(value[0] < 80)
+        return target.addClass("text-bg-warning");
+
+    target.addClass("text-bg-danger");
+}
+
+function ups_power_watt(target, source) {
+    const value = ups_value_percent(source);
+    const watt = 1980 * (value[0] / 100);
+
+    target.html(ups_value_prettify(["~" + watt.toFixed(0), "w"]));
+    target.removeClass(ups_classes);
+
+    if(value[0] < 2)
+        return target.addClass("text-bg-primary");
+
+    if(value[0] < 48)
+        return target.addClass("text-bg-success");
+
+    if(value[0] < 80)
+        return target.addClass("text-bg-warning");
+
+    target.addClass("text-bg-danger");
+}
+
+function ups_battery_charge(target, source) {
+    const value = ups_value_percent(source);
+    target.html(ups_value_prettify(value));
+    target.removeClass(ups_classes);
+
+    if(value[0] < 21)
+        return target.addClass("text-bg-danger");
+
+    if(value[0] < 40)
+        return target.addClass("text-bg-warning");
+
+    target.addClass("text-bg-success");
+}
+
+function ups_battery_voltage(target, source) {
+    const value = ups_value_voltage(source, 1);
+    target.html(ups_value_prettify(value));
+    target.removeClass(ups_classes);
+    target.addClass("text-bg-secondary");
+}
+
+function ups_time_left(target, source) {
+    const value = ups_value_minutes(source);
+    target.html(ups_value_prettify(value));
+    target.removeClass(ups_classes);
+
+    if(value[0] < 20)
+        return target.addClass("text-bg-danger");
+
+    if(value[0] < 45)
+        return target.addClass("text-bg-warning");
+
+    target.addClass("text-bg-success");
+}
+
+function ups_output_voltage(target, source) {
+    const value = ups_value_voltage(source, 0);
+    target.html(ups_value_prettify(value));
+    target.removeClass(ups_classes);
+
+    if(value[0] > 243)
+        return target.addClass("text-bg-danger");
+
+    if(value[0] < 190)
+        return target.addClass("text-bg-danger");
+
+    if(value[0] < 220)
+        return target.addClass("text-bg-warning");
+
+    target.addClass("text-bg-success");
+}
+
+function ups_internal_temperature(target, source) {
+    const value = ups_value_temperature(source);
+    target.html(ups_value_prettify(value));
+    target.removeClass(ups_classes);
+
+    if(value[0] < 31)
+        return target.addClass("text-bg-success");
+
+    if(value[0] < 36)
+        return target.addClass("text-bg-warning");
+
+    target.addClass("text-bg-danger");
+}
+
+//
+// ups main updater
+//
+function ups_update(ups) {
+    // console.log(ups);
+    ups_status($("#ups-status"), ups['STATUS']);
+
+    ups_power_load($("#ups-power-load"), ups['LOADPCT']);
+    ups_power_watt($("#ups-power-watt"), ups['LOADPCT']);
+    ups_battery_charge($("#ups-battery-charge"), ups['BCHARGE']);
+    ups_battery_voltage($("#ups-battery-voltage"), ups['BATTV']);
+    ups_time_left($("#ups-time-left"), ups['TIMELEFT']);
+    ups_output_voltage($("#ups-output-voltage"), ups['OUTPUTV']);
+    ups_internal_temperature($("#ups-internal-temperature"), ups['ITEMP']);
+}
+
+// var ups_live_updated = new Date();
+// var ups_live_cleared = true;
+
+function ups_live_update(event) {
+    let datestr = moment.unix(event['timestamp']).format("DD/MM HH:mm:ss");
+
+    $("#ups-live-time").html(datestr);
+    $("#ups-live-data").html(event['message']);
+
+    $("#ups-live-data").removeClass(ups_classes).addClass("text-bg-" + event['severity']);
+
+    // ups_live_cleared = false;
+    // ups_live_updated = new Date(event['timestamp'] * 1000);
+}
+
 function rain_chart(data) {
     // console.log(data);
 
@@ -299,7 +485,7 @@ function connect() {
 
         switch(json['type']) {
             case "weather":
-                console.log(json['payload'])
+                // console.log(json['payload'])
                 localweather['timestamp'] = json['payload']['updated'];
                 var today = json['payload']['zone']['today'];
 
@@ -446,7 +632,7 @@ function connect() {
 
             case "gpio-status":
                 var payload = json['payload'];
-                console.log(payload);
+                // console.log(payload);
 
                 $('#gpio-table').empty();
 
@@ -497,6 +683,14 @@ function connect() {
                 });
             break;
 
+            case "ups":
+                ups_update(json['payload']);
+            break;
+
+            case "ups-live":
+                ups_live_update(json['payload']);
+            break;
+
             case "rtinfo":
             case "rtinfo-local":
             case "ping":
@@ -505,11 +699,14 @@ function connect() {
             case "arp":
             case "devices":
             case "docsis-levels":
+            case "redfishing":
+            case "redfish-power":
+            case "switch-status":
                 // ignore them
             break;
 
             default:
-                console.log("Unknown type");
+                console.log("Unknown type", json['type']);
                 console.log(json);
         }
     }

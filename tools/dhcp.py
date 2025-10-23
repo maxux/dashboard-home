@@ -114,5 +114,5 @@ class DHCPLogger():
 
 if __name__ == '__main__':
     print("Fetching logs...")
-    dhcp = DHCPLogger("/var/log/messages")
+    dhcp = DHCPLogger("/var/log/dhcpd.log")
     dhcp.watch()

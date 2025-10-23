@@ -336,9 +336,10 @@ function summary_node(node, host, server) {
     let cpunr = node.cpu_usage.length - 1;
     let ram   = percentvalue(node.memory.ram_used, node.memory.ram_total);
     let ramsz = autosize(node.memory.ram_used);
-    let swap  = node.memory.swap_total - node.memory.swap_free;
-    let pswap = percentvalue(swap, node.memory.swap_total);
-    let swapz = autosize(swap);
+
+    // let swap  = node.memory.swap_total - node.memory.swap_free;
+    // let pswap = percentvalue(swap, node.memory.swap_total);
+    // let swapz = autosize(swap);
 
     var disksp = 0;
     for(let idx in node.disks)
@@ -356,7 +357,28 @@ function summary_node(node, host, server) {
     $("#" + prefix + " .nn-cpu").html(percent(node.cpu_usage[0])).addClass(colorize(node.cpu_usage[0]));
     $("#" + prefix + " .nn-cpu-total").html(cpunr);
     $("#" + prefix + " .nn-ram").html(percent(ram, ramsz)).addClass(colorize(ram));
-    $("#" + prefix + " .nn-swap").html(percent(pswap, swapz)).addClass(colorize(pswap));
+    // $("#" + prefix + " .nn-swap").html(percent(pswap, swapz)).addClass(colorize(pswap));
+
+    /*
+    if(node.hostname in summary_main_power) {
+        let server = summary_main_power[node.hostname];
+        var color = "text-light";
+
+        if(server.power > 170)
+            color = "text-warning";
+
+        if(server.power > 260)
+            color = "text-danger";
+
+        $("#" + prefix + " .nn-swap").html(server.power + " watt").addClass(color);
+
+    } else {
+        $("#" + prefix + " .nn-swap").html("-").addClass("text-muted");
+    }
+    */
+
+    $("#" + prefix + " .nn-swap").html("-").addClass("text-muted");
+
     $("#" + prefix + " .nn-load-1").html(node.loadavg[0]).addClass(loadcolor(node.loadavg[0]));
     $("#" + prefix + " .nn-load-5").html(node.loadavg[1]).addClass(loadcolor(node.loadavg[1]));
     $("#" + prefix + " .nn-load-15").html(node.loadavg[2]).addClass(loadcolor(node.loadavg[2]));
@@ -430,8 +452,13 @@ function summary_node(node, host, server) {
 // build summary table
 //
 function summary(host, server, nodes) {
-    for(var n in nodes)
+    for(var n in nodes) {
         summary_node(nodes[n], host, server);
+
+        if(nodes[n].hostname == "routinx-ng") {
+            router_update(nodes[n]);
+        }
+    }
 }
 
 function arraymove(arr, fi, di) {
@@ -505,7 +532,7 @@ function call(host) {
             .append($('<td>', {'class': 'td-3'}).html('CPU'))
             .append($('<td>', {'class': 'td-2'}).html('#'))
             .append($('<td>', {'class': 'td-10'}).html('RAM'))
-            .append($('<td>', {'class': 'td-10'}).html('SWAP'))
+            .append($('<td>', {'class': 'td-10'}).html('Power'))
             .append($('<td>', {'colspan': 3, 'class': 'td-10'}).html('Load Average'))
             .append($('<td>', {'class': 'td-8'}).html('Remote IP'))
             .append($('<td>', {'class': 'td-5'}).html('Time'))
@@ -523,6 +550,23 @@ function call(host) {
 
         $('#content').append(root);
     }
+}
+
+//
+// sorting by ip address
+//
+function compare_ip_addresses(a, b) {
+  const numA = Number(
+    a.split('.')
+      .map((num, idx) => num * Math.pow(2, (3 - idx) * 8))
+      .reduce((a, v) => ((a += v), a), 0)
+  );
+  const numB = Number(
+    b.split('.')
+      .map((num, idx) => num * Math.pow(2, (3 - idx) * 8))
+      .reduce((a, v) => ((a += v), a), 0)
+  );
+  return numA - numB;
 }
 
 var socket;
@@ -548,40 +592,72 @@ function connect() {
             case "power-backlog-days":
             case "gpio-status":
             case "sensors-dht":
+            case "ups":
                 // ignore all of this
+                // console.log("ignoring", json['type']);
             break;
 
             case "rtinfo":
+                // console.log("processing", json['type']);
                 call("maxux");
                 parsing(json['payload'], 'maxux');
             break;
 
+            /*
             case "rtinfo-local":
+                // console.log("processing", json['type']);
                 parsing_local(json['payload'], 'maxux');
             break;
+            */
 
             case "ping":
+                // console.log("processing", json['type']);
                 ping_update(json['payload']);
             break;
 
             case "wireless":
+                // console.log("processing", json['type']);
                 wireless_update(json['payload']['clients'], json['payload']['update']);
             break;
 
             case "devices":
+                // console.log("processing", json['type']);
                 devices_update(json['payload']);
             break;
 
             case "docsis-levels":
-                docsis(json['payload']);
+                // console.log("processing", json['type']);
+                // docsis(json['payload']);
             break;
 
             case "dnsquery":
+                // console.log("processing", json['type']);
                 dns_activity(json['payload']);
             break;
 
+            case "redfishing":
+                // console.log("processing", json['type']);
+                redfishing_update(json['payload']);
+            break;
+
+            case "redfish-power":
+                // console.log("processing", json['type']);
+                redfish_power_update(json['payload']);
+            break;
+
+            case "switch-status":
+                switch_bandwidth(json['payload']);
+            break;
+
+            case "ups-live":
+                // console.log("processing", json['type']);
+            break;
+
+
+
+
             default:
-                console.log("Unknown type");
+                console.log("Unknown type", json['type']);
                 console.log(json);
         }
     }
@@ -596,6 +672,83 @@ function connect() {
     }
 }
 
+const xKB = 1024;
+const xMB = xKB * 1024;
+const xGB = xMB * 1024;
+
+function switch_system_color(value) {
+    if(value > 65)
+        return "text-bg-danger";
+
+    if(value > 45)
+        return "text-bg-warning";
+
+    if(value > 24)
+        return "text-bg-secondary";
+
+    return "text-bg-dark";
+}
+
+function switch_load_color(value) {
+    if(value > 25 * xMB)
+        return "text-bg-danger";
+
+    if(value > 10 * xMB)
+        return "text-bg-warning";
+
+    if(value > 1 * xMB)
+        return "text-bg-secondary";
+
+    return "text-bg-dark";
+}
+
+function switch_ddm_color(value) {
+    if(value > 58)
+        return "text-bg-danger";
+
+    if(value > 50)
+        return "text-bg-warning";
+
+    if(value > 45)
+        return "text-bg-secondary";
+
+    return "text-bg-dark";
+}
+
+function switch_update_system(rootid, values) {
+    const possible = "text-bg-danger text-bg-warning text-bg-dark text-muted";
+
+    $("#" + rootid + " .cpu")
+        .removeClass(possible).addClass(switch_system_color(values['system']['cpu']))
+        .html(values['system']['cpu'] + " %");
+
+    $("#" + rootid + " .ram")
+        .removeClass(possible).addClass(switch_system_color(values['system']['ram']))
+        .html(values['system']['ram'] + " %");
+
+    var bandwidth = 0;
+    for(var i in values['ports'])
+        bandwidth += values['ports'][i]['rx-live'] + values['ports'][i]['tx-live'];
+
+    $("#" + rootid + " .net")
+        .removeClass(possible).addClass(switch_load_color(bandwidth))
+        .html(rate(bandwidth));
+
+    for(var i in values['ddm']) {
+        let ddm = values['ddm'][i];
+        let nodeid = "#" + rootid + " .ddm.port-" + ddm['port'].replaceAll('/', '-');
+        let temperature = ddm['temperature'].toFixed(0);
+
+        $(nodeid)
+            .removeClass(possible).addClass(switch_ddm_color(temperature))
+            .html(temperature + "°C");
+    }
+}
+
+function switch_bandwidth(switches) {
+    switch_update_system("core-switch-system", switches['switch-core']);
+    switch_update_system("room-switch-system", switches['switch-room']);
+}
 
 function ping_update(ping) {
     // console.log(ping);
@@ -685,11 +838,13 @@ function wireless_online(value) {
 
 var wireless_last_update = 0;
 var wireless_clients = {};
+
 const wireless_short_ssid = {
     "Maxux Network (2.4G)": "2G",
     "Maxux Network (5.2G)": "5G",
     "Maxux Legacy": "LE",
-    "Maxux Legacy (5.2G - Trusted)": "TR",
+    "Maxux Legacy (5.2G - Trusted)": "5T",
+    "Maxux Legacy (2.4G - Trusted)": "2T",
 };
 
 const classes_states = 'text-success text-warning text-danger text-info text-muted ' +
@@ -701,8 +856,9 @@ function wireless_update(clients, timestamp) {
     // console.log(clients);
 
     // flushing wireless clients
-    wireless_clients = {}
+    wireless_clients = clients;
 
+    /*
     for(let id in clients) {
         let client = clients[id];
         let keyid = client['address'].toLowerCase();
@@ -710,6 +866,7 @@ function wireless_update(clients, timestamp) {
         // update global table
         wireless_clients[keyid] = client;
     }
+    */
 
     wireless_last_update = timestamp;
 }
@@ -809,17 +966,34 @@ function devices_update(clients) {
 
     $(".devices .device-node").addClass("discard");
 
+    // first pass to sort ip addresses
+    var devices_addresses = [];
+    for(let index in clients)
+        devices_addresses.push(clients[index]['ip-address']);
+
+    const addresses_sorted = devices_addresses.sort(compare_ip_addresses);
+
     for(let index in clients) {
         // ip address as key, this is malformed, ignoring
+        /*
         if(index.indexOf('.') > -1)
             continue;
+        */
 
         const client = clients[index];
-        let order = client['ip-address'].split(".")[3];
-        let id = client['mac-address'].replaceAll(":", "").replaceAll(".", ""); // sometime, it's an ip as key
+
+        let hostseg = client['ip-address'].split('.');
+        // let order = client['ip-address'].split(".")[3];
+        let order = addresses_sorted.indexOf(client['ip-address']);
+        let vlan = hostseg[2];
+        let hostid = hostseg[3];
+        let id = client['mac-address'].replaceAll(":", "").replaceAll(".", "") + "-" + vlan; // sometime, it's an ip as key
+
+        if(client['mac-address'] == 'ff:ff:ff:ff:ff:ff')
+            continue;
 
         let elapsed = (now.getTime() / 1000) - client['timestamp'];
-        let hostname = client['hostname'] ? client['hostname'] : "(unknown)";
+        let hostname = client['hostname'] ? client['hostname'] : ((hostid == 254) ? "routinx-ng" : "(unknown)");
         let rx = (client['rx'] != undefined) ? client['rx'] : null;
         let tx = (client['tx'] != undefined) ? client['tx'] : null;
         let hostclass = (!client['hostname']) ? 'text-muted darker' : '';
@@ -829,11 +1003,11 @@ function devices_update(clients) {
         let totaltx = client['total-tx'] ? autosize(client['total-tx'] / 1024) : "--";
 
         if($("#devices-node-" + id).length == 0) {
-            let tr = $("<div>", {"id": "devices-node-" + id, "class": "d-flex device-node", "style": "order: " + order});
+            let tr = $("<div>", {"id": "devices-node-" + id, "class": "d-flex device-node" + ((hostid == 254) ? " gateway" : "")});
 
             tr.append($('<div>', {'class': 'dd-mac'}).html(client['mac-address']));
             tr.append($('<div>', {'class': 'dd-ip'}).html("..."));
-            tr.append($('<div>', {'class': 'dd-host'}).html("..."));
+            tr.append($('<div>', {'class': 'dd-host text-truncate pe-3'}).html("..."));
 
             tr.append($('<div>', {'class': 'dd-rx-parent'}).append(
                 $('<span>', {'class': 'dd-rx badge rounded-pill'}).html("...")
@@ -864,7 +1038,7 @@ function devices_update(clients) {
             $('.devices').append(tr);
         }
 
-        $("#devices-node-" + id).removeClass('offline').removeClass('discard').addClass(trclass);
+        $("#devices-node-" + id).removeClass('offline').removeClass('discard').addClass(trclass).css("order", order);
 
         $("#devices-node-" + id + " .dd-mac").html(client['mac-address']);
         $("#devices-node-" + id + " .dd-ip").html(client['ip-address']);
@@ -880,26 +1054,28 @@ function devices_update(clients) {
 
         $("#devices-node-" + id + " .dd-online").html(elapsedstr(elapsed.toFixed(0)));
 
-        if(wireless_clients[client['mac-address']] !== undefined) {
-            let target = wireless_clients[client['mac-address']];
+        if(wireless_clients[id] !== undefined) {
+            let target = wireless_clients[id];
 
             let signal = parseFloat(target['rssi']);
             let sigclass = wireless_signal(signal);
-            let network = wireless_short_ssid[target['ssid']];
-            let online = wireless_online(target['online']);
-            let onstyle = (target['online'] > 3600) ? "text-bg-dark" : "text-bg-light";
+            let network = target['ssid']; // wireless_short_ssid[target['ssid']];
+            let online = target['active']; // target['online']; // wireless_online(target['online']);
+            let onstyle = "text-bg-dark"; // (target['online'] > 3600) ? "text-bg-dark" : "text-bg-light";
 
-            $("#devices-node-" + id + " .dd-wireless-network").html(network);
+            // $("#devices-node-" + id + " .dd-wireless-network").html(network);
             // $("#devices-node-" + id + " .dd-wireless-signal").html(sigicon + signal + ' dBm');
             $("#devices-node-" + id + " .dd-wireless-signal").html(signal + ' dBm');
             $("#devices-node-" + id + " .dd-wireless-signal").addClass(sigclass + ' text-bg-dark');
-            $("#devices-node-" + id + " .dd-wireless-rate").html(target['linkrate'] + ' Mbps');
+            $("#devices-node-" + id + " .dd-wireless-rate").html(target['rate'] + ' Mbps');
             $("#devices-node-" + id + " .dd-wireless-rate").addClass('text-bg-dark');
             $("#devices-node-" + id + " .dd-wireless-online").html(online);
             $("#devices-node-" + id + " .dd-wireless-online").addClass(onstyle);
 
+            /*
             if(target['login'])
                 $("#devices-node-" + id + " .dd-wireless-login").html(target['login']);
+            */
         }
 
         /*
@@ -953,6 +1129,7 @@ function dns_activity(entry) {
     }
 }
 
+/*
 function docsis(payload) {
     $('.docsis-signal').empty();
 
@@ -969,21 +1146,21 @@ function docsis(payload) {
 
         var badge = 'badge docsis-value rounded-pill mx-1 ';
 
-        if(channel['txpower'] > 49.5 && channel['txpower'] <= 51) {
+        if(channel['txpower'] > 44) {
+            badge += 'text-bg-success';
+
+        } else if (channel['txpower'] > 40) {
             badge += 'text-bg-warning';
 
-        } else if (channel['txpower'] > 51) {
-            $('.docsis-signal').addClass('system-error');
-            badge += 'text-bg-danger';
-
         } else {
-            badge += 'text-bg-dark';
+            badge += 'text-bg-danger';
         }
 
         $('.docsis-signal').append($('<span>', {'class': badge}).html(channel['txpower'].toFixed(1)));
         // console.log(channel);
     }
 }
+*/
 
 var trafficup = [];
 var trafficdown = [];
@@ -1022,7 +1199,7 @@ function router_update(node) {
     for(var ifid in node['network']) {
         var intf = node['network'][ifid];
 
-        if(intf['name'] != 'eth0')
+        if(intf['name'] != 'wan')
             continue;
 
         /*
@@ -1062,7 +1239,83 @@ function router_update(node) {
     }
 }
 
+
+
+var redlog = [];
+const redmax = 6;
+const redsrv = {
+    "10.241.100.230": "storix-ng",
+    "10.241.100.240": "servix-ng",
+    "10.241.100.250": "routinx-ng",
+};
+const redsev = {
+    "Informational": "text-bg-success",
+    "Warning": "text-bg-warning",
+    "Critical": "text-bg-danger",
+};
+const redinfoid = {
+    "SYS1003": "text-bg-secondary",
+    "SYS1001": "text-bg-info",
+    "SYS1000": "text-bg-info",
+};
+
+
+function redfishing_update(payload) {
+    redlog.push(payload);
+    if(redlog.length > redmax)
+        redlog.shift();
+
+    $(".redfishing").empty();
+
+    for(var i in redlog) {
+        let entry = redlog[i];
+
+        // ignore redfish login history
+        if(entry['message'].includes("and REDFISH."))
+            continue;
+
+        // skip logout messages
+        if(entry['messageid'] == "USR0032")
+            continue;
+
+        // Skip entries older than 4 days
+        if(entry['timestamp'] < (new Date() - (4 * 86400)))
+            continue;
+
+        let datestr = moment.unix(entry['timestamp']).format("DD MMM HH:mm:ss");
+        let dateb = $("<span>", {"class": "badge text-bg-dark me-2"}).html(datestr);
+        let sourceb = $("<span>", {"class": "badge text-bg-dark me-2"}).html(redsrv[entry['source']]);
+
+        var severity = redsev[entry['severity']];
+        if(entry['messageid'] in redinfoid)
+            severity = redinfoid[entry['messageid']];
+
+        let messageb = $("<span>", {"class": "badge " + severity}).html(entry['message']);
+
+        $(".redfishing").prepend($("<div>").append(dateb).append(sourceb).append(messageb));
+    }
+}
+
+var summary_main_power = {};
+
+function redfish_power_update(payload) {
+    for(var key in payload) {
+        let server = payload[key];
+        summary_main_power[key] = server;
+
+        $(".rtinfo-maxux-" + key + " td.nn-swap").html(server.power + " watt");
+    }
+}
+
+
+var cronjob_main_counter = 0;
+
 function cronjob() {
+    cronjob_main_counter += 1;
+
+    if(cronjob_main_counter > 3600)
+        location.reload();
+
     if(wireless_last_update < (Date.now() / 1000) - 30) {
         $('#wireless-body').addClass('system-error');
 

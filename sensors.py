@@ -128,11 +128,18 @@ class DashboardSensors():
         self.slave_power.publish()
 
     def handle_ds18b20(self, data):
-        name = data[2]
-        value = int(data[3])
-        timestamp = int(data[1])
+        group = {
+            "id": data[2],
+            "name": data[2],
+            "value": int(data[3]),
+            "timestamp": int(float(data[1]))
+        }
 
-        print("[+] sensors: %s (%s): value: %s" % (name, timestamp, value))
+        print(f"[+] sensors: {group['name']} ({group['timestamp']}): value: {group['value']}")
+
+        if group['value'] == -127000:
+            print(f"[-] sensors: incorrect value detected, ignoring")
+            return False
 
         db = self.remote_database()
         cursor = db.cursor()
@@ -140,10 +147,13 @@ class DashboardSensors():
         #
         # keep pushing temperature sensors into database directly
         #
-        cursor.execute("SELECT id FROM sensors_devices WHERE devid = %s", (name,))
+        cursor.execute("SELECT id FROM sensors_devices WHERE devid = %(name)s", group)
         if cursor.rowcount == 0:
             print("[-] short id not found on sensors_devices, inserting")
-            cursor.execute("INSERT INTO sensors_devices (devid, NULL) VALUES (%s)", (name,))
+            cursor.execute("""
+                INSERT INTO sensors_devices (devid, name) VALUES (%(name)s, NULL)
+            """, group)
+
             shortid = cursor.lastrowid
 
         else:
@@ -151,16 +161,13 @@ class DashboardSensors():
 
         print(f"[+] sensors: short id: {shortid}")
 
-        rows = (shortid, int(timestamp), float(value))
-        cursor.execute("""
-            INSERT INTO sensors (id, timestamp, value) VALUES (%s, FROM_UNIXTIME(%s), %s)
-        """, rows)
+        group["shortid"] = shortid
 
-        self.sensors_last[name] = {
-            'id': name,
-            'timestamp': int(timestamp),
-            'value': float(value),
-        }
+        cursor.execute("""
+            INSERT IGNORE INTO sensors (id, timestamp, value) VALUES (%(shortid)s, FROM_UNIXTIME(%(timestamp)s), %(value)s)
+        """, group)
+
+        self.sensors_last[group['name']] = group
 
         self.slave_sensors.set(self.sensors_last)
         self.slave_sensors.publish()

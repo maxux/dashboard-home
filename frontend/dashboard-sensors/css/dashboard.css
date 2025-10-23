@@ -69,6 +69,21 @@ body {
     height: 100%;
 }
 
+.ups-card {
+    --bs-bg-opacity: 1;
+}
+
+.ups-head {
+    display: inline-block;
+    width: 85px;
+}
+
+.ups-content {
+    display: inline-block;
+    width: 170px;
+}
+
+
 /*
 .row-sensor {
     font-size: 130%;
