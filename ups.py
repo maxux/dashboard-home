@@ -80,7 +80,6 @@ if __name__ == "__main__":
 
     while True:
         try:
-
             print("[+] fetching ups status")
             status = apc.status()
 
@@ -108,6 +107,8 @@ if __name__ == "__main__":
 
             slive.set(live)
             slive.publish()
+
+            remote.rpush("hombedded-events-backlog", json.dumps(live))
 
             # slave.sleep(10)
 
