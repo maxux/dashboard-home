@@ -31,7 +31,8 @@ while True:
     p = payload
     formatted = f"{p['source']}: [{p['messageid']}] {p['message']}"
 
-    syslog.syslog(formatted)
+    if p['messageid'] not in ['USR0030', 'USR0032']:
+        syslog.syslog(formatted)
 
     print(f"[+] forwarding: {payload}")
     slave.set(payload)
