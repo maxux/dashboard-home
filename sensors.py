@@ -99,9 +99,15 @@ class DashboardSensors():
     # sensors handlers
     #
     def handle_power(self, data):
-        phase = int(data[2])
-        value = int(data[3])
-        timestamp = int(data[1])
+        phmap = {
+            '1': 0,
+            '2': 1,
+            '3': 2,
+        }
+
+        phase = phmap[data[2]]
+        value = int(float(data[3]))
+        timestamp = int(float(data[1]))
 
         timekey = self.timekey()
 
@@ -207,6 +213,10 @@ class DashboardSensors():
                 time.sleep(1)
                 continue
 
+            except pymysql.err.OperationalError as error:
+                print(f"[-] mariadb: connection lost: {error}, attempting to reconnect")
+                continue
+
             except Exception:
                 print("[-] redis: unhandled exception, stopping")
                 traceback.print_exc()
@@ -215,4 +225,3 @@ class DashboardSensors():
 if __name__ == '__main__':
     sensors = DashboardSensors()
     sensors.loop()
-
