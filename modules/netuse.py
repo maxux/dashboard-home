@@ -542,7 +542,9 @@ class RootPing():
             if "time=" not in lines[1]:
                 return (False, 0)
 
-            idx = lines[1].index('time=')
-            return (True, lines[1][idx + 5:])
+            idx = lines[1].split(" ")
+            lat = float(idx[6][5:])
+
+            return (True, lat)
 
         return (False, 0)
