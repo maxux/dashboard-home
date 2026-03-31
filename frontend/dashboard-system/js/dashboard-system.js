@@ -186,10 +186,8 @@ function colorbattery(battery) {
     return '';
 }
 
-function colorcputemp(text, value) {
-    if(value == 0)
-        return 'text-muted';
-
+function colorcputemp(value) {
+    // console.log(value);
     if(value < 45)
         return 'text-muted';
 
@@ -386,7 +384,7 @@ function summary_node(node, host, server) {
     $("#" + prefix + " .nn-time").html(unixtime(node.time));
     $("#" + prefix + " .nn-uptime").html(uptime(node.uptime)).addClass(uptime_color(node.uptime));
     $("#" + prefix + " .nn-battery").html(battery(node.battery));
-    $("#" + prefix + " .nn-cpu-temp").html(degree(node.sensors.cpu.average));
+    $("#" + prefix + " .nn-cpu-temp").html(degree(node.sensors.cpu.average)).addClass(colorcputemp(node.sensors.cpu.average));
     $("#" + prefix + " .nn-disks-temp").html(degree(node.sensors.hdd.average));
     $("#" + prefix + " .nn-disks-io").html(rate(disksp)).addClass(colordisk(disksp));
     $("#" + prefix + " .nn-net-rx").html(rate(netrxsp)).addClass(colorintf(netrxsp, 1000));
@@ -572,7 +570,8 @@ function compare_ip_addresses(a, b) {
 var socket;
 
 function connect() {
-    socket = new WebSocket("wss://" + window.location.hostname + "/websocket/dashboard");
+    // socket = new WebSocket("wss://" + window.location.hostname + "/websocket/dashboard");
+    socket = new WebSocket("ws://10.241.10.254:30501");
 
     socket.onopen = function() {
         console.log("websocket open");
@@ -750,6 +749,19 @@ function switch_bandwidth(switches) {
     switch_update_system("room-switch-system", switches['switch-room']);
 }
 
+const ping_info = {
+    // source: [normal/warning, warning/danger]
+    "cbr8-cjl-2-voo-be": [8, 13],
+    "public-dns-google-com": [8, 13],
+    "kulturax": [5, 9],
+    "liza-v4": [25, 33],
+    "liza-v6": [25, 33],
+    "servix-ng-production": [0.25, 0.7],
+    "servix-ng-public": [0.25, 0.7],
+    "publix-v4": [14, 28],
+    "publix-v6": [12, 26],
+};
+
 function ping_update(ping) {
     // console.log(ping);
 
@@ -763,13 +775,14 @@ function ping_update(ping) {
     }
 
     // parse latency
-    var latency = parseFloat(ping['data']['value'][1]);
+    const info = ping_info[clname];
+    var latency = ping['data']['value'][1];
     var badge = {'class': 'badge text-bg-success'};
 
-    if(latency < 40) {
+    if(latency < info[0]) {
         badge = {'class': 'badge text-bg-dark'};
 
-    } else if(latency < 80) {
+    } else if(latency < info[1]) {
         badge = {'class': 'badge text-bg-warning'};
 
     } else {
@@ -793,7 +806,7 @@ function ping_update(ping) {
     // tr.append($('<td>').html($('<span>', {'class': 'glyphicon ' + status})));
     // tr.append($('<td>').html($('<span>', badge).html(latency.toFixed(2) + ' ms')));
     $('.ping-' + clname).removeClass('system-error');
-    $('.ping-' + clname).html($('<span>', badge).html(latval + ' ms'));
+    $('.ping-' + clname).html($('<span>', badge).html(`${latval} ms`));
 }
 
 function wireless_signal(value) {
@@ -1270,6 +1283,7 @@ function redfishing_update(payload) {
     for(var i in redlog) {
         let entry = redlog[i];
 
+        /*
         // ignore redfish login history
         if(entry['message'].includes("and REDFISH."))
             continue;
@@ -1281,6 +1295,7 @@ function redfishing_update(payload) {
         // Skip entries older than 4 days
         if(entry['timestamp'] < (new Date() - (4 * 86400)))
             continue;
+        */
 
         let datestr = moment.unix(entry['timestamp']).format("DD MMM HH:mm:ss");
         let dateb = $("<span>", {"class": "badge text-bg-dark me-2"}).html(datestr);

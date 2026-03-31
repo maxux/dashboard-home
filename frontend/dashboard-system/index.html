@@ -29,71 +29,124 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-2">
+            <div class="col-lg-1">
                 <div class="card text-bg-dark my-1 card-ping">
-                    <div class="card-header">
-                        cbr8-cjl-2.voo.be
+                    <div class="card-header text-truncate font-monospace">
+                        public
+                    </div>
+                    <div class="card-body ping-reply ping-servix-ng-public p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-1">
+                <div class="card text-bg-dark my-1 card-ping">
+                    <div class="card-header text-truncate font-monospace">
+                        production
+                    </div>
+                    <div class="card-body ping-reply ping-servix-ng-production p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-1">
+                <div class="card text-bg-dark my-1 card-ping">
+                    <div class="card-header text-truncate font-monospace">
+                        cbr8-cjl
                     </div>
                     <div class="card-body ping-reply ping-cbr8-cjl-2-voo-be p-2 m-1">
-                        Checking...
+                        <span class="badge text-bg-primary">Checking</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-1">
                 <div class="card text-bg-dark my-1 card-ping">
-                    <div class="card-header">
-                        public-dns.google.com
+                    <div class="card-header text-truncate font-monospace">
+                        google-dns
                     </div>
                     <div class="card-body ping-reply ping-public-dns-google-com p-2 m-1">
-                        Checking...
+                        <span class="badge text-bg-primary">Checking</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-1">
                 <div class="card text-bg-dark my-1 card-ping">
-                    <div class="card-header">
-                        prodx.maxux.net
+                    <div class="card-header text-truncate font-monospace">
+                        kulturax
                     </div>
-                    <div class="card-body ping-reply ping-prodx-maxux-net p-2 m-1">
-                        Checking...
+                    <div class="card-body ping-reply ping-kulturax p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-1">
                 <div class="card text-bg-dark my-1 card-ping">
-                    <div class="card-header">
-                        liza.maxux.net
+                    <div class="card-header text-truncate font-monospace">
+                        liza-v4
                     </div>
-                    <div class="card-body ping-reply ping-liza-maxux-net p-2 m-1">
-                        Checking...
+                    <div class="card-body ping-reply ping-liza-v4 p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-1">
                 <div class="card text-bg-dark my-1 card-ping">
-                    <div class="card-header">
-                        prodx.wireguard.vpn
+                    <div class="card-header text-truncate font-monospace">
+                        liza-v6
                     </div>
-                    <div class="card-body ping-reply ping-prodx-wireguard-vpn p-2 m-1">
-                        Checking...
+                    <div class="card-body ping-reply ping-liza-v6 p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-1">
                 <div class="card text-bg-dark my-1 card-ping">
-                    <div class="card-header">
-                        servix-ng.maxux.net
+                    <div class="card-header text-truncate font-monospace">
+                        publix-v4
                     </div>
-                    <div class="card-body ping-reply ping-servix-ng-maxux-net p-2 m-1">
-                        Checking...
+                    <div class="card-body ping-reply ping-publix-v4 p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
                     </div>
                 </div>
             </div>
+
+            <div class="col-lg-1">
+                <div class="card text-bg-dark my-1 card-ping">
+                    <div class="card-header text-truncate font-monospace">
+                        publix-v6
+                    </div>
+                    <div class="card-body ping-reply ping-publix-v6 p-2 m-1">
+                        <span class="badge text-bg-primary">Checking</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <div class="card text-bg-dark my-1">
+                    <div class="card-header">
+                        Internet Traffic
+                    </div>
+                    <div class="card-body m-0 p-1 mb-1">
+                        <table class="table table-sm table-hover table-borderless router m-0 p-0 fs-5">
+                            <tr id="router-rate">
+                                <td><span class="glyphicon glyphicon-small glyphicon-arrow-down"></span></td>
+                                <td><span class="rr-rx badge rounded-pill">..</span></td>
+                                <td><span class="rr-tx badge rounded-pill">..</span></td>
+                                <td><span class="glyphicon glyphicon-small glyphicon-arrow-up"></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="row">
@@ -107,29 +160,10 @@
                         <div class="devices d-flex flex-column m-0 p-0"></div>
                         <!-- </table> -->
                     </div>
-                    <div class="card-footer redfishing font-monospace font-small bg-transparent">
-                    </div>
                 </div>
             </div>
 
             <div class="col-lg-3">
-                <!--
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card text-bg-dark my-1">
-                            <div class="card-header">
-                                Wireless Clients
-                            </div>
-                            <div class="card-body" id="wireless-body">
-                                <table class="table table-sm table-hover table-dark table-borderless wireless m-0 p-0">
-
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                -->
-
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card text-bg-dark my-1">
@@ -155,41 +189,6 @@
                                 <div class="chart-container">
                                     <div id="chart-upload" class="chart-placeholder"></div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card text-bg-dark my-1 card-ping">
-                            <div class="card-header">
-                                DOCSIS Upstream (dBmV)
-                            </div>
-                            <div class="card-body docsis-signal text-center fs-5 m-0 py-2 mb-2">
-                                Measuring...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                -->
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card text-bg-dark my-1">
-                            <div class="card-header">
-                                Internet Traffic
-                            </div>
-                            <div class="card-body m-0 p-1 mb-1">
-                                <table class="table table-sm table-hover table-borderless router m-0 p-0 fs-5">
-                                    <tr id="router-rate">
-                                        <td><span class="glyphicon glyphicon-small glyphicon-arrow-down"></span></td>
-                                        <td><span class="rr-rx badge rounded-pill">..</span></td>
-                                        <td><span class="rr-tx badge rounded-pill">..</span></td>
-                                        <td><span class="glyphicon glyphicon-small glyphicon-arrow-up"></span></td>
-                                    </tr>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -259,20 +258,19 @@
                     </div>
                 </div>
 
-            </div>
-
-            <!--
-            <div class="col-lg-6">
-            <div class="card text-bg-dark my-1">
-                <div class="card-body">
-                    <table class="table table-condensed table-hover dns-activity">
-
-                    </table>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card text-bg-dark my-1">
+                            <div class="card-header">
+                              Server Monitoring
+                            </div>
+                            <div class="card-body w-100 redfishing font-monospace font-small bg-transparent">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                </div>
+
             </div>
-            </div>
-            -->
 
        </div>
 	</div>

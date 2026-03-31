@@ -50,7 +50,7 @@ var localpower = {
 // extracted from backlog python code
 let sensorsgroups = {
     // Desktop [Desktop, Kitchen, Bedroom]
-    '28-ffc5fe441603d7': ['28-ffc5fe441603d7', '28-ff641f43cac675', '28-3709b812210156'],
+    '28-ffc0d7021703c2': ['28-ffc0d7021703c2', '28-ff641f43cac675', '28-3709b812210156'],
 
     // Freezer: [Freezer (large), Freezer (small)]
     '28-ff23a602170371': ['28-ff23a602170371', '28-ff2f0103170457'],
@@ -58,14 +58,14 @@ let sensorsgroups = {
     // Fridge: [Fridge (food), Fridge (drink, top), Fridge (drink, low)]
     '28-ffd3b4021703e8': ['28-ffd3b4021703e8', '28-ff274345160329', '28-ffd656471603b4'],
 
-    // Boiler Room: [Boiler Room, Mezzanine]
-    '28-ff641e93a42b71': ['28-ff641e93a42b71', '28-8245ca122101dd'],
+    // Boiler Room: [Boiler Room, Mezzanine, Terrace]
+    '28-ff641e93a42b71': ['28-ff641e93a42b71', '28-8245ca122101dd', '28-1f55b4122101e7'],
 };
 
 var localsensors =  {
     "28-ff641e93a42b71": { // servers-room
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
-        'min': 15, 'max': 35, 'color': '#FF6B1A', 'threshold': 30,
+        'min': 0, 'max': 40, 'color': '#FF6B1A', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
     "10-000802776315": {
@@ -103,7 +103,7 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#90A19D', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
-    "28-ffc5fe441603d7": { // desktop
+    "28-ffc0d7021703c2": { // desktop
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 15, 'max': 35, 'color': '#196774', 'threshold': 30,
         'timestamp': 0, 'value': 0
@@ -138,6 +138,11 @@ var localsensors =  {
         'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
         'timestamp': 0, 'value': 0
     },
+    "28-ff641f75ab5b08": { // door locker
+        'high': 35,  'warn': 30,  'normal': 18,  'low': 15,
+        'min': 15, 'max': 35, 'color': '#649564', 'threshold': 30,
+        'timestamp': 0, 'value': 0
+    },
 };
 
 var extrasensors = {
@@ -147,6 +152,7 @@ var extrasensors = {
     "28-ff274345160329": {},
     "28-ffd656471603b4": {},
     "28-1f55b4122101e7": {},
+    "28-ff641f75ab5b08": {},
 };
 
 function update_sensors_time() {
@@ -472,7 +478,8 @@ var socket;
 var poweriter = 0;
 
 function connect() {
-    socket = new WebSocket("wss://" + window.location.hostname + "/websocket/dashboard");
+    // socket = new WebSocket("wss://" + window.location.hostname + "/websocket/dashboard");
+    socket = new WebSocket("ws://10.241.10.254:30501");
 
     socket.onopen = function() {
         console.log("websocket open");
