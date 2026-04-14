@@ -100,8 +100,9 @@ class DashboardServer():
 
     async def redis_reader(self, channel):
         while True:
-            message = await channel.get_message(ignore_subscribe_messages=True, timeout=0.1)
-            # print(message)
+            message = await channel.get_message(ignore_subscribe_messages=True, timeout=None)
+            if message is None:
+                continue
 
             if message and message['type'] == 'message':
                 handler = json.loads(message['data'])
@@ -159,54 +160,54 @@ class DashboardServer():
                 del self.clients[clientid]
                 del self.hosts[clientid]
 
-    async def process(self):
+    async def process_websocket(self):
+        # fetching instance settings
+        wslisten = dashconfig['ws-listen-addr']
+        wsport = dashconfig['ws-listen-port']
+
+        async with serve(self.websocket_handler, wslisten, wsport) as server:
+            print(f"[+] websocket: waiting for clients on: [{wslisten}:{wsport}]")
+            await server.serve_forever()
+
+    async def process_redis(self):
         # fetching instance settings
         redis_channel = "dashboard"
-        websocket_address = dashconfig['ws-listen-addr']
-        websocket_port = dashconfig['ws-listen-port']
+        while True:
+            print("[+] redis: connecting to backend with asyncio")
 
-        async with serve(self.websocket_handler, websocket_address, websocket_port):
-            print(f"[+] websocket: waiting for clients on: [{websocket_address}:{websocket_port}]")
-            future_ws = asyncio.get_running_loop().create_future()
+            try:
+                self.redis = redis.asyncio.Redis(
+                    decode_responses=True,
+                    client_name="dashboard-dispatcher"
+                )
 
-            while True:
-                print("[+] redis: connecting to backend with asyncio")
+                async with self.redis.pubsub() as pubsub:
+                    print(f"[+] redis: subscribing to: {redis_channel}")
+                    await pubsub.subscribe(redis_channel)
 
-                try:
-                    self.redis = redis.asyncio.Redis(
-                        # host=dashconfig['redis-host'],
-                        # port=dashconfig['redis-port'],
-                        decode_responses=True,
-                        client_name="dashboard-dispatcher"
-                    )
+                    print(f"[+] redis: waiting for events")
+                    await self.redis_reader(pubsub)
 
-                    async with self.redis.pubsub() as pubsub:
-                        print(f"[+] redis: subscribing to: {redis_channel}")
-                        await pubsub.subscribe(redis_channel)
+            except redis.exceptions.ConnectionError as error:
+                print(f"[-] redis: connection lost: {error} attempting to reconnect")
 
-                        print(f"[+] redis: waiting for events")
-                        future_redis = asyncio.create_task(self.redis_reader(pubsub))
-                        await future_redis
+                await asyncio.sleep(1)
+                continue
 
-                except redis.exceptions.ConnectionError as error:
-                    print(f"[-] redis: connection lost: {error} attempting to reconnect")
-
-                    await asyncio.sleep(1)
-                    continue
-
-                except Exception:
-                    print("[-] redis: unhandled exception, stopping")
-                    traceback.print_exc()
-                    return None
-
-            await future_ws
+            except Exception:
+                print("[-] redis: unhandled exception, stopping")
+                traceback.print_exc()
+                return None
 
     def run(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         loop.set_debug(True)
-        loop.run_until_complete(self.process())
+
+        loop.create_task(self.process_websocket())
+        loop.create_task(self.process_redis())
+
+        loop.run_forever()
 
 if __name__ == '__main__':
     dashboard = DashboardServer()
     dashboard.run()
-
