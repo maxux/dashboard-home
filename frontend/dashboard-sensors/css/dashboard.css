@@ -4,6 +4,22 @@ html {
     background-attachment: fixed;
 }
 
+@font-face {
+    font-family: "UbuntuSans";
+    src: url("../fonts/ubuntu-sans-variable.woff2") format("woff2 supports variations"),
+         url("../fonts/ubuntu-sans-variable.woff2") format("woff2-variations");
+    font-weight: 100 950;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "UbuntuSansMono";
+    src: url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2 supports variations"),
+         url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2-variations");
+    font-weight: 100 950;
+    font-style: normal;
+}
+
 html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
@@ -13,6 +29,7 @@ body {
     padding: 15px;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
+    letter-spacing: 0.03rem;
 }
 
 #wrapper {
@@ -21,39 +38,58 @@ body {
 
 .card {
     --bs-card-spacer-y: 0.4rem;
-    --bs-card-cap-bg: rgba(255, 255, 255, 0.05);
+    --bs-card-cap-bg: rgba(var(--bs-secondary-rgb), 0.1);
+}
+
+.card-header {
+    font-size: 1rem;
+    --bs-card-cap-padding-y: 0.4rem;
+    --bs-card-cap-padding-x: 0.8rem;
 }
 
 :root {
     --bs-bg-opacity: 0.4;
+    --bs-body-font-family: "UbuntuSans";
+    --bs-font-monospace: "UbuntuSansMono";
+    --bs-body-font-weight: 475;
 }
 
 #current-time {
     margin-top: 0;
-    font-size: 88px;
+    font-size: 5.4em;
+    line-height: 1.1;
+    letter-spacing: 0.3rem;
 }
 
 #current-date {
-    font-size: 42px;
+    font-size: 2.4em;
+    font-weight: 300;
 }
 
 #current-day {
-    font-size: 20px;
+    font-size: 1.6em;
+    font-weight: 200;
 }
 
-.power h2 {
+.card-power h2 {
     text-align: center;
     margin: 0;
     font-size: 50px;
 }
 
-.power .unit {
+.card-power .power-unit {
     font-size: 25px;
 }
 
-.value span.h {
+/*
+.card-power .value span.h {
     font-size: 15px;
     padding-left: 15px;
+}
+*/
+
+.power-spacer {
+    width: 12em;
 }
 
 .chart-container {
@@ -69,18 +105,52 @@ body {
     height: 100%;
 }
 
+/* **************** */
+
+.pony-card {
+    --bs-bg-opacity: 1;
+}
+
+.pony-card .title {
+    min-width: 120px;
+}
+
+.pony-card .title .badge {
+    font-weight: 700;
+}
+
+/* **************** */
+
 .ups-card {
     --bs-bg-opacity: 1;
 }
 
-.ups-head {
-    display: inline-block;
-    width: 85px;
+.ups-card > div > div {
+    display: flex;
+    align-items: center;
+    justify-content: left;
 }
 
-.ups-content {
-    display: inline-block;
-    width: 170px;
+.ups-card > div > div > div:first-child {
+    min-width: 85px;
+}
+
+.ups-card > div > div > div:first-child > span.badge {
+    font-weight: 700;
+}
+
+#ups-status {
+    text-transform: lowercase;
+}
+
+#ups-status:first-letter {
+    text-transform: uppercase;
+}
+
+
+
+.badge {
+    font-weight: 550;
 }
 
 

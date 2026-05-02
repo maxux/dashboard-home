@@ -1,42 +1,147 @@
+//
+// Resolve a single time elements and cache their addresses
+//
+function root_resolve_elements(group) {
+    for(var key in group) {
+        group[key] = document.getElementById(key);
+    }
+}
+
+//
+// Resolve a single time power elements (card root)
+//
+function power_resolve_elements(group) {
+    for(var key in group) {
+        if(key == "-1") {
+            continue;
+        }
+
+        for(var sub in group[key]) {
+            group[key][sub] = document.querySelector(`.card-power[data-channel='${sub}-${key}']`);
+        }
+    }
+
+    group["-1"] = true;
+}
+
+//
+// Round a duration based on highest unit available
+//
+function secondsToDuration(seconds) {
+    const distance = seconds;
+    if((distance / 86400) > 1) {
+        return {days: Math.floor(distance / 86400)};
+    }
+
+    if(((distance % 86400) / 3600) > 1) {
+        return {hours: Math.floor((distance % 86400) / 3600)};
+    }
+
+    if(((distance % 3600) / 60) > 1) {
+        return {minutes: Math.floor((distance % 3600) / 60)};
+    }
+
+    return {seconds: seconds}
+}
+
 function zlead(x) {
     return (x < 10) ? "0" + x : x;
 }
 
-Date.prototype.today = function() {
+Date.prototype.nicedate = function() {
     return this.getFullYear() + "-" + zlead(this.getMonth() + 1) + "-" + zlead(this.getDate());
 }
 
-Date.prototype.timeNow = function() {
+Date.prototype.nicetime = function() {
      return zlead(this.getHours()) + ":" + zlead(this.getMinutes()) + ":" + zlead(this.getSeconds());
 }
 
-Date.prototype.dayName = function() {
+Date.prototype.dayname = function() {
     return this.toLocaleDateString("en-US", {weekday: 'long'});
 }
 
-function update_time() {
-    var now = new Date();
+const time_elements = {
+    "current-time": null,
+    "current-date": null,
+    "current-day": null,
+};
 
-    $('#current-time').html(now.timeNow());
-    $('#current-date').html(now.today());
-    $('#current-day').html(now.dayName());
+const dummy_inner_text = {
+    innerText: "",
+};
 
-    update_sensors_time();
-    update_weather_time();
-    update_powers_time();
+//
+// Update every 'updated' flagged element to refresh it's Duration label
+// and update label color if no update occured for some time
+//
+function refresh_updated_badge() {
+    const xnow = new Date();
+    const now = xnow.getTime() / 1000;
 
-    /*
-    if(ups_live_cleared == false) {
-        console.log(now)
-        console.log(ups_live_updated);
-        console.log(now - ups_live_updated);
+    const dufmt = new Intl.DurationFormat("en", {style: "long"});
 
-        if(now - ups_live_updated > (30 * 60 * 1000)) {
-            $("#ups-live").removeClass(ups_classes).addClass("text-bg-dark");
-            ups_live_cleared = true;
+    document.querySelectorAll(".updated").forEach((update) => {
+        update.classList.remove(...ups_classes);
+
+        // Default timeout to 240 seconds
+        let timeout = 240;
+        let updater = update;
+
+        // Special element not updating label but only class
+        if(update.dataset.refresh && update.dataset.refresh == "class") {
+            updater = dummy_inner_text;
         }
+
+        // Element individual timeout optional override
+        if(update.dataset.timeout) {
+            timeout = parseInt(update.dataset.timeout);
+        }
+
+        // No timestamp attached yet
+        if(!update.dataset.timestamp) {
+            // Set a placeholder
+            updater.innerText = "...";
+            update.classList.add("text-bg-secondary");
+            return;
+        }
+
+        const timestamp = parseInt(update.dataset.timestamp);
+        const distance = Math.floor(now - timestamp);
+        const duration = secondsToDuration(distance);
+
+        // Updated just right now
+        if(distance < 1) {
+            updater.innerText = "just right now";
+            update.classList.add("text-bg-dark");
+            return;
+        }
+
+        // Updated a few moment ago or a long time ago
+        updater.innerText = `${dufmt.format(duration)} ago`;
+        if(distance > timeout) {
+            update.classList.add("text-bg-danger");
+
+        } else {
+            update.classList.add("text-bg-dark");
+        }
+    });
+}
+
+function update_time() {
+    const now = new Date();
+
+    // Resolve elements address a single time
+    if(time_elements["current-time"] == null) {
+        root_resolve_elements(time_elements);
     }
-    */
+
+    // Refresh current Time and Date
+    time_elements["current-time"].innerText = now.nicetime();
+    time_elements["current-date"].innerText = now.nicedate();
+    time_elements["current-day"].innerText = now.dayname();
+
+    // Refresh last update badges
+    refresh_updated_badge();
 }
 
 var localweather = {
@@ -155,56 +260,6 @@ var extrasensors = {
     "28-ff641f75ab5b08": {},
 };
 
-function update_sensors_time() {
-    var now = new Date();
-
-    for(var id in localsensors) {
-        var sensor = localsensors[id];
-
-        // skip unset values
-        if(sensor['timestamp'] == 0)
-            continue;
-
-        var elapsed = (now.getTime() / 1000) - sensor['timestamp'];
-        $('div.sensor-' + sensor['id'] + ' .badge').html(elapsed.toFixed(0) + ' seconds ago');
-        $('div.sensor-' + sensor['id'] + ' .badge').removeClass('text-danger');
-
-        if(elapsed > 240) {
-            $('div.sensor-' + sensor['id'] + ' .badge').addClass('text-danger');
-
-            if(elapsed > 7200) {
-                var hrs = (elapsed / 3600).toFixed(0);
-                $('div.sensor-' + sensor['id'] + ' .badge').html(hrs + ' hours ago');
-            }
-        }
-    }
-}
-
-function update_weather_time() {
-    var now = new Date();
-
-    if(localweather['timestamp'] == 0)
-        return;
-
-    var elapsed = (now.getTime() / 1000) - localweather['timestamp'];
-
-    if(elapsed > 120)
-        $('#weather-backtime').html((elapsed / 60).toFixed(0) + ' minutes ago');
-    else
-        $('#weather-backtime').html(elapsed.toFixed(0) + ' seconds ago');
-}
-
-function update_powers_time() {
-    var now = Date.now();
-
-    if(now > localpower["lastupdate"] + 5000) {
-        $('.panel-power-watt').addClass('system-error');
-        return;
-    }
-
-    $('.panel-power-watt').removeClass('system-error');
-}
-
 function sensor_color(id, value) {
     if(value > localsensors[id]['high'])
         return "text-danger"
@@ -224,11 +279,10 @@ function sensor_color(id, value) {
 function update_sensor(sensor) {
     $('div.sensor-' + sensor['id'] + ' .sname').css("color", sensor['color']);
 
-    /*
-    $('div.sensor-' + sensor['id'] + ' .sname')
-        .css("border-left", "solid 6px " + sensor['color'])
-        .css("padding-left", "8px");
-    */
+    const update = document.querySelector(`div.sensor-${sensor['id']} .updated`);
+    if(update) {
+        update.dataset.timestamp = sensor["timestamp"];
+    }
 
     $('div.sensor-' + sensor['id'] + ' .value span.t').attr("class", "t");
     $('div.sensor-' + sensor['id'] + ' .value span.t').addClass(sensor_color(sensor['id'], sensor['value']));
@@ -237,7 +291,33 @@ function update_sensor(sensor) {
     if(sensor['value-new'] != undefined)
         $('div.sensor-' + sensor['id'] + ' .value span.h').html('[' + sensor['value-new'].toFixed(0) + ' %]');
 
-    update_sensors_time();
+    // update_sensors_time();
+}
+
+//
+// power management
+//
+const power_elements = {
+    "-1": null,
+    "0": {"watt": null, "volt": null},
+    "1": {"watt": null, "volt": null},
+    "2": {"watt": null, "volt": null},
+    "3": {"watt": null, "volt": null},
+};
+
+function power_element_value(channel, sub) {
+    if(!power_elements[channel]) {
+        return null;
+    }
+
+    if(!power_elements[channel][sub]) {
+        return null;
+    }
+
+    const card = power_elements[channel][sub];
+
+    // .card-power > h2 > .power-value
+    return card.firstElementChild.firstElementChild;
 }
 
 //
@@ -266,153 +346,205 @@ function ups_value_prettify(data) {
 //
 // ups range coloring
 //
-const ups_classes = "text-bg-dark text-bg-success text-bg-warning text-bg-danger text-bg-info text-bg-secondary";
+const ups_classes = [
+    "text-bg-dark",
+    "text-bg-success",
+    "text-bg-warning",
+    "text-bg-danger",
+    "text-bg-info",
+    "text-bg-secondary"
+];
+
+const ups_elements = {
+    "ups-status": null,
+    "ups-date-update": null,
+    "ups-power-load": null,
+    "ups-power-watt": null,
+    "ups-battery-charge": null,
+    "ups-battery-voltage": null,
+    "ups-time-left": null,
+    "ups-output-voltage": null,
+    "ups-output-frequency": null,
+    "ups-internal-temperature": null,
+    "ups-live-time": null,
+    "ups-live-data": null,
+};
 
 function ups_status(target, value) {
-    target.html(value);
-    target.removeClass(ups_classes);
+    target.innerText = value;
+    target.classList.remove(...ups_classes);
 
     if(value == "ONLINE") {
-        target.addClass("text-bg-success");
+        target.classList.add("text-bg-success");
         return;
     }
 
-    target.addClass("text-bg-warning");
+    target.classList.add("text-bg-warning");
 }
 
 function ups_power_load(target, source) {
     const value = ups_value_percent(source);
-    target.html(ups_value_prettify(value));
-    target.removeClass(ups_classes);
+    target.innerText = ups_value_prettify(value);
+    target.classList.remove(...ups_classes);
 
     if(value[0] < 2)
-        return target.addClass("text-bg-primary");
+        return target.classList.add("text-bg-primary");
 
     if(value[0] < 48)
-        return target.addClass("text-bg-success");
+        return target.classList.add("text-bg-success");
 
     if(value[0] < 80)
-        return target.addClass("text-bg-warning");
+        return target.classList.add("text-bg-warning");
 
-    target.addClass("text-bg-danger");
+    target.classList.add("text-bg-danger");
 }
 
 function ups_power_watt(target, source) {
     const value = ups_value_percent(source);
     const watt = 1980 * (value[0] / 100);
 
-    target.html(ups_value_prettify(["~" + watt.toFixed(0), "w"]));
-    target.removeClass(ups_classes);
+    target.innerText = ups_value_prettify(["~" + watt.toFixed(0), "w"]);
+    target.classList.remove(...ups_classes);
 
     if(value[0] < 2)
-        return target.addClass("text-bg-primary");
+        return target.classList.add("text-bg-primary");
 
     if(value[0] < 48)
-        return target.addClass("text-bg-success");
+        return target.classList.add("text-bg-success");
 
     if(value[0] < 80)
-        return target.addClass("text-bg-warning");
+        return target.classList.add("text-bg-warning");
 
-    target.addClass("text-bg-danger");
+    target.classList.add("text-bg-danger");
 }
 
 function ups_battery_charge(target, source) {
     const value = ups_value_percent(source);
-    target.html(ups_value_prettify(value));
-    target.removeClass(ups_classes);
+    target.innerText = ups_value_prettify(value);
+    target.classList.remove(...ups_classes);
 
     if(value[0] < 21)
-        return target.addClass("text-bg-danger");
+        return target.classList.add("text-bg-danger");
 
     if(value[0] < 40)
-        return target.addClass("text-bg-warning");
+        return target.classList.add("text-bg-warning");
 
-    target.addClass("text-bg-success");
+    target.classList.add("text-bg-success");
 }
 
 function ups_battery_voltage(target, source) {
     const value = ups_value_voltage(source, 1);
-    target.html(ups_value_prettify(value));
-    target.removeClass(ups_classes);
-    target.addClass("text-bg-secondary");
+    target.innerText = ups_value_prettify(value);
+    target.classList.remove(...ups_classes);
+    target.classList.add("text-bg-secondary");
 }
 
 function ups_time_left(target, source) {
     const value = ups_value_minutes(source);
-    target.html(ups_value_prettify(value));
-    target.removeClass(ups_classes);
+    target.innerText = ups_value_prettify(value);
+    target.classList.remove(...ups_classes);
 
     if(value[0] < 20)
-        return target.addClass("text-bg-danger");
+        return target.classList.add("text-bg-danger");
 
     if(value[0] < 45)
-        return target.addClass("text-bg-warning");
+        return target.classList.add("text-bg-warning");
 
-    target.addClass("text-bg-success");
+    target.classList.add("text-bg-success");
 }
 
 function ups_output_voltage(target, source) {
     const value = ups_value_voltage(source, 0);
-    target.html(ups_value_prettify(value));
-    target.removeClass(ups_classes);
+    target.innerText = ups_value_prettify(value);
+    target.classList.remove(...ups_classes);
 
     if(value[0] > 243)
-        return target.addClass("text-bg-danger");
+        return target.classList.add("text-bg-danger");
 
     if(value[0] < 190)
-        return target.addClass("text-bg-danger");
+        return target.classList.add("text-bg-danger");
 
     if(value[0] < 220)
-        return target.addClass("text-bg-warning");
+        return target.classList.add("text-bg-warning");
 
-    target.addClass("text-bg-success");
+    target.classList.add("text-bg-success");
+}
+
+function ups_output_freq(target, source) {
+    target.innerText = source;
+    target.classList.remove(...ups_classes);
+    target.classList.add("text-bg-secondary");
+}
+
+function ups_last_update(target, source) {
+    // const items = source.split(" ");
+    // target.innerText = items[1];
+    target.dataset.timestamp = source;
 }
 
 function ups_internal_temperature(target, source) {
     const value = ups_value_temperature(source);
-    target.html(ups_value_prettify(value));
-    target.removeClass(ups_classes);
+    target.innerText = ups_value_prettify(value);
+    target.classList.remove(...ups_classes);
 
     if(value[0] < 31)
-        return target.addClass("text-bg-success");
+        return target.classList.add("text-bg-success");
 
     if(value[0] < 36)
-        return target.addClass("text-bg-warning");
+        return target.classList.add("text-bg-warning");
 
-    target.addClass("text-bg-danger");
+    target.classList.add("text-bg-danger");
 }
 
 //
 // ups main updater
 //
+
 function ups_update(ups) {
-    // console.log(ups);
-    ups_status($("#ups-status"), ups['STATUS']);
+    const x = (n) => { return ups_elements[n]; }
 
-    ups_power_load($("#ups-power-load"), ups['LOADPCT']);
-    ups_power_watt($("#ups-power-watt"), ups['LOADPCT']);
-    ups_battery_charge($("#ups-battery-charge"), ups['BCHARGE']);
-    ups_battery_voltage($("#ups-battery-voltage"), ups['BATTV']);
-    ups_time_left($("#ups-time-left"), ups['TIMELEFT']);
-    ups_output_voltage($("#ups-output-voltage"), ups['OUTPUTV']);
-    ups_internal_temperature($("#ups-internal-temperature"), ups['ITEMP']);
+    // Resolve a single time ups elements
+    if(ups_elements["ups-status"] == null) {
+        root_resolve_elements(ups_elements);
+    }
+
+    ups_status(x("ups-status"), ups['STATUS']);
+
+    ups_power_load(x("ups-power-load"), ups['LOADPCT']);
+    ups_last_update(x("ups-date-update"), ups['EPOCH']);
+    ups_power_watt(x("ups-power-watt"), ups['LOADPCT']);
+    ups_battery_charge(x("ups-battery-charge"), ups['BCHARGE']);
+    ups_battery_voltage(x("ups-battery-voltage"), ups['BATTV']);
+    ups_time_left(x("ups-time-left"), ups['TIMELEFT']);
+    ups_output_voltage(x("ups-output-voltage"), ups['OUTPUTV']);
+    ups_output_freq(x("ups-output-frequency"), ups['LINEFREQ']);
+    ups_internal_temperature(x("ups-internal-temperature"), ups['ITEMP']);
 }
-
-// var ups_live_updated = new Date();
-// var ups_live_cleared = true;
 
 function ups_live_update(event) {
-    let datestr = moment.unix(event['timestamp']).format("DD/MM HH:mm:ss");
+    const x = (n) => { return ups_elements[n]; }
 
-    $("#ups-live-time").html(datestr);
-    $("#ups-live-data").html(event['message']);
+    const datefmt = new Intl.DateTimeFormat("en", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
+    });
 
-    $("#ups-live-data").removeClass(ups_classes).addClass("text-bg-" + event['severity']);
+    const evtime = new Date(event["timestamp"] * 1000);
+    const xdatestr = datefmt.format(evtime);
 
-    // ups_live_cleared = false;
-    // ups_live_updated = new Date(event['timestamp'] * 1000);
+    x("ups-live-time").innerText = xdatestr;
+    x("ups-live-data").innerText = event["message"];
+
+    x("ups-live-data").classList.remove(...ups_classes);
+    x("ups-live-data").classList.add(`text-bg-${event['severity']}`);
 }
 
+/*
 function rain_chart(data) {
     // console.log(data);
 
@@ -440,6 +572,7 @@ function rain_chart(data) {
         yaxis: { min: 0, max: 9, show: false },
     });
 }
+*/
 
 function prettifyday(source) {
     var pretty = [];
@@ -502,7 +635,7 @@ function connect() {
                 $("#weather-wind").html(today['wind_speed_to'] + ' <span class="unit">km/h</span>');
                 $("#weather-hum").html(today['ppcp'] + ' <span class="unit">%</span>');
 
-                rain_chart(json['payload']['rain90min']['data']);
+                // rain_chart(json['payload']['rain90min']['data']);
             break;
 
             case "sensors":
@@ -524,25 +657,6 @@ function connect() {
                     $('div#extra-sensors-' + id + ' span.value').html(json['payload'][id]['value']);
                 }
             break;
-
-            /*
-            case "sensors-dht":
-                for(var id in json['payload']) {
-                    console.log(id);
-                    console.log(localsensors[id]);
-                    if(localsensors[id] != undefined) {
-                        localsensors[id]['timestamp'] = json['payload'][id]['timestamp'];
-                        localsensors[id]['value'] = json['payload'][id]['temperature'];
-                        localsensors[id]['id'] = id
-
-                        update_sensor(localsensors[id]);
-                    }
-
-                    $("#dht-" + id + " .temp").html(json['payload'][id]['temperature']);
-                    $("#dht-" + id + " .hum").html(json['payload'][id]['humidity']);
-                }
-            break;
-            */
 
             case "sensors-backlog":
                 var id = json['payload']["id"];
@@ -586,30 +700,46 @@ function connect() {
             break;
 
             case "power":
-                var total = 0;
+                if(!power_elements["-1"]) {
+                    power_resolve_elements(power_elements);
+                }
 
                 for(var channel in json['payload']) {
-                    var value = json['payload'][channel]['value'].toFixed(0);
-                    $('.power-value-channel-' + channel).html(value + ' <span class="unit">W</span>');
+                    const chaninfo = json["payload"][channel];
+
+                    if(!power_elements[channel]) {
+                        continue;
+                    }
+
+                    const group = power_elements[channel];
+
+                    for(var sub of ["watt", "volt"]) {
+                        const element = power_element_value(channel, sub);
+                        if(!element) {
+                            continue;
+                        }
+
+                        // value element
+                        element.innerText = chaninfo[sub].toFixed(0);
+
+                        // card timestamp holder
+                        group[sub].dataset.timestamp = chaninfo["timestamp"];
+                    }
+
+                    /*
+                    if(group["watt"]) {
+                        const watt = chaninfo["watt"].toFixed(0);
+                        group["watt"].querySelector("h2 .power-value").innerText = watt;
+                        group["watt"].dataset.timestamp = chaninfo["timestamp"];
+                    }
+
+                    if(group["volt"]) {
+                        const volt = chaninfo["volt"].toFixed(0);
+                        group["volt"].firstElementChild.innerText = volt;
+                        group["volt"].dataset.timestamp = chaninfo["timestamp"];
+                    }
+                    */
                 }
-
-                // special case
-                var diff = json['payload'][0]['value'] + json['payload'][1]['value'];
-
-                if(poweriter % 3 == 0) {
-                    // master - (channel 3 + channel 2) = channel 1
-                    var ch1 = json['payload'][2]['value'] - diff + 150;
-
-                    // don't allow negative number, except if this is a high
-                    // value which could be something wrong
-                    // if(ch1 < 0 && ch1 > -100)
-                    //    ch1 = 0;
-
-                    $('.power-value-channel-10').html(ch1.toFixed(0) + ' <span class="unit">W</span>');
-                }
-
-                poweriter += 1;
-                localpower['lastupdate'] = Date.now();
             break;
 
             case "power-backlog":
@@ -696,6 +826,19 @@ function connect() {
 
             case "ups-live":
                 ups_live_update(json['payload']);
+            break;
+
+            case "pony":
+                const state = json["payload"]["state"];
+                const stclass = {"up": "text-bg-success", "down": "text-bg-secondary"};
+                const statestr = {"up": "charging", "down": "discharging"};
+
+                document.querySelector(".pony-card .state").innerText = statestr[json["payload"]["state"]];
+                document.querySelector(".pony-card .state").classList.remove("text-bg-success", "text-bg-secondary");
+                document.querySelector(".pony-card .state").classList.add(stclass[state]);
+
+                document.querySelector(".pony-card .level").innerText = json["payload"]["level"] + " %";
+                document.querySelector(".pony-card .updated").dataset.timestamp = json["payload"]["update"];
             break;
 
             case "rtinfo":
