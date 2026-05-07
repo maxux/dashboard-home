@@ -6,11 +6,15 @@ from dashboard import DashboardSlave
 
 r = redis.Redis(decode_responses=True)
 slave = DashboardSlave("devices")
+slavefull = DashboardSlave("devices-full")
+
+backlog = {}
 
 while True:
     print("[+] local (dhcp) devices checker: updating")
 
     devices = {}
+    dirtyfull = False
 
     """
     dhclients = r.keys('dhcp-*')
@@ -31,7 +35,7 @@ while True:
         live = json.loads(payload)
 
         # ignore inactive client
-        if live['active'] < time.time() - (4 * 3600):
+        if live["active"] < time.time() - (4 * 3600):
             continue
 
         # dhcpfound = False
@@ -40,19 +44,37 @@ while True:
         if hostname:
             hostname = hostname.replace(".home.maxux.net", "")
 
-        devices[live['addr']] = {
-            "timestamp": live['active'],
-            "mac-address": live['macaddr'],
+        device = {
+            "timestamp": live["active"],
+            "mac-address": live["macaddr"],
             "hostname": hostname or None,
-            "ip-address": live['addr'],
-            "rx": live['rx'],
-            "tx": live['tx'],
-            "total-rx": live['total-rx'],
-            "total-tx": live['total-tx'],
+            "ip-address": live["addr"],
+            "rx": live["rx"],
+            "tx": live["tx"],
+            "total-rx": live["total-rx"],
+            "total-tx": live["total-tx"],
         }
 
-    print("[+] local devices checker: %d devices found" % len(devices))
+        # No backlog found, force include
+        if live["addr"] not in backlog:
+            devices[live["addr"]] = device
+            backlog[live["addr"]] = device
+            dirtyfull = True
+            continue
+
+        snapshot = backlog[live["addr"]]
+
+        for key in device:
+            if device[key] != snapshot[key]:
+                devices[live["addr"]] = device
+                backlog[live["addr"]] = device
+                break
+
+    print(f"[+] local devices checker: {len(devices)} devices found")
     slave.set(devices)
     slave.publish()
     slave.sleep(1)
 
+    if dirtyfull:
+        slavefull.set(backlog)
+        slavefull.publish()
