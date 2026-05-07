@@ -4,11 +4,33 @@ html {
     background-attachment: fixed;
 }
 
+@font-face {
+    font-family: "UbuntuSans";
+    src: url("../fonts/ubuntu-sans-variable.woff2") format("woff2 supports variations"),
+         url("../fonts/ubuntu-sans-variable.woff2") format("woff2-variations");
+    font-weight: 100 950;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "UbuntuSansMono";
+    src: url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2 supports variations"),
+         url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2-variations");
+    font-weight: 100 950;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "Glyphicons Halflings";
+  src: url("../fonts/glyphicons-halflings-regular.woff2") format("woff2");
+}
+
 body {
     min-height: 100vh;
     padding: 5px;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
+    letter-spacing: 0.03rem;
 }
 
 html::-webkit-scrollbar, body::-webkit-scrollbar {
@@ -17,6 +39,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 :root {
     --bs-bg-opacity: 0.4;
+    --bs-body-font-family: "UbuntuSans";
+    --bs-font-monospace: "UbuntuSansMono";
+    --bs-body-font-weight: 450;
 }
 
 .card {
@@ -80,7 +105,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 table.wireless tr {
     font-size: 14px;
-    font-family: monospace;
+    font-family: "UbuntuSansMono";
     line-height: 10px;
 }
 
@@ -89,44 +114,111 @@ table.wireless td:first-child {
 }
 
 /* devices */
-.devices {
+#network-devices {
+    display: flex;
+    flex-direction: column;
     font-size: 14px;
-    font-family: monospace;
+    font-family: "UbuntuSansMono";
     line-height: 18px;
 }
 
-.devices .dd-mac {
-    width: 160px;
+.device-node {
+    display: flex;
 }
 
-.devices .dd-ip {
-    width: 140px;
-}
-
-.devices .dd-host {
-    width: 280px;
-}
-
-.devices .dd-tx-parent, .devices .dd-rx-parent,
-.devices .dd-rx-total-parent, .devices .dd-tx-total-parent {
-    width: 7em;
-}
-
-.devices .dd-wireless {
-    width: 20em;
-}
-
-.devices .dd-online-parent {
-    width: 8em;
-}
-
-.devices .inactive {
+.device-node .badge {
     opacity: 0.3;
 }
 
-.devices .offline {
+.device-node .badge.active {
+    opacity: 1;
+}
+
+.device-node.offline {
+    opacity: 0.3;
+}
+
+.device-node .dd-mac {
+    width: 160px;
+}
+
+.device-node .dd-ip {
+    width: 140px;
+}
+
+.device-node .dd-host {
+    width: 280px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.device-node.gateway .dd-mac,
+.device-node.gateway .dd-ip,
+.device-node.gateway .dd-host {
+    color: #20c997;
+}
+
+.device-node.gateway .dd-host {
     opacity: 0.5;
 }
+
+.device-node .dd-tx-parent,
+.device-node .dd-rx-parent,
+.device-node .dd-rx-total-parent,
+.device-node .dd-tx-total-parent {
+    width: 7em;
+}
+
+.device-node .dd-wireless {
+    width: 20em;
+}
+
+.device-node .dd-online-parent {
+    width: 8em;
+}
+
+.device-node .inactive {
+    opacity: 0.3;
+}
+
+.device-node .offline {
+    opacity: 0.5;
+}
+
+/* Devices Arrow */
+.device-node .dd-rx::before,
+.device-node .dd-rx-total::before,
+#router-rate .rr-rx::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e094";
+    font-size: 0.50rem;
+    position: relative;
+    top: 1px;
+    margin-right: 0.40rem;
+    line-height: 1.1;
+}
+
+#router-rate .rr-rx::before {
+    font-size: 0.70rem;
+}
+
+.device-node .dd-tx::before,
+.device-node .dd-tx-total::before,
+#router-rate .rr-tx::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e093";
+    font-size: 0.50rem;
+    position: relative;
+    top: 1px;
+    margin-right: 0.40rem;
+    line-height: 1.1;
+}
+
+#router-rate .rr-tx::before {
+    font-size: 0.70rem;
+}
+
 
 table.router td:first-child, table.router td:last-child,
 table.core-room-switch td:first-child, table.core-room-switch td:last-child {
@@ -213,34 +305,11 @@ tr.spacer {
     height: 15px;
 }
 
-
-
-@font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url("../fonts/glyphicons-halflings-regular.eot");
-  src: url("../fonts/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/glyphicons-halflings-regular.woff2") format("woff2"), url("../fonts/glyphicons-halflings-regular.woff") format("woff"), url("../fonts/glyphicons-halflings-regular.ttf") format("truetype"), url("../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
-}
-
-.glyphicon {
-  position: relative;
-  top: 1px;
-  display: inline-block;
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
-  font-weight: normal;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-}
-
+/*
 .glyphicon-signal:before {
-  content: "\e018"; }
-
-.glyphicon-arrow-up:before {
-  content: "\e093"; }
-
-.glyphicon-arrow-down:before {
-  content: "\e094"; }
-
+  content: "\e018";
+}
+*/
 
 #core-switch-system, #room-switch-system {
     display: flex;
@@ -249,7 +318,7 @@ tr.spacer {
 }
 
 #core-switch-system div, #room-switch-system div {
-    font-family: monospace;
+    font-family: "UbuntuSansMono";
 }
 
 .cpu-root, .ram-root {
@@ -258,10 +327,4 @@ tr.spacer {
 
 .load-root {
     width: 46%;
-}
-
-.device-node.gateway .dd-mac,
-.device-node.gateway .dd-ip,
-.device-node.gateway .dd-host {
-    color: #20c997;
 }
