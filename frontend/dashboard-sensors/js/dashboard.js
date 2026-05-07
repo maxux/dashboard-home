@@ -616,7 +616,15 @@ function connect() {
 
     socket.onopen = function() {
         console.log("websocket open");
-        $('#disconnected').hide();
+        document.getElementById("disconnected").classList.add("d-none")
+
+        const register = {
+            "id": "register",
+            "name": "dashboard-sensors",
+            "watch": ["weather", "sensors", "sensors-backlog", "power", "power-backlog", "power-backlog-days", "ups", "ups-live", "pony"],
+        };
+
+        socket.send(JSON.stringify(register));
     }
 
     socket.onmessage = function(msg) {

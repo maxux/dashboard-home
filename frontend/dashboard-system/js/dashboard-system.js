@@ -742,7 +742,14 @@ function connect() {
 
     socket.onopen = function() {
         console.log("websocket open");
-        $('#disconnected').hide();
+
+        const register = {
+            "id": "register",
+            "name": "dashboard-system",
+            "watch": ["ups", "rtinfo", "ping", "wireless", "devices", "redfishing", "switch-status"],
+        };
+
+        socket.send(JSON.stringify(register));
     }
 
     socket.onmessage = function(msg) {

@@ -27,6 +27,7 @@ class DashboardServer():
     def __init__(self):
         self.clients = {}
         self.hosts = {}
+        self.filters = {}
         self.payloads = {}
 
     """
@@ -87,6 +88,26 @@ class DashboardServer():
         except Exception as error:
             print(error)
 
+    async def broadcast_clients_filters(self, data):
+        # payload = self.format_payload(clientid, handler['id'], handler['payload'])
+        payload = self.format_payload(data["id"], data["payload"])
+
+        try:
+            for clientid in self.filters:
+                if self.filters[clientid].get(data["id"]):
+                    print(f"[+] forwarding [{data['id']}] to [{clientid}]")
+                    await self.clients[clientid].send(payload)
+
+        except websockets.exceptions.ConnectionClosedError as error:
+            print(error)
+
+        except websockets.exceptions.ConnectionClosedOK as error:
+            print(error)
+
+        except Exception as error:
+            print(error)
+
+
     # def format_payload(self, clientid, type, payload):
     def format_payload(self, type, payload):
         """
@@ -119,7 +140,8 @@ class DashboardServer():
                     "payload": handler['payload'],
                 }
 
-                await self.broadcast_clients(handler)
+                # await self.broadcast_clients(handler)
+                await self.broadcast_clients_filters(handler)
 
     async def websocket_handler(self, websocket):
         clientid = str(uuid.uuid4())
@@ -133,20 +155,29 @@ class DashboardServer():
 
             self.hosts[clientid] = clienthost
             self.clients[clientid] = websocket
-
-            for id in self.payloads:
-                item = self.payloads[id]
-                print("[+] sending backlog: %s (%s)" % (id, item['id']))
-
-                # payload = self.format_payload(clientid, item['id'], item['payload'])
-                payload = self.format_payload(item['id'], item['payload'])
-                await websocket.send(payload)
+            self.filters[clientid] = {}
 
             # request a quick latency checking
             await websocket.ping()
 
-            # do not listen for client messages
-            await websocket.wait_closed()
+            while True:
+                data = await websocket.recv(decode=False)
+                message = json.loads(data)
+
+                if "id" in message and message["id"] == "register":
+                    if "watch" in message:
+                        for watch in message["watch"]:
+                            print(f"[+] websocket: client {clientid}: watching for {watch}")
+                            self.filters[clientid][watch] = True
+
+                            # sending backlog if available
+                            if self.payloads.get(watch):
+                                item = self.payloads[watch]
+
+                                print(f"[+] websocket: client {clientid}: sending backlog: {watch}")
+                                payload = self.format_payload(item["id"], item['payload'])
+
+                                await websocket.send(payload)
 
         except websockets.exceptions.ConnectionClosedError:
             print(f"[-][{clientid}] connection closed prematurely")
@@ -159,6 +190,7 @@ class DashboardServer():
                 print(f"[+][{clientid}] cleaning up clients list")
                 del self.clients[clientid]
                 del self.hosts[clientid]
+                del self.filters[clientid]
 
     async def process_websocket(self):
         # fetching instance settings
