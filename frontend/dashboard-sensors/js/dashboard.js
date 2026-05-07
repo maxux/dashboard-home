@@ -620,7 +620,7 @@ function connect() {
     }
 
     socket.onmessage = function(msg) {
-        json = JSON.parse(msg.data);
+        const json = JSON.parse(msg.data);
         // console.log(json);
 
         switch(json['type']) {
