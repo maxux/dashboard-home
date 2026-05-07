@@ -18,6 +18,8 @@ class DashboardBacklog():
         self.slave_power_backlog = DashboardSlave("power-backlog")
         self.slave_power_backlog_days = DashboardSlave("power-backlog-days")
 
+        self.db = None
+
     def remote_database(self):
         db = pymysql.connect(
             host=dashconfig['db-sensors-host'],
@@ -32,10 +34,8 @@ class DashboardBacklog():
     def power_backlog_fetch(self):
         print("[+] power backlogger: fetching 24h")
 
-        db = self.remote_database()
-
         # Today
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""
             SELECT DATE_FORMAT(timewin, '%m-%d %Hh') byhour, value
             FROM power_summary
@@ -54,7 +54,7 @@ class DashboardBacklog():
 
         # 30 days backlog
         print("[+] power backlogger: fetching 30 days")
-        cursor = db.cursor(pymysql.cursors.DictCursor)
+        cursor = self.db.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT DATE_FORMAT(timewin, '%Y-%m-%d') xday, phase, sum(value) kwh FROM power_summary
             WHERE timewin > CURRENT_DATE - INTERVAL 30 DAY
@@ -86,13 +86,10 @@ class DashboardBacklog():
         self.slave_power_backlog_days.set(parsed)
         self.slave_power_backlog_days.publish()
 
-        db.close()
-
     def sensors_backlog(self, id):
         limit = 600
 
-        db = self.remote_database()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
 
         rows = (id, limit)
         cursor.execute("""
@@ -106,15 +103,12 @@ class DashboardBacklog():
         for entry in cursor.fetchall():
             array.append([entry[0] * 1000, entry[1] / 1000])
 
-        db.close()
-
         return [array]
 
     def sensors_group_backlog(self, id):
         series = []
 
-        db = self.remote_database()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
 
         for nid in self.sensorsgrp[id]:
             cursor.execute("""
@@ -131,11 +125,11 @@ class DashboardBacklog():
 
             series.append({"data": array})
 
-        db.close()
-
         return series
 
     def run(self):
+        self.db = self.remote_database()
+
         for name in self.sensors:
             if name in self.sensorsgrp:
                 print("[+] sensors backlog: fetching group [%s]" % name)
@@ -150,6 +144,8 @@ class DashboardBacklog():
         self.power_backlog_fetch()
 
         print("[+] done, waiting next time")
+        self.db.close()
+
         time.sleep(5 * 60)
 
 if __name__ == '__main__':
