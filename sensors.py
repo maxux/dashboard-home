@@ -14,13 +14,25 @@ class DashboardSensors():
 
         self.power = {100: {
             'timestamp': 0,
-            'value': 0,
+            'watt': 0,
+            'volt': 0,
         }}
+
+        self.db = None
 
         self.slave_sensors = DashboardSlave("sensors")
         self.slave_power = DashboardSlave("power")
 
-    # dropped crappy ugly http server
+        # only commit data when phase 0, 1 and 2 arrived
+        self.power_needed = {0: True, 1: True, 2: True}
+        self.power_missing = None
+        self.power_buffer = None
+
+        self.power_buffer_reset()
+
+    def power_buffer_reset(self):
+        self.power_missing = self.power_needed.copy()
+        self.power_buffer = {}
 
     def remote_database(self):
         db = pymysql.connect(
@@ -34,8 +46,7 @@ class DashboardSensors():
         return db
 
     def power_summary_save(self, timewin, phase, value):
-        db = self.remote_database()
-        cursor = db.cursor(pymysql.cursors.DictCursor)
+        cursor = self.db.cursor(pymysql.cursors.DictCursor)
 
         data = {
             "timewin": timewin,
@@ -49,9 +60,6 @@ class DashboardSensors():
             VALUES (%(timewin)s, %(phase)s, %(value)s)
 
         """, data)
-
-        db.close()
-
 
     def aggregate_watt_hour(self, key):
         items = self.aggregator.lrange(key, 0, -1)
@@ -106,7 +114,8 @@ class DashboardSensors():
         }
 
         phase = phmap[data[2]]
-        value = int(float(data[3]))
+        watt = int(float(data[3]))
+        volt = int(float(data[4]))
         timestamp = int(float(data[1]))
 
         timekey = self.timekey()
@@ -118,8 +127,8 @@ class DashboardSensors():
         #
         # aggregation reducing database from 6 GB (252M rows) to 5.5 MB (182k rows)
         #
-        print(f"[+] power: phase {phase}: {timestamp}, group: {timekey}, value: {value} watt")
-        length = self.aggregator.rpush(f"dataset:power:{phase}:{timekey}", value)
+        print(f"[+] power: phase {phase}: {timestamp}, group: {timekey}, watt: {watt}, volt: {volt}")
+        length = self.aggregator.rpush(f"dataset:power:{phase}:{timekey}", watt)
 
         if length == 1:
             print("[+] timekey: new list detected, starting aggregation")
@@ -127,11 +136,28 @@ class DashboardSensors():
 
         self.power[phase] = {
             'timestamp': int(timestamp),
-            'value': float(value),
+            'watt': float(watt),
+            'volt': float(volt),
         }
 
-        self.slave_power.set(self.power)
-        self.slave_power.publish()
+        self.power_buffer[phase] = self.power[phase]
+        if phase in self.power_missing:
+            del self.power_missing[phase]
+
+        if len(self.power_missing) == 0:
+            print("[+] power: computing phase difference")
+            self.power_buffer[3] = {
+                'timestamp': int(timestamp),
+                'watt': self.power[2]["watt"] - self.power[1]["watt"] - self.power[0]["watt"],
+                'volt': 0,
+            }
+
+            print("[+] power: sending batch to dashboard")
+            self.slave_power.set(self.power_buffer)
+            self.slave_power.publish()
+
+            # Reset buffer
+            self.power_buffer_reset()
 
     def handle_ds18b20(self, data):
         group = {
@@ -147,8 +173,7 @@ class DashboardSensors():
             print(f"[-] sensors: incorrect value detected, ignoring")
             return False
 
-        db = self.remote_database()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
 
         #
         # keep pushing temperature sensors into database directly
@@ -178,14 +203,12 @@ class DashboardSensors():
         self.slave_sensors.set(self.sensors_last)
         self.slave_sensors.publish()
 
-        db.close()
-
 
     #
     # main consumer loop
     #
     def broker(self, name):
-        return redis.Redis(dashconfig['redis-host'], dashconfig['redis-port'], decode_responses=True, client_name=name)
+        return redis.Redis(unix_socket_path=dashconfig['redis-sock'], decode_responses=True, client_name=name)
 
     def run(self):
         self.listener = self.broker("sensors-listener")
@@ -206,7 +229,9 @@ class DashboardSensors():
     def loop(self):
         while True:
             try:
+                self.db = self.remote_database()
                 sensors.run()
+                self.db.close()
 
             except redis.exceptions.ConnectionError as error:
                 print(f"[-] redis: connection lost: {error} attempting to reconnect")
