@@ -5,12 +5,10 @@ from config import dashconfig
 from dashboard import DashboardSlave
 
 syslog.openlog("redfish")
-
 slave = DashboardSlave("redfishing")
 
 remote = redis.Redis(
-    host=dashconfig['redis-host'],
-    port=dashconfig['redis-port'],
+    unix_socket_path=dashconfig['redis-sock'],
     client_name="redfishing-listener",
     decode_responses=True
 )
@@ -21,22 +19,16 @@ pubsub.subscribe("redfishing-live")
 print("[+] redfishing: waiting for notifications")
 
 while True:
-    # try:
-    message = pubsub.get_message(ignore_subscribe_messages=True, timeout=1)
-    if message is None:
-        continue
+    for message in pubsub.listen():
+        if message["type"] != "message":
+            continue
 
-    payload = json.loads(message['data'])
+        data = json.loads(message["data"])
+        formatted = f"[{data['messageid']}] {data['message']}"
 
-    p = payload
-    formatted = f"{p['source']}: [{p['messageid']}] {p['message']}"
+        if data['messageid'] not in ['USR0030', 'USR0032'] and data.get("backlog") is None:
+            syslog.syslog(formatted)
 
-    if p['messageid'] not in ['USR0030', 'USR0032']:
-        syslog.syslog(formatted)
-
-    print(f"[+] forwarding: {payload}")
-    slave.set(payload)
-    slave.publish()
-
-     # except Exception as e:
-     #    print(e)
+        print(f"[+] forwarding: {data}")
+        slave.set(data)
+        slave.publish()
