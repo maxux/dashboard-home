@@ -153,7 +153,7 @@ var localpower = {
 };
 
 // extracted from backlog python code
-let sensorsgroups = {
+let sensors_groups = {
     // Desktop [Desktop, Kitchen, Bedroom]
     '28-ffc0d7021703c2': ['28-ffc0d7021703c2', '28-ff641f43cac675', '28-3709b812210156'],
 
@@ -167,7 +167,7 @@ let sensorsgroups = {
     '28-ff641e93a42b71': ['28-ff641e93a42b71', '28-8245ca122101dd', '28-1f55b4122101e7'],
 };
 
-var localsensors =  {
+const sensors_parameters =  {
     "28-ff641e93a42b71": { // servers-room
         'high': 28,  'warn': 25,  'normal': 18,  'low': 15,
         'min': 0, 'max': 40, 'color': '#FF6B1A', 'threshold': 30,
@@ -250,6 +250,7 @@ var localsensors =  {
     },
 };
 
+/*
 var extrasensors = {
     "28-ffc0d7021703c2": {},
     "28-ffc5fe441603d7": {},
@@ -259,24 +260,55 @@ var extrasensors = {
     "28-1f55b4122101e7": {},
     "28-ff641f75ab5b08": {},
 };
+*/
 
-function sensor_color(id, value) {
-    if(value > localsensors[id]['high'])
+const sensors_classes = [
+    "text-danger",
+    "text-warning",
+    "text-success",
+    "text-primary",
+    "text-muted"
+];
+
+function sensor_color(source, value) {
+    if(value > source["high"])
         return "text-danger"
 
-    if(value > localsensors[id]['warn'])
+    if(value > source["warn"])
         return "text-warning";
 
-    if(value > localsensors[id]['normal'])
+    if(value > source["normal"])
         return "text-success";
 
-    if(value > localsensors[id]['low'])
+    if(value > source["low"])
         return "text-primary";
 
     return "text-muted";
 }
 
-function update_sensor(sensor) {
+function sensors_update_item(sensor) {
+    const root = document.getElementById(`sensor-${sensor.id}`);
+
+    // Skip undefined sensors layout
+    if(!root) {
+        return;
+    }
+
+    root.querySelector(".label").style.color = sensor["color"];
+
+    const value = root.querySelector(".value");
+    value.innerText = `${sensor["value"].toFixed(2)}°C`;
+    value.classList.remove(...sensors_classes);
+    value.classList.add(sensor_color(sensor, sensor["value"]));
+
+    const update = root.querySelector(".updated");
+    if(update) {
+        update.dataset.timestamp = sensor["timestamp"];
+    }
+}
+
+/*
+function __update_sensor(sensor) {
     $('div.sensor-' + sensor['id'] + ' .sname').css("color", sensor['color']);
 
     const update = document.querySelector(`div.sensor-${sensor['id']} .updated`);
@@ -293,6 +325,7 @@ function update_sensor(sensor) {
 
     // update_sensors_time();
 }
+*/
 
 //
 // power management
@@ -621,7 +654,17 @@ function connect() {
         const register = {
             "id": "register",
             "name": "dashboard-sensors",
-            "watch": ["weather", "sensors", "sensors-backlog", "power", "power-backlog", "power-backlog-days", "ups", "ups-live", "pony"],
+            "watch": [
+                "weather",
+                "sensors-backlog",
+                "sensors",
+                "power",
+                "power-backlog",
+                "power-backlog-days",
+                "ups",
+                "ups-live",
+                "pony"
+            ],
         };
 
         socket.send(JSON.stringify(register));
@@ -631,29 +674,45 @@ function connect() {
         const json = JSON.parse(msg.data);
         // console.log(json);
 
-        switch(json['type']) {
+        switch(json["type"]) {
             case "weather":
                 // console.log(json['payload'])
-                localweather['timestamp'] = json['payload']['updated'];
-                var today = json['payload']['zone']['today'];
+                localweather["timestamp"] = json["payload"]["updated"];
+                var today = json["payload"]["zone"]["today"];
 
-                $("#weather-city").html("Liège");
-                $("#weather-backtime").html("Right now");
-                $("#weather-temperature").html(today['temp'] + '°C');
-                $("#weather-wind").html(today['wind_speed_to'] + ' <span class="unit">km/h</span>');
-                $("#weather-hum").html(today['ppcp'] + ' <span class="unit">%</span>');
+                // document.getElementById("weather-city").innerText = "Liège";
+                // document.getElementById("weather-backtime").innerText = "Right now";
+                document.getElementById("weather-temperature").innerText = `${today['temp']}°C`;
+                document.getElementById("weather-wind").innerText = `${today['wind_speed_to']} km/h`;
+                document.getElementById("weather-hum").innerText = `${today['ppcp']} %`;
 
                 // rain_chart(json['payload']['rain90min']['data']);
             break;
 
             case "sensors":
+                for(let sensor of Object.values(json["payload"])) {
+                    const local = sensors_parameters[sensor.id];
+
+                    // Skip unknown sensors
+                    if(!local) {
+                        continue;
+                    }
+
+                    local["timestamp"] = sensor["timestamp"];
+                    local["value"] = sensor["value"] / 1000;
+                    local["id"] = sensor["id"];
+
+                    sensors_update_item(local);
+                }
+
+                /*
                 for(var id in json['payload']) {
                     if(localsensors[id] == undefined)
                         continue;
 
-                    localsensors[id]['timestamp'] = json['payload'][id]['timestamp'];
-                    localsensors[id]['value'] = json['payload'][id]['value'] / 1000;
-                    localsensors[id]['id'] = id
+                    localsensors[id]["timestamp"] = json["payload"][id]["timestamp"];
+                    localsensors[id]["value"] = json["payload"][id]["value"] / 1000;
+                    localsensors[id]["id"] = id
 
                     update_sensor(localsensors[id]);
                 }
@@ -664,21 +723,22 @@ function connect() {
 
                     $('div#extra-sensors-' + id + ' span.value').html(json['payload'][id]['value']);
                 }
+                */
             break;
 
             case "sensors-backlog":
-                var id = json['payload']["id"];
+                const id = json["payload"]["id"];
 
-                if(localsensors[id] == undefined)
+                if(!sensors_parameters[id])
                     break;
 
-                if(sensorsgroups[id] == undefined)
+                if(!sensors_groups[id])
                     break;
 
                 // colors lines based on sensor color defined
                 var colors = [];
-                for(let i in sensorsgroups[id])
-                    colors.push(localsensors[sensorsgroups[id][i]]['color']);
+                for(let i in sensors_groups[id])
+                    colors.push(sensors_parameters[sensors_groups[id][i]]['color']);
 
                 $.plot("#chart-" + id, json['payload']['serie'], {
                     colors: colors,
@@ -696,8 +756,8 @@ function connect() {
                         align: "center",
                     },
                     yaxis: {
-                        min: localsensors[id]['min'],
-                        max: localsensors[id]['max'],
+                        min: sensors_parameters[id]['min'],
+                        max: sensors_parameters[id]['max'],
                         tickFormatter: function(v, axis) { return v.toFixed(0) + "°C"; },
                     },
                     grid: {

@@ -5,66 +5,26 @@ html {
 }
 
 @font-face {
-    font-family: "UbuntuSans";
-    src: url("../fonts/ubuntu-sans-variable.woff2") format("woff2 supports variations"),
-         url("../fonts/ubuntu-sans-variable.woff2") format("woff2-variations");
-    font-weight: 100 950;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "UbuntuSansMono";
-    src: url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2 supports variations"),
-         url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2-variations");
-    font-weight: 100 950;
-    font-style: normal;
-}
-
-@font-face {
-  font-family: "Glyphicons Halflings";
-  src: url("../fonts/glyphicons-halflings-regular.woff2") format("woff2");
+    font-family: "Glyphicons Halflings";
+    src: url("../fonts/glyphicons-halflings-regular.woff2") format("woff2");
 }
 
 body {
     min-height: 100vh;
-    padding: 5px;
+    padding: 1rem 0 0.2rem 0;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
-    letter-spacing: 0.03rem;
 }
 
 html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
 
-:root {
-    --bs-bg-opacity: 0.4;
-    --bs-body-font-family: "UbuntuSans";
-    --bs-font-monospace: "UbuntuSansMono";
-    --bs-body-font-weight: 450;
-}
-
-.card {
-    --bs-card-spacer-y: 0.4rem;
-    --bs-card-cap-bg: rgba(255, 255, 255, 0.05);
-}
-
-.badge {
-    --bs-bg-opacity: 1;
-}
-
-.table-dark {
-    --bs-table-bg: transparent;
-}
-
 .table-sm .badge {
     padding: 0.25em 0.5rem 0.25rem 0.5rem;
 }
 
-/* background fix */
-#wrapper {
-    background: transparent !important;
-}
+/* ###################### */
 
 .node-down {
     opacity: 0.3;
@@ -72,6 +32,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .rtinfo table {
     font-size: 14px;
+    font-family: var(--bs-font-monospace);
+    background: transparent;
+    margin: 0;
 }
 
 .rtinfo table thead {
@@ -94,9 +57,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .td-2 { width: 2%; }
 .td-1 { width: 1%; }
 
+/* ############################ */
+
+.card-ping .card-header {
+    font-family: var(--bs-font-monospace);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .ping-reply {
     text-align: center;
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
 .wfix {
@@ -175,7 +147,8 @@ table.wireless td:first-child {
 }
 
 .device-node .dd-online-parent {
-    width: 8em;
+    width: 9em;
+    text-align: right;
 }
 
 .device-node .inactive {
@@ -219,6 +192,17 @@ table.wireless td:first-child {
     font-size: 0.70rem;
 }
 
+#router-rate.card-body {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+}
+
+#router-rate > div {
+    width: 50%;
+    text-align: center;
+}
+
 
 table.router td:first-child, table.router td:last-child,
 table.core-room-switch td:first-child, table.core-room-switch td:last-child {
@@ -240,10 +224,12 @@ table.router td, table.core-room-switch td {
     to { text-shadow : none; }
 }
 
+/*
 .text-danger {
     animation: redshadow 1s infinite ease-in-out alternate;
     font-weight: bold;
 }
+*/
 
 .discard {
     animation: overlight 1s infinite ease-in-out alternate;
@@ -327,4 +313,13 @@ tr.spacer {
 
 .load-root {
     width: 46%;
+}
+
+.redfishing {
+    font-family: var(--bs-font-monospace);
+}
+
+.redfishing .badge.message {
+    text-wrap: wrap;
+    width: 100%;
 }

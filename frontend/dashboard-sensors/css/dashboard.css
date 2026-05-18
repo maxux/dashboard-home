@@ -4,38 +4,18 @@ html {
     background-attachment: fixed;
 }
 
-@font-face {
-    font-family: "UbuntuSans";
-    src: url("../fonts/ubuntu-sans-variable.woff2") format("woff2 supports variations"),
-         url("../fonts/ubuntu-sans-variable.woff2") format("woff2-variations");
-    font-weight: 100 950;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "UbuntuSansMono";
-    src: url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2 supports variations"),
-         url("../fonts/ubuntu-sans-mono-variable.woff2") format("woff2-variations");
-    font-weight: 100 950;
-    font-style: normal;
-}
-
 html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
 
 body {
     min-height: 100vh;
-    padding: 15px;
+    padding: 1rem 0 0.2rem 0;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
-    letter-spacing: 0.03rem;
 }
 
-#wrapper {
-    background: transparent !important;
-}
-
+/*
 .card {
     --bs-card-spacer-y: 0.4rem;
     --bs-card-cap-bg: rgba(var(--bs-secondary-rgb), 0.1);
@@ -43,7 +23,7 @@ body {
 
 .card-header {
     font-size: 1rem;
-    --bs-card-cap-padding-y: 0.4rem;
+    --bs-card-cap-padding-y: 0.5rem;
     --bs-card-cap-padding-x: 0.8rem;
 }
 
@@ -53,6 +33,52 @@ body {
     --bs-font-monospace: "UbuntuSansMono";
     --bs-body-font-weight: 475;
 }
+*/
+
+
+/* ################################################# */
+
+.temperature-sensors {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    line-height: 1.8rem;
+}
+
+.temperature-sensors .label {
+    width: 14rem;
+}
+
+.temperature-sensors .value {
+    font-family: var(--bs-font-monospace);
+}
+
+.temperature-sensors .timestamp {
+    margin-left: auto;
+}
+
+.sensors-extra {
+    display: flex;
+    gap: 10rem;
+}
+
+.sensors-extra .temperature-sensors {
+    line-height: 1rem;
+}
+
+.sensors-extra .temperature-sensors div {
+    width: 10em;
+}
+
+.sensors-extra .extra-weather {
+    margin-left: auto;
+}
+
+
+
+
+
+/* ################################################# */
 
 #current-time {
     margin-top: 0;
@@ -107,8 +133,16 @@ body {
 
 /* **************** */
 
+/*
 .pony-card {
     --bs-bg-opacity: 1;
+}
+*/
+
+.pony-card > div {
+    display: flex;
+    justify-content: start;
+    align-items: center;
 }
 
 .pony-card .title {
@@ -122,7 +156,11 @@ body {
 /* **************** */
 
 .ups-card {
+    /*
     --bs-bg-opacity: 1;
+    */
+    display: flex;
+    gap: 2.5rem;
 }
 
 .ups-card > div > div {
@@ -147,83 +185,6 @@ body {
     text-transform: uppercase;
 }
 
-
-
 .badge {
     font-weight: 550;
 }
-
-
-/*
-.row-sensor {
-    font-size: 130%;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.row-sensor .value {
-    font-family: monospace;
-}
-
-.row-sensor .updated {
-    text-align: right;
-}
-
-.panel-body-light {
-}
-
-.panel-final {
-    margin-bottom: 0;
-}
-
-.extrasensors .value, .extrasensors .temp {
-    font: monospace;
-    color: #97bad8;
-}
-
-.extrasensors .hum {
-    font: monospace;
-    color: #afb7bd;
-}
-
-@keyframes blinker {
-    50% { opacity: 0; }
-}
-
-#disconnected {
-    position: absolute;
-    bottom: 5px;
-    right: 15px;
-    color: #A52A2A;
-    font-weight: bold;
-    animation: blinker 1s linear infinite;
-}
-
-@keyframes error-blinker {
-    50% { background-color: #222222; }
-}
-
-.system-error {
-    background-color: #792525;
-    animation: error-blinker 2s infinite;
-}
-
-@media (max-width: 640px) {
-    .row-sensor {
-        text-align: center;
-    }
-
-    .row-sensor .updated {
-        text-align: center;
-    }
-
-    #current-time {
-        margin-top: 0;
-        font-size: 50px;
-    }
-
-    #current-date {
-        font-size: 25px;
-    }
-}
-*/

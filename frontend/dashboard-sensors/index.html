@@ -2,488 +2,430 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <title>Maxux Dashboard</title>
+  <title>Maxux Dashboard</title>
 
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/dashboard.css" rel="stylesheet">
+  <link href="css/bootstrap-dashboard.css" rel="stylesheet">
+  <link href="css/dashboard.css" rel="stylesheet">
 </head>
 
-<body>
-    <div id="wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 col-xl-4">
-                <div class="card text-bg-dark mb-3 mb-2">
-                    <div class="card-header">
-                        Right now
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-sensor sensor-28-ffc0d7021703c2 my-1">
-                        <div class="col-lg-4 sname">Desktop</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-ff641f43cac675 my-1">
-                        <div class="col-lg-4 sname">Kitchen</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-                        <div class="row row-sensor sensor-28-3709b812210156 my-1">
-                        <div class="col-lg-4 sname">Bedroom</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-ff641e93a42b71 my-1">
-                        <div class="col-lg-4 sname">Machines Room</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-8245ca122101dd my-1">
-                        <div class="col-lg-4 sname">Mezzanine</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-                    </div>
-                </div>
+<body data-bs-theme="dark">
+  <div class="container-fluid">
+    <div class="row g-3">
+      <div class="col-12 col-xl-4">
+        <div class="card">
+          <div class="card-header">
+            Temperature Sensors
+          </div>
+          <div class="card-body">
+            <div id="sensor-28-ffc0d7021703c2" class="temperature-sensors">
+              <div class="label">Desktop</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
             </div>
 
-            <div class="col-12 col-xl-4">
-                <div class="card text-bg-dark mb-3 mb-3">
-                    <div class="card-body text-center">
-                        <h2 id="current-time">00:00:00</h2>
-                        <h3 id="current-date">0000-00-00</h3>
-                        <h4 id="current-day">Loading</h4>
-                    </div>
-                </div>
+            <div id="sensor-28-ff641f43cac675" class="temperature-sensors">
+              <div class="label">Kitchen</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
             </div>
 
-            <div class="col-12 col-xl-4">
-                <!--
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-heading">
-                        <div class="card-header">
-                            <span class="glyphicon glyphicon-globe glyphicon-text"></span>
-                            <span id="weather-city">Weather</span>
-                            <span class="badge pull-right" id="weather-backtime">Loading</span>
-                        </div>
-                    </div>
-                    <div class="card-body weather">
-                        <div class="row">
-                        <div class="col-lg-4 text-center">
-                            Outside Temperature
-                            <h1 id="weather-temperature"></h1>
-                        </div>
-                        <div class="col-lg-4 text-center">
-                            Wind Speed
-                            <h1 id="weather-wind"></h1>
-                        </div>
-                        <div class="col-lg-4 text-center">
-                            Rainfall
-                            <h1 id="weather-hum"></h1>
-                        </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div id="chart-rain" class="chart-container-small">
-                                <div class="chart-placeholder">
-
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                -->
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Right now
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-sensor sensor-28-ffd3b4021703e8 my-1">
-                        <div class="col-lg-4 sname">Fridge (food)</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-ff274345160329 my-1">
-                        <div class="col-lg-4 sname">Fridge (drink, top)</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-ffd656471603b4 my-1">
-                        <div class="col-lg-4 sname">Fridge (drink, low)</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-ff2f0103170457 my-1">
-                        <div class="col-lg-4 sname">Fridge (freezer)</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-
-                        <div class="row row-sensor sensor-28-ff23a602170371 my-1">
-                        <div class="col-lg-4 sname">Freezer (large)</div>
-                        <div class="col-lg-5 value font-monospace"><span class="t"></span></div>
-                        <div class="col-lg-3">
-                            <span class="badge updated">Now</span>
-                        </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="sensor-28-3709b812210156" class="temperature-sensors">
+              <div class="label">Bedroom</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
             </div>
+
+            <div id="sensor-28-ff641e93a42b71" class="temperature-sensors">
+              <div class="label">Machines Room</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
+            </div>
+
+            <div id="sensor-28-8245ca122101dd" class="temperature-sensors">
+              <div class="label">Mezzanine</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="row">
-            <div class="col-6 col-xl-3">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Rooms
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <div id="chart-28-ffc0d7021703c2" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-xl-3">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Freezer Temperature
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <div id="chart-28-ff23a602170371" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-xl-3">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Fridge Temperature
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <div id="chart-28-ffd3b4021703e8" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-xl-3">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Extra Temperature
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <div id="chart-28-ff641e93a42b71" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="col-12 col-xl-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h2 id="current-time">00:00:00</h2>
+            <h3 id="current-date">0000-00-00</h3>
+            <h4 id="current-day">Loading</h4>
+          </div>
         </div>
+      </div>
 
-        <div class="row mx-auto justify-content-center">
-            <div class="col-4 col-xl-2">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Electric Power (Channel 1)
-                    </div>
-                    <div class="card-body card-power" data-channel="watt-3">
-                        <h2>
-                            <span class="power-value">...</span>
-                            <span class="power-unit">W</span>
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4 col-xl-2">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Electric Power (Channel 2)
-                    </div>
-                    <div class="card-body card-power" data-channel="watt-0">
-                        <h2>
-                            <span class="power-value">...</span>
-                            <span class="power-unit">W</span>
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4 col-xl-2">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Electric Power (Channel 3)
-                    </div>
-                    <div class="card-body card-power" data-channel="watt-1">
-                        <h2>
-                            <span class="power-value">...</span>
-                            <span class="power-unit">W</span>
-                        </h2>
-                    </div>
-                </div>
+      <div class="col-12 col-xl-4">
+        <div class="card">
+          <div class="card-header">
+            Temperature Sensors
+          </div>
+          <div class="card-body">
+            <div id="sensor-28-ffd3b4021703e8" class="temperature-sensors">
+              <div class="label">Fridge (food)</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
             </div>
 
-            <div class="power-spacer d-none d-xl-block"></div>
-
-            <div class="col-4 col-xl-2">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Electric Power (Master)
-                    </div>
-                    <div class="card-body card-power updated" data-channel="watt-2" data-refresh="class" data-timeout="5">
-                        <h2>
-                            <span class="power-value">...</span>
-                            <span class="power-unit">W</span>
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4 col-xl-2">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Voltage (Master)
-                    </div>
-                    <div class="card-body card-power" data-channel="volt-0">
-                        <h2>
-                            <span class="power-value">...</span>
-                            <span class="power-unit">V</span>
-                        </h2>
-                    </div>
-                </div>
-            </div>
+            <div id="sensor-28-ff274345160329" class="temperature-sensors">
+              <div class="label">Fridge (drink, top)</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
             </div>
 
-
-
-            <!--
-            <div class="col-lg-5">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-heading">
-                        <div class="card-header">
-                            <span class="glyphicon glyphicon-flash glyphicon-text"></span>
-                            Electric Channels status (GPIO, Raspberry Pi)
-                        </div>
-                    </div>
-                    <div class="card-body power">
-                        <div class="chart-container">
-                            <div id="gpio-table" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
+            <div id="sensor-28-ffd656471603b4" class="temperature-sensors">
+              <div class="label">Fridge (drink, low)</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
             </div>
-            -->
+
+            <div id="sensor-28-ff2f0103170457" class="temperature-sensors">
+              <div class="label">Fridge (freezer)</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
+            </div>
+
+            <div id="sensor-28-ff23a602170371" class="temperature-sensors">
+              <div class="label">Freezer (large)</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Electric Power Usage (last 30 days, kWh)
-                    </div>
-                    <div class="card-body power">
-                        <div class="chart-container">
-                            <div id="chart-power-backlog-70days" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
+      <!-- New Row -->
+
+      <div class="col-6 col-xl-3">
+        <div class="card">
+          <div class="card-header">
+            Rooms
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div id="chart-28-ffc0d7021703c2" class="chart-placeholder"></div>
             </div>
-            <div class="col-lg-5">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Electric Power Usage (last 24 hours, kWh)
-                    </div>
-                    <div class="card-body power">
-                        <div class="chart-container">
-                            <div id="chart-power-backlog" class="chart-placeholder"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Extra Sensors
-                    </div>
-                    <div class="card-body row extrasensors">
-                        <div class="col-lg-4 row sensor-28-1f55b4122101e7">
-                            <div class="col-lg-2">Terrace</div>
-                            <div class="col-lg-2"><span class="value"><span class="t"></span></div>
-                            <div class="col-lg-8">
-                                <span class="badge updated">Now</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 row sensor-28-ff641f75ab5b08">
-                            <div class="col-lg-3">Door Locker</div>
-                            <div class="col-lg-2"><span class="value"><span class="t"></span></div>
-                            <div class="col-lg-7">
-                                <span class="badge updated">Now</span>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4">
-                            Outside Temperature: <span id="weather-temperature"></span> /
-                            Wind Speed: <span id="weather-wind"></span> /
-                            Rainfall: <span id="weather-hum"></span>
-                        </div>
-                    </div>
-                </div>
+      <div class="col-6 col-xl-3">
+        <div class="card">
+          <div class="card-header">
+            Freezer Temperature
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div id="chart-28-ff23a602170371" class="chart-placeholder"></div>
             </div>
+          </div>
         </div>
-
-        <div class="row">
-            <div class="col-4 col-xl-3">
-                <div class="card text-bg-dark mb-3">
-                    <div class="card-header">
-                        Pony
-                    </div>
-                    <div class="card-body pony-card">
-                        <div class="d-flex justify-content-start align-items-center">
-                            <div class="title">
-                                <span class="badge text-bg-dark rounded-pill">Battery State</span>
-                            </div>
-                            <span class="state badge rounded-pill">...</span>
-                            <span class="badge ms-auto updated">...</span>
-                        </div>
-                        <div class="d-flex justify-content-start align-items-center">
-                            <div class="title">
-                                <span class="badge text-bg-dark rounded-pill">Battery Level</span>
-                            </div>
-                            <span class="level badge text-bg-dark rounded-pill">...</span>
-                        </div>
-                    </div>
-                </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="card">
+          <div class="card-header">
+            Fridge Temperature
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div id="chart-28-ffd3b4021703e8" class="chart-placeholder"></div>
             </div>
-
-            <div class="col-8 col-xl-6">
-                <div class="card text-bg-dark pb-1">
-                    <div class="card-header">
-                        Uninterruptible Power Supply
-                    </div>
-                    <div class="card-body ups-card d-flex gap-5">
-                        <div>
-                            <div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-dark">Status</span>
-                                </div>
-                                <div>
-                                    <span id="ups-status" class="badge rounded-pill text-bg-dark">Loading...</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-dark">Load</span>
-                                </div>
-                                <div>
-                                    <span id="ups-power-load" class="badge rounded-pill text-bg-dark">..</span>
-                                    <span id="ups-power-watt" class="badge rounded-pill text-bg-dark">..</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-dark">Output</span>
-                                </div>
-                                <div>
-                                    <span id="ups-output-voltage" class="badge rounded-pill text-bg-dark">..</span>
-                                    <span id="ups-output-frequency" class="badge rounded-pill text-bg-dark">..</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-fill">
-                            <div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-dark">Realtime</span>
-                                </div>
-                                <div>
-                                    <span id="ups-live-data" class="badge rounded-pill text-bg-secondary">..</span>
-                                    <span id="ups-live-time" class="badge rounded-pill text-bg-dark">..</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-dark">Battery</span>
-                                </div>
-                                <div>
-                                    <span id="ups-battery-charge" class="badge rounded-pill text-bg-dark">..</span>
-                                    <span id="ups-battery-voltage" class="badge rounded-pill text-bg-dark">..</span>
-                                    <span id="ups-internal-temperature" class="badge rounded-pill text-bg-dark">..</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-dark">Time Left</span>
-                                </div>
-                                <div class="d-flex flex-fill">
-                                    <span id="ups-time-left" class="badge rounded-pill text-bg-dark">..</span>
-                                    <span id="ups-date-update" class="badge rounded-pill text-bg-dark ms-auto updated">..</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3">
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="card">
+          <div class="card-header">
+            Extra Temperature
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div id="chart-28-ff641e93a42b71" class="chart-placeholder"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div id="disconnected">Connecting...</div>
+      <!-- New Row -->
+
+      <div class="col-4 col-xl-2 ms-auto">
+        <div class="card">
+          <div class="card-header">
+            Electric Power (Channel 1)
+          </div>
+          <div class="card-body card-power" data-channel="watt-3">
+            <h2>
+              <span class="power-value">...</span>
+              <span class="power-unit">W</span>
+            </h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-4 col-xl-2">
+        <div class="card">
+          <div class="card-header">
+            Electric Power (Channel 2)
+          </div>
+          <div class="card-body card-power" data-channel="watt-0">
+            <h2>
+              <span class="power-value">...</span>
+              <span class="power-unit">W</span>
+            </h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-4 col-xl-2">
+        <div class="card">
+          <div class="card-header">
+            Electric Power (Channel 3)
+          </div>
+          <div class="card-body card-power" data-channel="watt-1">
+            <h2>
+              <span class="power-value">...</span>
+              <span class="power-unit">W</span>
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="power-spacer d-none d-xl-block"></div>
+
+      <div class="col-4 col-xl-2">
+        <div class="card">
+          <div class="card-header">
+            Electric Power (Master)
+          </div>
+          <div class="card-body card-power updated" data-channel="watt-2" data-refresh="class" data-timeout="5">
+            <h2>
+              <span class="power-value">...</span>
+              <span class="power-unit">W</span>
+            </h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-4 col-xl-2 me-auto">
+        <div class="card">
+          <div class="card-header">
+            Voltage (Master)
+          </div>
+          <div class="card-body card-power" data-channel="volt-0">
+            <h2>
+              <span class="power-value">...</span>
+              <span class="power-unit">V</span>
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Row -->
+
+      <div class="col-lg-7">
+        <div class="card">
+          <div class="card-header">
+            Electric Power Usage (last 30 days, kWh)
+          </div>
+          <div class="card-body power">
+            <div class="chart-container">
+              <div id="chart-power-backlog-70days" class="chart-placeholder"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card">
+          <div class="card-header">
+            Electric Power Usage (last 24 hours, kWh)
+          </div>
+          <div class="card-body power">
+            <div class="chart-container">
+              <div id="chart-power-backlog" class="chart-placeholder"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Row -->
+
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            Extra Sensors
+          </div>
+          <div class="card-body sensors-extra">
+            <div id="sensor-28-1f55b4122101e7" class="temperature-sensors">
+              <div class="label">Terrace</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
+            </div>
+
+            <div id="sensor-28-ff641f75ab5b08" class="temperature-sensors">
+              <div class="label">Door Locker</div>
+              <div class="value">...</div>
+              <div class="timestamp">
+                <span class="badge updated">Now</span>
+              </div>
+            </div>
+
+            <div class="extra-weather">
+              Outside Temperature: <span id="weather-temperature" class="badge text-bg-dark"></span> /
+              Wind Speed: <span id="weather-wind" class="badge text-bg-dark"></span> /
+              Rainfall: <span id="weather-hum" class="badge text-bg-dark"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Row -->
+
+      <div class="col-4 col-xl-3">
+        <div class="card">
+          <div class="card-header">
+            Pony
+          </div>
+          <div class="card-body pony-card">
+            <div>
+              <div class="title">
+                <span class="badge text-bg-dark rounded-pill">Battery State</span>
+              </div>
+              <span class="state badge rounded-pill">...</span>
+              <span class="badge ms-auto updated">...</span>
+            </div>
+            <div>
+              <div class="title">
+                <span class="badge text-bg-dark rounded-pill">Battery Level</span>
+              </div>
+              <span class="level badge text-bg-dark rounded-pill">...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-8 col-xl-6">
+          <div class="card pb-1">
+          <div class="card-header">
+            Uninterruptible Power Supply
+          </div>
+          <div class="card-body ups-card">
+            <div>
+              <div>
+                <div>
+                  <span class="badge rounded-pill text-bg-dark">Status</span>
+                </div>
+                <div>
+                  <span id="ups-status" class="badge rounded-pill text-bg-dark">Loading...</span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span class="badge rounded-pill text-bg-dark">Load</span>
+                </div>
+                <div>
+                  <span id="ups-power-load" class="badge rounded-pill text-bg-dark">..</span>
+                  <span id="ups-power-watt" class="badge rounded-pill text-bg-dark">..</span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span class="badge rounded-pill text-bg-dark">Output</span>
+                </div>
+                <div>
+                  <span id="ups-output-voltage" class="badge rounded-pill text-bg-dark">..</span>
+                  <span id="ups-output-frequency" class="badge rounded-pill text-bg-dark">..</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex-fill">
+              <div>
+                <div>
+                  <span class="badge rounded-pill text-bg-dark">Realtime</span>
+                </div>
+                <div>
+                  <span id="ups-live-data" class="badge rounded-pill text-bg-secondary">..</span>
+                  <span id="ups-live-time" class="badge rounded-pill text-bg-dark">..</span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span class="badge rounded-pill text-bg-dark">Battery</span>
+                </div>
+                <div>
+                  <span id="ups-battery-charge" class="badge rounded-pill text-bg-dark">..</span>
+                  <span id="ups-battery-voltage" class="badge rounded-pill text-bg-dark">..</span>
+                  <span id="ups-internal-temperature" class="badge rounded-pill text-bg-dark">..</span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span class="badge rounded-pill text-bg-dark">Time Left</span>
+                </div>
+                <div class="d-flex flex-fill">
+                  <span id="ups-time-left" class="badge rounded-pill text-bg-dark">..</span>
+                  <span id="ups-date-update" class="badge rounded-pill text-bg-dark ms-auto updated">..</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3">
+      </div>
     </div>
 
-    <!--
-    <div style="position: absolute; top: 350px; left: 510px; background: rgba(140, 20, 20, 0.8); width: 900px; height: 300px; font-size: 5em; text-align: center; padding: 50px; border-radius: 10px;">
-        Broadcast Message
-    </div>
-    -->
+    <div id="disconnected">Connecting...</div>
 
-    <script src="js/jquery-3.6.4.min.js"></script>
-    <script src="js/moment.min.js"></script>
-    <script src="js/jquery.flot.js"></script>
-    <script src="js/jquery.flot.time.js"></script>
-    <script src="js/jquery.flot.categories.js"></script>
-    <script src="js/jquery.flot.stack.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/dashboard.js"></script>
+  <!--
+  <div style="position: absolute; top: 350px; left: 510px; background: rgba(140, 20, 20, 0.8); width: 900px; height: 300px; font-size: 5em; text-align: center; padding: 50px; border-radius: 10px;">
+    Broadcast Message
+  </div>
+  -->
+
+  <script src="js/jquery-3.6.4.min.js"></script>
+  <script src="js/moment.min.js"></script>
+  <script src="js/jquery.flot.js"></script>
+  <script src="js/jquery.flot.time.js"></script>
+  <script src="js/jquery.flot.categories.js"></script>
+  <script src="js/jquery.flot.stack.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/dashboard.js"></script>
 </body>
 
 </html>

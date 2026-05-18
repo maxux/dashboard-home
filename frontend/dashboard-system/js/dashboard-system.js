@@ -63,6 +63,23 @@ function colorize(value) {
 	return 'text-danger';
 }
 
+function raplcolor(value) {
+	if(value < 4000)
+		return "text-muted";
+
+    if(value < 35000)
+        return '';
+
+	if(value < 50000)
+		return "text-info";
+
+	if(value < 65000)
+		return "text-warning";
+
+	return "text-danger";
+}
+
+
 function loadcolor(value, cpu) {
 	if(value < 0.8)
 		return 'text-muted';
@@ -391,6 +408,7 @@ function rtinfo_summary_node(node, host, server) {
     let cpunr = node.cpu_usage.length - 1;
     let ram   = percentvalue(node.memory.ram_used, node.memory.ram_total);
     let ramsz = autosize(node.memory.ram_used);
+    let rapl  = (node.rapl.pkg / 1000).toFixed(1);
 
     // let swap  = node.memory.swap_total - node.memory.swap_free;
     // let pswap = percentvalue(swap, node.memory.swap_total);
@@ -414,8 +432,8 @@ function rtinfo_summary_node(node, host, server) {
     rnode("nn-host").innerText = node.hostname;
     rclass("nn-host", host_status(node, server));
 
-    rnode("nn-swap").innerText = "-";
-    rclass("nn-swap", "text-muted");
+    rnode("nn-swap").innerText = (rapl > 0) ? `${rapl} watt` : "--";
+    rclass("nn-swap", raplcolor(node.rapl.pkg));
 
     rnode("nn-cpu").innerText = percent(node.cpu_usage[0]);
     rclass("nn-cpu", colorcpu(node));
@@ -791,6 +809,13 @@ function ping_update(ping) {
     element.classList.add(ping_levels[severity]);
 }
 
+const wireless_classes = [
+    "text-danger",
+    "text-warning",
+    "text-light",
+    "text-success",
+];
+
 function wireless_signal(value) {
     if(value < -80)
         return "text-danger";
@@ -799,7 +824,7 @@ function wireless_signal(value) {
         return "text-warning";
 
     if(value < -55)
-        return "";
+        return "text-light";
 
     return "text-success";
 }
@@ -1058,7 +1083,8 @@ function devices_update(clients) {
 
         // sorting clients
         node["line"].style.order = client.order;
-        node["line"].classList.toggle("offline", (client.elapsed > 1200));
+        node["line"].classList.toggle("offline", (client.elapsed > 1200)); // 20m
+        node["line"].classList.toggle("d-none", (client.elapsed > 21600)); // 6h
 
         node["dd-ip"].innerText = client.ipaddr;
 
@@ -1199,7 +1225,7 @@ function redfishing_update(payload) {
         if(entry['messageid'] in redinfoid)
             severity = redinfoid[entry['messageid']];
 
-        let messageb = $("<span>", {"class": "badge " + severity}).html(entry['message']);
+        let messageb = $("<span>", {"class": "badge message " + severity}).html(entry['message']);
 
         $(".redfishing").prepend($("<div>").append(dateb).append(sourceb).append(messageb));
     }
@@ -1217,5 +1243,5 @@ function cronjob() {
 
 $(document).ready(function() {
     connect();
-    setInterval(cronjob, 1000);
+    setInterval(cronjob, 1000); // 1s
 });
