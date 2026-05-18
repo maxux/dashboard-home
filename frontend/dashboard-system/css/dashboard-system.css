@@ -323,3 +323,8 @@ tr.spacer {
     text-wrap: wrap;
     width: 100%;
 }
+
+.redacted {
+    filter: blur(6px);
+    opacity: 0.5;
+}

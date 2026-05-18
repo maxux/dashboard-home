@@ -6,6 +6,9 @@ var batpic = ["→", "↓", "↑"];
 var color;
 var root;
 
+// const redacted_data = "redacted";
+// const redacted_enabled = true;
+
 function elapsedstr(elapsed) {
     if(elapsed < 60)
         return elapsed + ' seconds ago';
@@ -431,6 +434,7 @@ function rtinfo_summary_node(node, host, server) {
 
     rnode("nn-host").innerText = node.hostname;
     rclass("nn-host", host_status(node, server));
+    // rclass("nn-host", redacted_data);
 
     rnode("nn-swap").innerText = (rapl > 0) ? `${rapl} watt` : "--";
     rclass("nn-swap", raplcolor(node.rapl.pkg));
@@ -451,6 +455,8 @@ function rtinfo_summary_node(node, host, server) {
     rclass("nn-load-15", loadcolor(node.loadavg[2], cpunr));
 
     rnode("nn-remote").innerText = node.remoteip;
+    // rclass("nn-remote", redacted_data);
+
     rnode("nn-time").innerText = unixtime(node.time);
 
     rnode("nn-uptime").innerText = uptime(node.uptime);
@@ -1086,10 +1092,14 @@ function devices_update(clients) {
         node["line"].classList.toggle("offline", (client.elapsed > 1200)); // 20m
         node["line"].classList.toggle("d-none", (client.elapsed > 21600)); // 6h
 
+        // node["dd-mac"].classList.toggle("redacted", redacted_enabled);
+
         node["dd-ip"].innerText = client.ipaddr;
+        // node["dd-ip"].classList.toggle("redacted", redacted_enabled);
 
         node["dd-host"].innerText = (client.hostname) ? client.hostname : "(unknown)";
         node["dd-host"].classList.toggle("text-muted", !client.hostname);
+        // node["dd-host"].classList.toggle("redacted", redacted_enabled);
 
         node["dd-rx"].innerText = shortrate(client.rx);
         node["dd-rx"].classList.remove(...devices_rxtx_classes);
@@ -1229,6 +1239,8 @@ function redfishing_update(payload) {
 
         $(".redfishing").prepend($("<div>").append(dateb).append(sourceb).append(messageb));
     }
+
+    // document.querySelector(".redfishing").classList.toggle("redacted", redacted_enabled);
 }
 
 function cronjob() {
