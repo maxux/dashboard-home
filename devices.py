@@ -8,6 +8,7 @@ r = redis.Redis(decode_responses=True)
 slave = DashboardSlave("devices")
 slavefull = DashboardSlave("devices-full")
 
+dirtyrefresh = time.time()
 backlog = {}
 
 while True:
@@ -69,6 +70,11 @@ while True:
                 devices[live["addr"]] = device
                 backlog[live["addr"]] = device
                 break
+
+    # Update full devices once per minute for backlog
+    if time.time() > dirtyrefresh + 60:
+        dirtyrefresh = time.time()
+        dirtyfull = True
 
     print(f"[+] local devices checker: {len(devices)} devices found")
     slave.set(devices)
