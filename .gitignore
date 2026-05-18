@@ -1,0 +1,8 @@
+# virtual environment runtime
+.runtime
+
+# sensitives data
+config.py
+
+# python caches
+__pycache__
