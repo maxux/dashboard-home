@@ -9,7 +9,7 @@ some snippets if you find anything which suits you !
 ## Screenshots
 
 ### Sensors
-![Sensors](https://home.maxux.net/resources/dashboard-sensors.png)
+![Sensors](https://home.maxux.net/resources/dashboard-sensors-ng.png)
 
 ### System
-![System](https://home.maxux.net/resources/dashboard-system.png)
+![System](https://home.maxux.net/resources/dashboard-system-ng.png)
