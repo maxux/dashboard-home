@@ -23,6 +23,9 @@ class DashboardSlave():
     def sleep(self, seconds):
         time.sleep(seconds)
 
+    def objdump(self, obj):
+        return json.dumps(obj, indent=2, default=str)
+
 class DashboardServer():
     def __init__(self):
         self.clients = {}
