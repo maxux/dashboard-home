@@ -168,20 +168,19 @@ class DashboardServer():
                 message = json.loads(data)
 
                 if "id" in message and message["id"] == "register":
-                    if "watch" in message:
-                        for watch in message["watch"]:
-                            print(f"[+] websocket: client {clientid}: watching for {watch}")
-                            self.filters[clientid][watch] = True
+                    for watch in message["watch"]:
+                        print(f"[+] websocket: client {clientid}: watching for {watch}")
+                        self.filters[clientid][watch] = True
 
-                    # sending backlog if available
-                    for id in self.payloads:
-                        item = self.payloads[id]
+                        # sending backlog if available
+                        for id in self.payloads:
+                            item = self.payloads[id]
 
-                        if self.filters[clientid].get(item["id"]):
-                            print(f"[+] websocket: client {clientid}: sending backlog: {id}")
-                            payload = self.format_payload(item["id"], item["payload"])
+                            if watch == item["id"]:
+                                print(f"[+] websocket: client {clientid}: sending backlog: {id}")
+                                payload = self.format_payload(item["id"], item["payload"])
 
-                            await websocket.send(payload)
+                                await websocket.send(payload)
 
         except websockets.exceptions.ConnectionClosedError:
             print(f"[-][{clientid}] connection closed prematurely")
